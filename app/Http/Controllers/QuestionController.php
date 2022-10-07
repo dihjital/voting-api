@@ -91,30 +91,31 @@ class QuestionController extends Controller
   public function createVote($question_id, Request $request)
   {
 
-    $question = Question::find($question_id);
+    $question = Question::findOrFail($question_id);
+
+    $validator = validator()->make(request()->all(), [
+      'vote_text' => 'required'
+    ]);
+
+    if ($validator->fails()) {
+      $errors = $validator->errors();
+      return response()->json($errors->first('vote_text'), 500);
+    }
 
     try {
-
-      $this->validate($request, [
-        'vote_text' => 'required'
-      ]);
 
       $vote = new Vote();
       $vote->vote_text = $request->vote_text;
       $vote->number_of_votes = $request->number_of_votes || 0; // Default is 0
       $vote->question_id = $question_id;
 
-      // $author = Author::create($request->all());
-
       if ($vote->save()) {
         return response()->json(['status' => 'success', 'message' => 'Vote successfully created']);
       }
 
     } catch (\Exception $e) {
-      return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+      return response()->json($e->getMessage(), 500);
     }
-
-    // return response()->json($author, 201);
 
   }
 
