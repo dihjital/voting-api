@@ -91,7 +91,11 @@ class QuestionController extends Controller
   public function createVote($question_id, Request $request)
   {
 
-    $question = Question::findOrFail($question_id);
+    try {
+      $question = Question::findOrFail($question_id);
+    } catch (\Exception $e) {
+      return response()->json($e->getMessage(), 404);
+    }
 
     $validator = validator()->make(request()->all(), [
       'vote_text' => 'required'
@@ -122,7 +126,12 @@ class QuestionController extends Controller
   public function showAllVotesforQuestion($question_id)
   {
 
-    $question = Question::findOrFail($question_id);
+    try {
+      $question = Question::findOrFail($question_id);
+    } catch (\Exception $e) {
+      return response()->json($e->getMessage(), 404);
+    }
+
     $votes = $question->votes;
 
     return response()->json($votes, 200);
@@ -135,7 +144,7 @@ class QuestionController extends Controller
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+      return response()->json($e->getMessage(), 404);
     }
 
     // meg kell vizsgálni, hogy van-e ilyen vote egyáltalán
