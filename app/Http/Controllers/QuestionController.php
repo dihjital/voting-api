@@ -54,7 +54,11 @@ class QuestionController extends Controller
   public function modifyQuestion($question_id, Request $request)
   {
 
-    $new_question = Question::findOrFail($question_id);
+    try {
+      $new_question = Question::findOrFail($question_id);
+    } catch (\Exception $e) {
+      return response('Question not found', 404);
+    }
 
     $validator = validator()->make(request()->all(), [
       'question_text' => 'required'
@@ -82,7 +86,11 @@ class QuestionController extends Controller
   public function deleteQuestion($question_id)
   {
 
-    Question::findOrFail($question_id)->delete();
+    try {
+      Question::findOrFail($question_id)->delete();
+    } catch (\Exception $e) {
+      return response('Question not found', 404);
+    }
 
     return response()->json(['status' => 'success', 'message' => 'Question deleted successfully']);
 
