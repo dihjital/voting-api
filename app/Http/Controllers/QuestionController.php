@@ -20,8 +20,12 @@ class QuestionController extends Controller
   public function showOneQuestion($question_id)
   {
 
-    return response()->json(Question::findOrFail($question_id));
-
+    try {
+      return response()->json(Question::findOrFail($question_id));
+    } catch (\Exception $e) {
+      return response('Question not found', 404);
+    }
+    
   }
 
   public function createQuestion(Request $request)
