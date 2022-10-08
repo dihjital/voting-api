@@ -30,3 +30,4 @@ $router->post('/questions', ['uses' => 'QuestionController@createQuestion']);
 $router->post('/questions/{question_id}/votes', ['uses' => 'QuestionController@createVote']);
 $router->get('/questions/{question_id}/votes', ['uses' => 'QuestionController@showAllVotesforQuestion']);
 $router->delete('/questions/{question_id}/votes/{vote_id}', ['uses' => 'QuestionController@deleteVote']);
+$router->delete('/questions/{question_id}/votes', ['uses' => 'QuestionController@deleteAllVotesforQuestion']);

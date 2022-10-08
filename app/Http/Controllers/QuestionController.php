@@ -25,7 +25,7 @@ class QuestionController extends Controller
     } catch (\Exception $e) {
       return response('Question not found', 404);
     }
-    
+
   }
 
   public function createQuestion(Request $request)
@@ -106,7 +106,7 @@ class QuestionController extends Controller
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json($e->getMessage(), 404);
+      return response()->json('Question not found', 404);
     }
 
     $validator = validator()->make(request()->all(), [
@@ -141,7 +141,7 @@ class QuestionController extends Controller
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json($e->getMessage(), 404);
+      return response()->json('Question not found', 404);
     }
 
     $votes = $question->votes;
@@ -156,14 +156,16 @@ class QuestionController extends Controller
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json($e->getMessage(), 404);
+      return response()->json('Question not found', 404);
     }
 
-    // meg kell vizsgálni, hogy van-e ilyen vote egyáltalán
-    $vote = $question->votes
-                     ->where('id', '=', $vote_id)
-                     ->first()
-                     ->delete();
+    $vote = $question->votes->where('id', '=', $vote_id)->first();
+
+    if (!$vote) {
+      return response()->json('Vote not found', 404);
+    }
+
+    $vote->delete();
 
     return response()->json(['status' => 'success', 'message' => 'Vote deleted successfully']);
 
@@ -171,6 +173,20 @@ class QuestionController extends Controller
 
   public function deleteAllVotesforQuestion($question_id)
   {
+
+    try {
+      $question = Question::findOrFail($question_id);
+    } catch (\Exception $e) {
+      return response()->json('Question not found', 404);
+    }
+
+    try {
+      $vote = $question->votes->where('id', '=', '%%')->delete();
+    } catch (\Exception $e) {
+      return response()->json($e->getMessage(), 500);
+    }
+
+    return response()->json(['status' => 'success', 'message' => 'All votes deleted successfully']);
 
   }
 
