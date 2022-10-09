@@ -135,6 +135,25 @@ class QuestionController extends Controller
 
   }
 
+  public function showOneVote($question_id, $vote_id)
+  {
+
+    try {
+      $question = Question::findOrFail($question_id);
+    } catch (\Exception $e) {
+      return response()->json('Question not found', 404);
+    }
+
+    $vote = $question->votes->where('id', '=', $vote_id)->first();
+
+    if (!$vote) {
+      return response()->json('Vote not found', 404);
+    }
+
+    return response()->json($vote, 200);
+
+  }
+
   public function showAllVotesforQuestion($question_id)
   {
 
