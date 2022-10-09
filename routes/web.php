@@ -21,7 +21,7 @@ $router->get('/', function () use ($router) {
 $router->get('/questions', ['uses' => 'QuestionController@showAllQuestions']);
 $router->get('/questions/{question_id}', ['uses' => 'QuestionController@showOneQuestion']);
 $router->delete('/questions/{question_id}', ['uses' => 'QuestionController@deleteQuestion']);
-$router->post('/questions/{question_id}', ['uses' => 'QuestionController@modifyQuestion']);
+$router->put('/questions/{question_id}', ['uses' => 'QuestionController@modifyQuestion']);
 
 $router->post('/questions', ['uses' => 'QuestionController@createQuestion']);
 

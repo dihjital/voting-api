@@ -181,7 +181,7 @@ class QuestionController extends Controller
     }
 
     try {
-      $vote = $question->votes->where('id', '=', '%%')->delete();
+      Vote::where('question_id', $question_id)->delete();
     } catch (\Exception $e) {
       return response()->json($e->getMessage(), 500);
     }
