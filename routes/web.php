@@ -32,3 +32,5 @@ $router->get('/questions/{question_id}/votes', ['uses' => 'QuestionController@sh
 $router->get('/questions/{question_id}/votes/{vote_id}', ['uses' => 'QuestionController@showOneVote']);
 $router->delete('/questions/{question_id}/votes/{vote_id}', ['uses' => 'QuestionController@deleteVote']);
 $router->delete('/questions/{question_id}/votes', ['uses' => 'QuestionController@deleteAllVotesforQuestion']);
+
+$router->put('/questions/{question_id}/votes/{vote_id}', ['uses' => 'QuestionController@modifyVote']);

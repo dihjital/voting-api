@@ -122,11 +122,41 @@ class QuestionController extends Controller
 
       $vote = new Vote();
       $vote->vote_text = $request->vote_text;
-      $vote->number_of_votes = $request->number_of_votes || 0; // Default is 0
+      $vote->number_of_votes = $request->number_of_votes ?? 0; // Default is 0
       $vote->question_id = $question_id;
 
       if ($vote->save()) {
         return response()->json(['status' => 'success', 'message' => 'Vote successfully created']);
+      }
+
+    } catch (\Exception $e) {
+      return response()->json($e->getMessage(), 500);
+    }
+
+  }
+
+  public function modifyVote($question_id, $vote_id, Request $request)
+  {
+
+    try {
+      $question = Question::findOrFail($question_id);
+    } catch (\Exception $e) {
+      return response()->json('Question not found', 404);
+    }
+
+    $new_vote = $question->votes->where('id', '=', $vote_id)->first();
+
+    if (!$new_vote) {
+      return response()->json('Vote not found', 404);
+    }
+
+    try {
+
+      $new_vote->vote_text = $request->vote_text ? $request->vote_text : $new_vote->vote_text;
+      $new_vote->number_of_votes = $request->number_of_votes ? $request->number_of_votes : ($new_vote->number_of_votes+1);
+
+      if ($new_vote->save()) {
+        return response()->json(['status' => 'success', 'message' => 'Vote modified successfully']);
       }
 
     } catch (\Exception $e) {
