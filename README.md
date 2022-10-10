@@ -14,5 +14,15 @@
 
 ```docker-compose run --rm lumen php artisan migrate```
 
+In case you cannot run ```migration```:
+
+```docker-compose down```
+
+```docker-compose run --rm lumen php artisan cache:clean```
+
+```docker-compose run --rm lumen php artisan migrate```
+
+```docker-compose up```
+
 ## Access the server
 ``` curl -v http://localhost:8000/questions```
