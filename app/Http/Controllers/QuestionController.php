@@ -78,7 +78,7 @@ class QuestionController extends Controller
       $new_question->question_text = $request->question_text;
 
       if ($new_question->save()) {
-        return response()->json(['status' => 'success', 'message' => 'Question modified successfully']);
+        return response()->json($new_question, 200);
       }
 
     } catch (\Exception $e) {
@@ -156,7 +156,7 @@ class QuestionController extends Controller
       $new_vote->number_of_votes = $request->number_of_votes ? $request->number_of_votes : ($new_vote->number_of_votes+1);
 
       if ($new_vote->save()) {
-        return response()->json(['status' => 'success', 'message' => 'Vote modified successfully']);
+        return response()->json($new_vote, 200);
       }
 
     } catch (\Exception $e) {
