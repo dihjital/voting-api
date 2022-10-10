@@ -20,7 +20,11 @@ class QuestionController extends Controller
   public function showOneQuestion($question_id)
   {
 
-    return response()->json(Question::findOrFail($question_id));
+    try {
+      return response()->json(Question::findOrFail($question_id));
+    } catch (\Exception $e) {
+      return response('Question not found', 404);
+    }
 
   }
 
@@ -54,7 +58,11 @@ class QuestionController extends Controller
   public function modifyQuestion($question_id, Request $request)
   {
 
-    $new_question = Question::findOrFail($question_id);
+    try {
+      $new_question = Question::findOrFail($question_id);
+    } catch (\Exception $e) {
+      return response('Question not found', 404);
+    }
 
     $validator = validator()->make(request()->all(), [
       'question_text' => 'required'
@@ -70,7 +78,7 @@ class QuestionController extends Controller
       $new_question->question_text = $request->question_text;
 
       if ($new_question->save()) {
-        return response()->json(['status' => 'success', 'message' => 'Question modified successfully']);
+        return response()->json($new_question, 200);
       }
 
     } catch (\Exception $e) {
@@ -82,7 +90,11 @@ class QuestionController extends Controller
   public function deleteQuestion($question_id)
   {
 
-    Question::findOrFail($question_id)->delete();
+    try {
+      Question::findOrFail($question_id)->delete();
+    } catch (\Exception $e) {
+      return response('Question not found', 404);
+    }
 
     return response()->json(['status' => 'success', 'message' => 'Question deleted successfully']);
 
@@ -94,7 +106,7 @@ class QuestionController extends Controller
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json($e->getMessage(), 404);
+      return response()->json('Question not found', 404);
     }
 
     $validator = validator()->make(request()->all(), [
@@ -110,7 +122,7 @@ class QuestionController extends Controller
 
       $vote = new Vote();
       $vote->vote_text = $request->vote_text;
-      $vote->number_of_votes = $request->number_of_votes || 0; // Default is 0
+      $vote->number_of_votes = $request->number_of_votes ?? 0; // Default is 0
       $vote->question_id = $question_id;
 
       if ($vote->save()) {
@@ -123,13 +135,62 @@ class QuestionController extends Controller
 
   }
 
+  public function modifyVote($question_id, $vote_id, Request $request)
+  {
+
+    try {
+      $question = Question::findOrFail($question_id);
+    } catch (\Exception $e) {
+      return response()->json('Question not found', 404);
+    }
+
+    $new_vote = $question->votes->where('id', '=', $vote_id)->first();
+
+    if (!$new_vote) {
+      return response()->json('Vote not found', 404);
+    }
+
+    try {
+
+      $new_vote->vote_text = $request->vote_text ? $request->vote_text : $new_vote->vote_text;
+      $new_vote->number_of_votes = $request->number_of_votes ? $request->number_of_votes : ($new_vote->number_of_votes+1);
+
+      if ($new_vote->save()) {
+        return response()->json($new_vote, 200);
+      }
+
+    } catch (\Exception $e) {
+      return response()->json($e->getMessage(), 500);
+    }
+
+  }
+
+  public function showOneVote($question_id, $vote_id)
+  {
+
+    try {
+      $question = Question::findOrFail($question_id);
+    } catch (\Exception $e) {
+      return response()->json('Question not found', 404);
+    }
+
+    $vote = $question->votes->where('id', '=', $vote_id)->first();
+
+    if (!$vote) {
+      return response()->json('Vote not found', 404);
+    }
+
+    return response()->json($vote, 200);
+
+  }
+
   public function showAllVotesforQuestion($question_id)
   {
 
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json($e->getMessage(), 404);
+      return response()->json('Question not found', 404);
     }
 
     $votes = $question->votes;
@@ -144,14 +205,16 @@ class QuestionController extends Controller
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json($e->getMessage(), 404);
+      return response()->json('Question not found', 404);
     }
 
-    // meg kell vizsgálni, hogy van-e ilyen vote egyáltalán
-    $vote = $question->votes
-                     ->where('id', '=', $vote_id)
-                     ->first()
-                     ->delete();
+    $vote = $question->votes->where('id', '=', $vote_id)->first();
+
+    if (!$vote) {
+      return response()->json('Vote not found', 404);
+    }
+
+    $vote->delete();
 
     return response()->json(['status' => 'success', 'message' => 'Vote deleted successfully']);
 
@@ -159,6 +222,20 @@ class QuestionController extends Controller
 
   public function deleteAllVotesforQuestion($question_id)
   {
+
+    try {
+      $question = Question::findOrFail($question_id);
+    } catch (\Exception $e) {
+      return response()->json('Question not found', 404);
+    }
+
+    try {
+      Vote::where('question_id', $question_id)->delete();
+    } catch (\Exception $e) {
+      return response()->json($e->getMessage(), 500);
+    }
+
+    return response()->json(['status' => 'success', 'message' => 'All votes deleted successfully']);
 
   }
 
