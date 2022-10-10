@@ -122,7 +122,7 @@ class QuestionController extends Controller
 
       $vote = new Vote();
       $vote->vote_text = $request->vote_text;
-      $vote->number_of_votes = $request->number_of_votes ?? 0; // Default is 0
+      $vote->number_of_votes = intval($request->number_of_votes) ?? 0; // Default is 0
       $vote->question_id = $question_id;
 
       if ($vote->save()) {
@@ -153,7 +153,7 @@ class QuestionController extends Controller
     try {
 
       $new_vote->vote_text = $request->vote_text ? $request->vote_text : $new_vote->vote_text;
-      $new_vote->number_of_votes = $request->number_of_votes ? $request->number_of_votes : ($new_vote->number_of_votes+1);
+      $new_vote->number_of_votes = !is_null($request->number_of_votes) ? intval($request->number_of_votes) : $new_vote->number_of_votes + 1;
 
       if ($new_vote->save()) {
         return response()->json($new_vote, 200);
