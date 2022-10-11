@@ -110,12 +110,12 @@ class QuestionController extends Controller
     }
 
     $validator = validator()->make(request()->all(), [
-      'vote_text' => 'required'
+      'vote_text' => 'required',
+      'number_of_votes' => 'numeric|integer'
     ]);
 
     if ($validator->fails()) {
-      $errors = $validator->errors();
-      return response()->json($errors->first('vote_text'), 500);
+      return response()->json($validator->errors()->first(), 500);
     }
 
     try {
@@ -142,6 +142,14 @@ class QuestionController extends Controller
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
       return response()->json('Question not found', 404);
+    }
+
+    $validator = validator()->make(request()->all(), [
+      'number_of_votes' => 'numeric|integer'
+    ]);
+
+    if ($validator->fails()) {
+      return response()->json($validator->errors()->first(), 500);
     }
 
     $new_vote = $question->votes->where('id', '=', $vote_id)->first();
