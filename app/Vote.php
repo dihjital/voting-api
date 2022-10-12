@@ -2,10 +2,13 @@
 
 namespace App;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Vote extends Model
 {
+
+    use HasFactory;
     /**
      * Get the question that this voting option belongs to
      */
