@@ -9,6 +9,12 @@ class Question extends Model
 {
 
     use HasFactory;
+
+    public function getNumberOfVotesAttribute()
+    {
+      return Vote::where('question_id', '=', $this->id)->count();
+    }
+
     /**
      * Get the voting options that belong to this Question
      */
@@ -28,5 +34,6 @@ class Question extends Model
      * @var array
      */
     protected $hidden = [];
+    protected $appends = ['number_of_votes'];
 
 }
