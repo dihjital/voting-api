@@ -21,10 +21,14 @@ class QuestionController extends Controller
   {
 
     try {
-      return response()->json(Question::findOrFail($question_id))->setEncodingOptions(JSON_NUMERIC_CHECK);
+      $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response('Question not found', 404);
+      return response()->json('Question not found', 404);
     }
+
+    $votes = $question->votes;
+
+    return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
 
   }
 
