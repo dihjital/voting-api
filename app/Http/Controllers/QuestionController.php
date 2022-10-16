@@ -12,7 +12,7 @@ class QuestionController extends Controller
   public function showAllQuestions()
   {
 
-    return response()->json(Question::all());
+    return response()->json(Question::all())->setEncodingOptions(JSON_NUMERIC_CHECK);
 
   }
 
@@ -21,7 +21,7 @@ class QuestionController extends Controller
   {
 
     try {
-      return response()->json(Question::findOrFail($question_id));
+      return response()->json(Question::findOrFail($question_id))->setEncodingOptions(JSON_NUMERIC_CHECK);
     } catch (\Exception $e) {
       return response('Question not found', 404);
     }
@@ -78,7 +78,7 @@ class QuestionController extends Controller
       $new_question->question_text = $request->question_text;
 
       if ($new_question->save()) {
-        return response()->json($new_question, 200);
+        return response()->json($new_question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
       }
 
     } catch (\Exception $e) {
@@ -164,7 +164,7 @@ class QuestionController extends Controller
       $new_vote->number_of_votes = !is_null($request->number_of_votes) ? intval($request->number_of_votes) : $new_vote->number_of_votes + 1;
 
       if ($new_vote->save()) {
-        return response()->json($new_vote, 200);
+        return response()->json($new_vote, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
       }
 
     } catch (\Exception $e) {
@@ -188,7 +188,7 @@ class QuestionController extends Controller
       return response()->json('Vote not found', 404);
     }
 
-    return response()->json($vote, 200);
+    return response()->json($vote, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
 
   }
 
@@ -203,7 +203,7 @@ class QuestionController extends Controller
 
     $votes = $question->votes;
 
-    return response()->json($votes, 200);
+    return response()->json($votes, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
 
   }
 
