@@ -26,7 +26,7 @@ class QuestionController extends Controller
       return response()->json('Question not found', 404);
     }
 
-    $votes = $question->votes;
+    $votes = $question->votes->makeHidden('question_id')->toArray();
 
     return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
 
