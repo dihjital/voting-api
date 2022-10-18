@@ -27,10 +27,10 @@ $router->post('/questions', ['uses' => 'QuestionController@createQuestion']);
 
 // Votes (A question might have multiple votes)
 
-$router->post('/questions/{question_id}/votes', ['uses' => 'QuestionController@createVote']);
-$router->get('/questions/{question_id}/votes', ['uses' => 'QuestionController@showAllVotesforQuestion']);
-$router->get('/questions/{question_id}/votes/{vote_id}', ['uses' => 'QuestionController@showOneVote']);
-$router->delete('/questions/{question_id}/votes/{vote_id}', ['uses' => 'QuestionController@deleteVote']);
-$router->delete('/questions/{question_id}/votes', ['uses' => 'QuestionController@deleteAllVotesforQuestion']);
+$router->post('/questions/{question_id}/votes', ['uses' => 'VoteController@createVote']);
+$router->get('/questions/{question_id}/votes', ['uses' => 'VoteController@showAllVotesforQuestion']);
+$router->get('/questions/{question_id}/votes/{vote_id}', ['uses' => 'VoteController@showOneVote']);
+$router->delete('/questions/{question_id}/votes/{vote_id}', ['uses' => 'VoteController@deleteVote']);
+$router->delete('/questions/{question_id}/votes', ['uses' => 'VoteController@deleteAllVotesforQuestion']);
 
-$router->put('/questions/{question_id}/votes/{vote_id}', ['uses' => 'QuestionController@modifyVote']);
+$router->put('/questions/{question_id}/votes/{vote_id}', ['uses' => 'VoteController@modifyVote']);

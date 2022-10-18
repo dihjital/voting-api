@@ -1,0 +1,289 @@
+{
+	"info": {
+		"_postman_id": "fc169dc3-1ff5-4ba2-813a-d19c54cc7e4a",
+		"name": "Voting API collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET all Questions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/questions",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"questions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET a specific Question",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/questions/5",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"questions",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET all Votes for a Question",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/questions/6",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"questions",
+						"6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET a specific Vote belonging to a Question",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/questions/6/votes/19",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"questions",
+						"6",
+						"votes",
+						"19"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST a new Question",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "question_text",
+							"value": "Mit gondonol Ön a brüsszeli szankciókról?",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8000/questions",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"questions"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "POST a new Vote option for a Question",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "vote_text",
+							"value": "Nem gondolok én semmit",
+							"type": "default"
+						},
+						{
+							"key": "quetsion_id",
+							"value": "19",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8000/questions/19/votes",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"questions",
+						"19",
+						"votes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT (modify) a specific Question",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "question_text",
+							"value": "Merre van az előre?",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8000/questions/5",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"questions",
+						"5"
+					],
+					"query": [
+						{
+							"key": "question_text",
+							"value": "Hogy ityeg a fityeg?",
+							"disabled": true
+						}
+					]
+				},
+				"description": "PUT (modify) a specific Question"
+			},
+			"response": []
+		},
+		{
+			"name": "PUT (modify) a specific Vote belinging to a Question",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "vote_text",
+							"value": "Előre megyünk nem hátra",
+							"type": "default"
+						},
+						{
+							"key": "number_of_votes",
+							"value": "2",
+							"type": "default"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:8000/questions/6/votes/19",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"questions",
+						"6",
+						"votes",
+						"19"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE a specific Vote beloinging to a Question",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/questions/6/votes/19",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"questions",
+						"6",
+						"votes",
+						"19"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE all Votes beloinging to a Question",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/questions/6/votes",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"questions",
+						"6",
+						"votes"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DELETE a specific Question",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:8000/questions/6",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"questions",
+						"6"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
