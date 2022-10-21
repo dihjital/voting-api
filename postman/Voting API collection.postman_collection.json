@@ -23,7 +23,7 @@
 			},
 			"response": [
 				{
-					"name": "GET all Questions",
+					"name": "Questions returned with 200 Ok HTTP status code",
 					"originalRequest": {
 						"method": "GET",
 						"header": [],
@@ -64,7 +64,7 @@
 			},
 			"response": [
 				{
-					"name": "GET a specific Question",
+					"name": "Question returned with 200 Ok HTTP status code",
 					"originalRequest": {
 						"method": "GET",
 						"header": [],
@@ -84,6 +84,28 @@
 					"header": null,
 					"cookie": [],
 					"body": "{\n    \"id\": 8,\n    \"question_text\": \"Mit gondol Ön Orbán Viktorról?\",\n    \"created_at\": \"2022-10-06T10:17:32.000000Z\",\n    \"updated_at\": \"2022-10-10T16:25:58.000000Z\",\n    \"number_of_votes\": 7,\n    \"votes\": [\n        {\n            \"id\": 12,\n            \"vote_text\": \"O1G\",\n            \"number_of_votes\": 0,\n            \"created_at\": \"2022-10-09T19:03:45.000000Z\",\n            \"updated_at\": \"2022-10-09T19:03:45.000000Z\"\n        },\n        {\n            \"id\": 13,\n            \"vote_text\": \"Szerintem Gyurcsány!\",\n            \"number_of_votes\": 14,\n            \"created_at\": \"2022-10-09T19:03:57.000000Z\",\n            \"updated_at\": \"2022-10-10T06:34:59.000000Z\"\n        },\n        {\n            \"id\": 14,\n            \"vote_text\": \"Orbán a király!\",\n            \"number_of_votes\": 0,\n            \"created_at\": \"2022-10-09T19:04:06.000000Z\",\n            \"updated_at\": \"2022-10-09T19:04:06.000000Z\"\n        },\n        {\n            \"id\": 15,\n            \"vote_text\": \"A szomszéd fűje mindig zöldebb\",\n            \"number_of_votes\": 0,\n            \"created_at\": \"2022-10-10T06:36:01.000000Z\",\n            \"updated_at\": \"2022-10-10T18:02:44.000000Z\"\n        },\n        {\n            \"id\": 16,\n            \"vote_text\": \"Pisont István a legnagyobb c....!\",\n            \"number_of_votes\": 10,\n            \"created_at\": \"2022-10-10T06:40:25.000000Z\",\n            \"updated_at\": \"2022-10-10T06:40:25.000000Z\"\n        },\n        {\n            \"id\": 28,\n            \"vote_text\": \"Non iste dolorum officia quasi pariatur incidunt. Exercitationem similique quia aspernatur facere omnis nulla eveniet. Doloribus sunt rerum enim maiores rem aspernatur.\",\n            \"number_of_votes\": 5,\n            \"created_at\": \"2022-10-12T06:39:06.000000Z\",\n            \"updated_at\": \"2022-10-12T06:39:06.000000Z\"\n        },\n        {\n            \"id\": 39,\n            \"vote_text\": \"Ipsam magnam ea amet et quis. Harum rerum dolorem consequatur sunt eos dolor incidunt. Quia ut dolorem quis sed.\",\n            \"number_of_votes\": 3,\n            \"created_at\": \"2022-10-16T20:18:59.000000Z\",\n            \"updated_at\": \"2022-10-16T20:18:59.000000Z\"\n        }\n    ]\n}"
+				},
+				{
+					"name": "404 Question Not Found HTTP status code returned",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{HOSTNAME}}:{{PORT}}/questions/{{$randomInt}}",
+							"host": [
+								"{{HOSTNAME}}"
+							],
+							"port": "{{PORT}}",
+							"path": [
+								"questions",
+								"{{$randomInt}}"
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "\"Question not found\""
 				}
 			]
 		},
@@ -118,7 +140,30 @@
 			},
 			"response": [
 				{
-					"name": "GET all Votes for a Question",
+					"name": "Votes returned belonging to a specific Question with 200 Ok HTTP status code",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8000/questions/8/votes",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"questions",
+								"8",
+								"votes"
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "[\n    {\n        \"id\": 12,\n        \"vote_text\": \"O1G\",\n        \"number_of_votes\": 0,\n        \"created_at\": \"2022-10-09T19:03:45.000000Z\",\n        \"updated_at\": \"2022-10-09T19:03:45.000000Z\",\n        \"question_id\": 8\n    },\n    {\n        \"id\": 13,\n        \"vote_text\": \"Szerintem Gyurcsány!\",\n        \"number_of_votes\": 14,\n        \"created_at\": \"2022-10-09T19:03:57.000000Z\",\n        \"updated_at\": \"2022-10-10T06:34:59.000000Z\",\n        \"question_id\": 8\n    },\n    {\n        \"id\": 14,\n        \"vote_text\": \"Orbán a király!\",\n        \"number_of_votes\": 0,\n        \"created_at\": \"2022-10-09T19:04:06.000000Z\",\n        \"updated_at\": \"2022-10-09T19:04:06.000000Z\",\n        \"question_id\": 8\n    },\n    {\n        \"id\": 15,\n        \"vote_text\": \"A szomszéd fűje mindig zöldebb\",\n        \"number_of_votes\": 0,\n        \"created_at\": \"2022-10-10T06:36:01.000000Z\",\n        \"updated_at\": \"2022-10-10T18:02:44.000000Z\",\n        \"question_id\": 8\n    },\n    {\n        \"id\": 16,\n        \"vote_text\": \"Pisont István a legnagyobb c....!\",\n        \"number_of_votes\": 10,\n        \"created_at\": \"2022-10-10T06:40:25.000000Z\",\n        \"updated_at\": \"2022-10-10T06:40:25.000000Z\",\n        \"question_id\": 8\n    },\n    {\n        \"id\": 28,\n        \"vote_text\": \"Non iste dolorum officia quasi pariatur incidunt. Exercitationem similique quia aspernatur facere omnis nulla eveniet. Doloribus sunt rerum enim maiores rem aspernatur.\",\n        \"number_of_votes\": 5,\n        \"created_at\": \"2022-10-12T06:39:06.000000Z\",\n        \"updated_at\": \"2022-10-12T06:39:06.000000Z\",\n        \"question_id\": 8\n    },\n    {\n        \"id\": 39,\n        \"vote_text\": \"Ipsam magnam ea amet et quis. Harum rerum dolorem consequatur sunt eos dolor incidunt. Quia ut dolorem quis sed.\",\n        \"number_of_votes\": 3,\n        \"created_at\": \"2022-10-16T20:18:59.000000Z\",\n        \"updated_at\": \"2022-10-16T20:18:59.000000Z\",\n        \"question_id\": 8\n    }\n]"
+				},
+				{
+					"name": "404 Question Not Found HTTP status code returned",
 					"originalRequest": {
 						"method": "GET",
 						"header": [],
@@ -192,7 +237,80 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "404 Question Not Found HTTP status code returned",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8000/questions/6/votes/19",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"questions",
+								"6",
+								"votes",
+								"19"
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": null
+				},
+				{
+					"name": "404 Vote Not Found HTTP status code returned",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8000/questions/6/votes/19",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"questions",
+								"6",
+								"votes",
+								"19"
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "\"Vote not found\""
+				},
+				{
+					"name": "Vote returned with 200 Ok HTTP status code",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8000/questions/6/votes/12",
+							"host": [
+								"localhost"
+							],
+							"port": "8000",
+							"path": [
+								"questions",
+								"6",
+								"votes",
+								"12"
+							]
+						}
+					},
+					"_postman_previewlanguage": null,
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"id\": 12,\n    \"vote_text\": \"O1G\",\n    \"number_of_votes\": 0,\n    \"created_at\": \"2022-10-09T19:03:45.000000Z\",\n    \"updated_at\": \"2022-10-09T19:03:45.000000Z\",\n    \"question_id\": 6\n}"
+				}
+			]
 		},
 		{
 			"name": "POST a new Question",
