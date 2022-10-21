@@ -6,5 +6,5 @@ Homestead.yaml
 .phpunit.result.cache
 
 database.sqlite
-storage/oauth-private.key
-storage/oauth-public.key
+oauth-private.key
+oauth-public.key
