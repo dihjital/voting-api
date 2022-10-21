@@ -14,21 +14,27 @@ class AuthController extends Controller
     public function register(Request $request)
     {
 
+      $validator = validator()->make(request()->all(), [
+        'name' => 'required|string',
+        'email' => 'email|required|unique:users',
+        'password' => [
+          'required',
+          'min:6',
+          'regex:/[a-z]/',      // must contain at least one lowercase letter
+          'regex:/[A-Z]/',      // must contain at least one uppercase letter
+          'regex:/[0-9]/',      // must contain at least one digit
+          'regex:/[@$!%*#?&]/',
+        ],
+        'password_confirm' => 'required|same:password',
+      ]);
+
+      if ($validator->fails()) {
+        return response()->json(['status' => 'error', 'message' => $validator->errors()->first()], 400);
+      }
+
       $name = $request->name;
       $email = $request->email;
       $password = $request->password;
-
-      if (empty($name) || empty($email) || empty($password)) {
-        return response()->json(['status' => 'error', 'message' => 'Required field is missing'], 400);
-      }
-
-      if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        return response()->json(['status' => 'error', 'message' => 'You must enter a valid e-mail address'], 400);
-      }
-
-      if (User::where('email', '=', $email)->exists()) {
-        return response()->json(['status' => 'error', 'message' => 'User already exists with the give e-mail address'], 400);
-      }
 
       try {
         $user = new User();
@@ -61,13 +67,17 @@ class AuthController extends Controller
     public function login(Request $request)
     {
 
+      $validator = validator()->make(request()->all(), [
+        'email' => 'email|required',
+        'password' => 'required',
+      ]);
+
+      if ($validator->fails()) {
+        return response()->json(['status' => 'error', 'message' => $validator->errors()->first()], 400);
+      }
+
       $email = $request->email;
       $password = $request->password;
-
-      if (empty($email) || empty($password))
-      {
-        return response()->json(['status' => 'error', 'message' => 'You must fill in all required fields'], 400);
-      }
 
       try {
 
