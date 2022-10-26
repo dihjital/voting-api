@@ -24,19 +24,20 @@ $router->post('/register', ['uses' => 'AuthController@register']);
 
 $router->group(['middleware' => 'auth'], function () use ($router) {
   $router->post('/logout', ['uses' => 'AuthController@logout']);
-  $router->delete('/questions/{question_id}', ['uses' => 'QuestionController@deleteQuestion']);
-  $router->put('/questions/{question_id}', ['uses' => 'QuestionController@modifyQuestion']);
+  $router->delete('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@deleteQuestion']);
+  $router->put('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@modifyQuestion']);
   $router->post('/questions', ['uses' => 'QuestionController@createQuestion']);
-  $router->post('/questions/{question_id}/votes', ['uses' => 'VoteController@createVote']);
-  $router->delete('/questions/{question_id}/votes/{vote_id}', ['uses' => 'VoteController@deleteVote']);
-  $router->delete('/questions/{question_id}/votes', ['uses' => 'VoteController@deleteAllVotesforQuestion']);
+  $router->post('/questions/{question_id: [0-9]+}/votes', ['uses' => 'VoteController@createVote']);
+  $router->put('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@modifyVote']);
+  $router->delete('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@deleteVote']);
+  $router->delete('/questions/{question_id: [0-9]+}/votes', ['uses' => 'VoteController@deleteAllVotesforQuestion']);
 });
 
 // Questions
 $router->get('/questions', ['uses' => 'QuestionController@showAllQuestions']);
-$router->get('/questions/{question_id}', ['uses' => 'QuestionController@showOneQuestion']);
+$router->get('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@showOneQuestion']);
 
 // Votes (A question might have multiple votes)
-$router->get('/questions/{question_id}/votes', ['uses' => 'VoteController@showAllVotesforQuestion']);
-$router->get('/questions/{question_id}/votes/{vote_id}', ['uses' => 'VoteController@showOneVote']);
-$router->put('/questions/{question_id}/votes/{vote_id}', ['uses' => 'VoteController@modifyVote']);
+$router->get('/questions/{question_id: [0-9]+}/votes', ['uses' => 'VoteController@showAllVotesforQuestion']);
+$router->get('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@showOneVote']);
+$router->patch('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@increaseVoteNumber']);
