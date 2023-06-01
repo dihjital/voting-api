@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Question;
-use App\Vote;
+use App\Models\Question;
+use App\Models\Vote;
 use Illuminate\Http\Request;
 
 class VoteController extends Controller
@@ -35,7 +35,8 @@ class VoteController extends Controller
       $vote->question_id = $question_id;
 
       if ($vote->save()) {
-        return response()->json(['status' => 'success', 'message' => 'Vote successfully created']);
+        // return response()->json(['status' => 'success', 'message' => 'Vote successfully created', 'vote' => $vote], 201);
+        return response()->json($vote, 201);
       }
 
     } catch (\Exception $e) {

@@ -1,39 +1,31 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Question extends Model
+class Vote extends Model
 {
 
     use HasFactory;
-
-    public function getNumberOfVotesAttribute()
-    {
-      return Vote::where('question_id', '=', $this->id)->count();
-    }
-
     /**
-     * Get the voting options that belong to this Question
+     * Get the question that this voting option belongs to
      */
-    public function votes()
+    public function question()
     {
-        return $this->hasMany('\App\Vote');
+        return $this->belongsTo('\App\Question');
     }    /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'question_text'
+        'vote_text', 'number_of_votes', 'question_id'
     ];    /**
      * The attributes that are excluded from the model's JSON form.
      *
      * @var array
      */
     protected $hidden = [];
-    protected $appends = ['number_of_votes'];
-
 }
