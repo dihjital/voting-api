@@ -14,7 +14,7 @@ class Vote extends Model
      */
     public function question()
     {
-        return $this->belongsTo('\App\Question');
+        return $this->belongsTo(Question::class);
     }    /**
      * The attributes that are mass assignable.
      *

@@ -10,6 +10,15 @@ class Question extends Model
 
     use HasFactory;
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($question) {
+            $question->votes()->delete();
+        });
+    }
+
     public function getNumberOfVotesAttribute()
     {
       return Vote::where('question_id', '=', $this->id)->count();
@@ -20,7 +29,7 @@ class Question extends Model
      */
     public function votes()
     {
-        return $this->hasMany('\App\Vote');
+        return $this->hasMany(Vote::class);
     }    /**
      * The attributes that are mass assignable.
      *

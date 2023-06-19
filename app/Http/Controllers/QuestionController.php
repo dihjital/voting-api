@@ -5,12 +5,34 @@ namespace App\Http\Controllers;
 use App\Models\Question;
 use App\Models\Vote;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class QuestionController extends Controller
 {
 
+  const PER_PAGE = 5;
+
   public function showAllQuestions()
   {
+
+    $data = Question::all();
+
+    if (request('page')) {
+      $currentPage = request('page', 1); // Get the current page from the request query parameters
+
+      $collection = new Collection($data); // Convert the data to a collection
+
+      $paginatedData = new LengthAwarePaginator(
+        $collection->forPage($currentPage, self::PER_PAGE),
+        $collection->count(),
+        self::PER_PAGE,
+        $currentPage,
+        ['path' => url('/questions')]
+      );
+
+      return response()->json($paginatedData)->setEncodingOptions(JSON_NUMERIC_CHECK);
+    }
 
     return response()->json(Question::all())->setEncodingOptions(JSON_NUMERIC_CHECK);
 
