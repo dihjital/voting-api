@@ -27,6 +27,12 @@ class TokenController extends Controller
         if (!Cache::has($key)) {
             Cache::put($key, $request->token, Carbon::now()->addMinutes(self::CACHE_EXPIRATION_TIME));
             return response()->json(['status' => 'success', 'message' => 'Token registered successfully'], 201);
+        } else {
+            if ($request->token !== Cache::get($key)) {
+                Cache::forget($key);
+                Cache::put($key, $request->token, Carbon::now()->addMinutes(self::CACHE_EXPIRATION_TIME));
+                return response()->json(['status' => 'success', 'message' => 'Token refreshed successfully'], 200);
+            }
         }
 
         return response()->json(['status' => 'success', 'message' => 'Token is already registered'], 200);
