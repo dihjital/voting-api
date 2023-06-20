@@ -76,6 +76,7 @@ $app->configure('service');
 */
 
 $app->middleware([
+    App\Http\Middleware\CorsMiddleware::class,
     App\Http\Middleware\HttpsProtocol::class
 ]);
 
