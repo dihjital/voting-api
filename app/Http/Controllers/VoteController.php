@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Question;
 use App\Models\Vote;
+use App\Traits\WithPushNotification;
 use Illuminate\Http\Request;
 
 class VoteController extends Controller
 {
+
+  use WithPushNotification;
 
   public function createVote($question_id, Request $request)
   {
@@ -104,6 +107,17 @@ class VoteController extends Controller
       $new_vote->number_of_votes++;
 
       if ($new_vote->save()) {
+        
+        try {
+          $this->initWithPushNotification(
+            $question->question_text . ' / '. $new_vote->vote_text, 
+            'Votes increased to ' . $new_vote->number_of_votes,
+            "http://localhost:8200/questions/$question_id/votes"
+          )->sendPushNotification();
+        } catch (\Exception $e) {
+          return response()->json($e->getMessage(), 500);
+        }
+        
         return response()->json($new_vote, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
       }
 
@@ -164,7 +178,7 @@ class VoteController extends Controller
 
     $vote->delete();
 
-    return response()->json(['status' => 'success', 'message' => 'Vote deleted successfully']);
+    return response()->json(['status' => 'success', 'message' => 'Vote deleted successfully'], 200);
 
   }
 
@@ -183,7 +197,7 @@ class VoteController extends Controller
       return response()->json($e->getMessage(), 500);
     }
 
-    return response()->json(['status' => 'success', 'message' => 'All votes deleted successfully']);
+    return response()->json(['status' => 'success', 'message' => 'All votes deleted successfully'], 200);
 
   }
 

@@ -41,3 +41,6 @@ $router->get('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@
 $router->get('/questions/{question_id: [0-9]+}/votes', ['uses' => 'VoteController@showAllVotesforQuestion']);
 $router->get('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@showOneVote']);
 $router->patch('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@increaseVoteNumber']);
+
+// Tokens for push notifications
+$router->post('/subscribe', ['uses' => 'TokenController@storeToken']);
