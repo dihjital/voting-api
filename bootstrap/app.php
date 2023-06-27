@@ -76,9 +76,10 @@ $app->configure('queue');
 |
 */
 
+// CorsMiddleware is killing OAuth ... need to fix this ...
 $app->middleware([
-    App\Http\Middleware\CorsMiddleware::class,
-    App\Http\Middleware\HttpsProtocol::class
+    App\Http\Middleware\HttpsProtocol::class,
+    App\Http\Middleware\CorsMiddleware::class
 ]);
 
 // $app->middleware([

@@ -4,52 +4,39 @@ namespace App\Traits;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
+use App\Jobs\PushNotification;
 
 trait WithPushNotification
 {
 
-    protected $ch;
-    protected $options = [];
+    protected $url;
+    protected $data = [];
+    protected $fcm_key;
 
     public function initWithPushNotification($title, $body, $link): self 
     {
-        // Create a new cURL resource
-        $this->ch = curl_init();
 
-        $fcm_key = env('FCM_AUTHORIZATION_KEY');
+        $this->fcm_key = env('FCM_AUTHORIZATION_KEY');
+        $this->url = "https://fcm.googleapis.com/fcm/send";
 
-        // Set the cURL options
-        $url = "https://fcm.googleapis.com/fcm/send";
-        $headers = [
-            'Authorization: key='.$fcm_key,
-            'Content-Type: application/json'
+        $this->headers = [
+            'Authorization' => 'key=' . $this->fcm_key,
+            'Content-Type' => 'application/json'
         ];
-
-        $data = [];
-
+                
         // TODO: Tag the client keys so they are not going to be mixed with other cached items
         foreach ($this->getClientKeys() as $key) {
-            $data[] = [
+            $this->data[] = [
                 'notification' => [
                     'title' => $title,
                     'body' => $body,
                     'icon' => 'firebase-logo.png',
                     'click_action' => $link
                 ],
-                'to' => $key 
+                'to' => $key
             ];
         }
 
-        $this->options = array_map(function ($data) use ($url, $headers) {
-            return [
-                CURLOPT_URL => $url,
-                CURLOPT_POST => true,
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_HTTPHEADER => $headers,
-                CURLOPT_POSTFIELDS => json_encode($data)
-            ];
-        }, $data);
-        
         return $this;
 
     }
@@ -69,30 +56,12 @@ trait WithPushNotification
         }
     }
 
-    public function sendPushNotification(): array
+    public function sendPushNotification()
     {
-        $response = [];
-
         // Loop through all subscribed clients
-        foreach ($this->options as $option) {
-            // Set the cURL options to the resource
-            curl_setopt_array($this->ch, $option);
-
-            // Execute the cURL request
-            $response[] = curl_exec($this->ch);
-
-            // Check for cURL errors
-            if (curl_errno($this->ch)) {
-                $error = curl_error($this->ch);
-                // Handle the error accordingly
-                throw new \Exception(__("cURL Error: ") . $error);
-            }
+        foreach ($this->data as $payload) {
+            dispatch(new PushNotification($this->url, $this->headers, $payload));
         }
-
-        // Close the cURL resource
-        curl_close($this->ch);
-
-        return $response;
     }
 
 }
