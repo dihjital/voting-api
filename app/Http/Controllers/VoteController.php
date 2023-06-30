@@ -87,6 +87,73 @@ class VoteController extends Controller
 
   }
 
+  /**
+   * @OA\Patch(
+   *     path="/api/questions/{question_id}/votes/{vote_id}",
+   *     tags={"no-auth", "vote"},
+   *     summary="Increase vote number",
+   *     description="Increase the number of votes for a specific vote associated with a question.",
+   *     operationId="increaseVoteNumber",
+   *     @OA\Parameter(
+   *         name="question_id",
+   *         in="path",
+   *         description="ID of the question",
+   *         required=true,
+   *         @OA\Schema(
+   *             type="integer",
+   *             format="int64"
+   *         )
+   *     ),
+   *     @OA\Parameter(
+   *         name="vote_id",
+   *         in="path",
+   *         description="ID of the vote",
+   *         required=true,
+   *         @OA\Schema(
+   *             type="integer",
+   *             format="int64"
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response="200",
+   *         description="Vote number increased successfully",
+   *         @OA\JsonContent(ref="#/components/schemas/Vote"),
+   *     ),
+   *     @OA\Response(
+   *         response="404",
+   *         description="Question or vote not found",
+   *         @OA\JsonContent(
+   *             @OA\Property(
+   *                 property="status",
+   *                 type="string",
+   *                 example="error"
+   *             ),
+   *             @OA\Property(
+   *                 property="message",
+   *                 type="string",
+   *                 example="Question or vote not found"
+   *             )
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response="500",
+   *         description="Internal server error",
+   *         @OA\JsonContent(
+   *             @OA\Property(
+   *                 property="status",
+   *                 type="string",
+   *                 example="error"
+   *             ),
+   *             @OA\Property(
+   *                 property="message",
+   *                 type="string",
+   *                 example="Internal server error"
+   *             )
+   *         )
+   *     )
+   * )
+   */
+
   public function increaseVoteNumber($question_id, $vote_id)
   {
 
@@ -193,6 +260,52 @@ class VoteController extends Controller
     return response()->json($vote, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
 
   }
+
+  /**
+   * @OA\Get(
+   *     path="/questions/{question_id}/votes",
+   *     tags={"no-auth", "vote"},
+   *     summary="Get all votes for a question",
+   *     description="Retrieve all votes associated with a specific question.",
+   *     operationId="showAllVotesforQuestion",
+   *     @OA\Parameter(
+   *         name="question_id",
+   *         in="path",
+   *         required=true,
+   *         description="ID of the question",
+   *         @OA\Schema(
+   *             type="integer",
+   *             format="int64"
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response="200",
+   *         description="Success",
+   *         @OA\JsonContent(
+   *             type="array",
+   *             @OA\Items(
+   *                 ref="#/components/schemas/Vote"
+   *             )
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response="404",
+   *         description="Question not found",
+   *         @OA\JsonContent(
+   *             @OA\Property(
+   *                 property="status",
+   *                 type="string",
+   *                 example="error"
+   *             ),
+   *             @OA\Property(
+   *                 property="message",
+   *                 type="string",
+   *                 example="Question not found"
+   *             )
+   *         )
+   *     ),
+   * )
+   */
 
   public function showAllVotesforQuestion($question_id)
   {
