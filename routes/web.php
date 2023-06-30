@@ -44,3 +44,4 @@ $router->patch('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['use
 
 // Tokens for push notifications
 $router->post('/subscribe', ['uses' => 'TokenController@storeToken']);
+$router->delete('/unsubscribe', ['uses' => 'TokenController@deleteToken']);

@@ -31,10 +31,23 @@ class TokenController extends Controller
             if ($request->token !== Cache::get($key)) {
                 Cache::forget($key);
                 Cache::put($key, $request->token, Carbon::now()->addMinutes(self::CACHE_EXPIRATION_TIME));
-                return response()->json(['status' => 'success', 'message' => 'Token refreshed successfully'], 200);
+                return response()->json(['status' => 'success', 'message' => 'Token refreshed successfully.'], 200);
             }
         }
 
-        return response()->json(['status' => 'success', 'message' => 'Token is already registered'], 200);
+        return response()->json(['status' => 'success', 'message' => __('Token is already registered.')], 200);
     }
+
+    public function deleteToken(Request $request)
+    {
+        $key = $request->ip;
+
+        if (Cache::has($key)) {
+            Cache::forget($key);
+            return response()->json(['status' => 'success', 'message' => __('Token successfully deleted.')], 200);
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'Token not found.'], 404);
+    }
+
 }

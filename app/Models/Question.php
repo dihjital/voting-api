@@ -21,7 +21,12 @@ class Question extends Model
 
     public function getNumberOfVotesAttribute()
     {
-      return Vote::where('question_id', '=', $this->id)->count();
+        return Vote::where('question_id', '=', $this->id)->count();
+    }
+
+    public function getLastUpdatedAtVoteAttribute()
+    {
+        return Vote::where('question_id', $this->id)->max('updated_at');
     }
 
     /**
@@ -43,6 +48,9 @@ class Question extends Model
      * @var array
      */
     protected $hidden = [];
-    protected $appends = ['number_of_votes'];
+    protected $appends = [
+        'number_of_votes',
+        'last_updated_at_vote'
+    ];
 
 }
