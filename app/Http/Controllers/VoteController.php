@@ -127,6 +127,54 @@ class VoteController extends Controller
 
   }
 
+  /**
+     * @OA\Get(
+     *     path="/questions/{question_id}/votes/{vote_id}",
+     *     tags={"no-auth", "vote"},
+     *     summary="Show one voting option",
+     *     description="Show one voting option belonging to a question",
+     *     operationId="showOneVote",
+     *     @OA\Parameter(
+     *         name="question_id",
+     *         description="Question ID",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="vote_id",
+     *         description="Vote ID",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/Vote"),
+     *     ),
+     *     @OA\Response(
+     *         response="404",
+     *         description="Vote or Question not found",
+     *         @OA\JsonContent(
+     *             oneOf={
+     *                 @OA\Schema(
+     *                     @OA\Property(property="status", type="string", example="error"),
+     *                     @OA\Property(property="message", type="string", example="Vote not found"),
+     *                 ),
+     *                 @OA\Schema(
+     *                     @OA\Property(property="error", type="string", example="error"),
+     *                     @OA\Property(property="message", type="string", example="Question not found"),
+     *                 ),
+     *             }
+     *         ),
+     *     ),
+     * )
+     */
   public function showOneVote($question_id, $vote_id)
   {
 

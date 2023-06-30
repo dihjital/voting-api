@@ -13,6 +13,28 @@ class QuestionController extends Controller
 
   const PER_PAGE = 5;
 
+  /**
+     * @OA\Get(
+     *     path="/questions",
+     *     tags={"no-auth", "question"},
+     *     summary="Show all questions",
+     *     description="Show all questions registered in the database",
+     *     operationId="showAllQuestions",
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         required=false,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(ref="#/components/schemas/Question"),
+     *     ),
+     * )
+     */
   public function showAllQuestions()
   {
 
@@ -38,7 +60,44 @@ class QuestionController extends Controller
 
   }
 
-  //show one Question
+  /**
+     * @OA\Get(
+     *     path="/questions/{question_id}",
+     *     tags={"no-auth", "question"},
+     *     summary="Show one question with it's votes",
+     *     description="Show question details and all votes belonging to the specified question",
+     *     operationId="showOneQuestion",
+     *     @OA\Parameter(
+     *         name="question_id",
+     *         in="path",
+     *         description="Question ID",
+     *         required=true,
+     *         @OA\Schema(
+     *             type="integer"
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="successful operation",
+     *         @OA\JsonContent(
+     *            allOf={
+     *                 @OA\Schema(ref="#/components/schemas/Question"),
+     *                 @OA\Schema(
+     *                     @OA\Property(
+     *                         property="votes",
+     *                         type="array",
+     *                         @OA\Items(ref="#/components/schemas/Vote")
+     *                     ),
+     *                 ),
+     *             },
+     *         ),
+     *     ),
+     *     @OA\Response(
+     *         response=404,
+     *         description="Question not found"
+     *     ),
+     * )
+     */
   public function showOneQuestion($question_id)
   {
 

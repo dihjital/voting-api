@@ -23,10 +23,13 @@ $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
 
+# $app->instance('path.config', app()->configPath());
+# $app->instance('path.storage', app()->storagePath());
 
 $app->withFacades();
-
 $app->withEloquent();
+
+$app->configure('swagger-lume');
 
 /*
 |--------------------------------------------------------------------------
@@ -105,6 +108,7 @@ $app->routeMiddleware([
 // $app->register(App\Providers\EventServiceProvider::class);
 $app->register(Laravel\Passport\PassportServiceProvider::class);
 $app->register(Dusterio\LumenPassport\PassportServiceProvider::class);
+$app->register(\SwaggerLume\ServiceProvider::class);
 
 /*
 |--------------------------------------------------------------------------

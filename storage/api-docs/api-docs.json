@@ -1,0 +1,296 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "voting-api",
+        "description": "This is a sample Petstore server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "email": "peter.hrobar@gmail.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/questions": {
+            "get": {
+                "tags": [
+                    "no-auth",
+                    "question"
+                ],
+                "summary": "Show all questions",
+                "description": "Show all questions registered in the database",
+                "operationId": "showAllQuestions",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Question"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/questions/{question_id}": {
+            "get": {
+                "tags": [
+                    "no-auth",
+                    "question"
+                ],
+                "summary": "Show one question with it's votes",
+                "description": "Show question details and all votes belonging to the specified question",
+                "operationId": "showOneQuestion",
+                "parameters": [
+                    {
+                        "name": "question_id",
+                        "in": "path",
+                        "description": "Question ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "allOf": [
+                                        {
+                                            "properties": {
+                                                "votes": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/components/schemas/Vote"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        {
+                                            "$ref": "#/components/schemas/Question"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Question not found"
+                    }
+                }
+            }
+        },
+        "/questions/{question_id}/votes/{vote_id}": {
+            "get": {
+                "tags": [
+                    "no-auth",
+                    "vote"
+                ],
+                "summary": "Show one voting option",
+                "description": "Show one voting option belonging to a question",
+                "operationId": "showOneVote",
+                "parameters": [
+                    {
+                        "name": "question_id",
+                        "in": "path",
+                        "description": "Question ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "vote_id",
+                        "in": "path",
+                        "description": "Vote ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Vote"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Vote or Question not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "error"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Vote not found"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "error"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Question not found"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "Question": {
+                "title": "Question model",
+                "description": "Question model",
+                "required": [
+                    "question_text"
+                ],
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "Auto-incrementing ID of the question",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "question_text": {
+                        "title": "Question text",
+                        "description": "Question text",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "number_of_votes": {
+                        "title": "Number of votes",
+                        "description": "Number of voting options the question has (calculated field)",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "last_updated_at_vote": {
+                        "title": "Last date and time when a vote was updated",
+                        "description": "Date and time when the last vote was received for the question (calculated field)",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2023-06-18 12:01:01"
+                    },
+                    "created_at": {
+                        "title": "Created at",
+                        "description": "Date and time when the question was created",
+                        "type": "string",
+                        "format": "datetime",
+                        "default": "now",
+                        "example": "2023-06-18 12:01:01"
+                    },
+                    "updated_at": {
+                        "title": "Updated at",
+                        "description": "Date and time when the question was updated",
+                        "type": "string",
+                        "format": "datetime",
+                        "default": "now",
+                        "example": "2023-06-18 12:01:01"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "Question"
+                }
+            },
+            "Vote": {
+                "title": "Vote model",
+                "description": "Vote model",
+                "required": [
+                    "vote_text",
+                    "number_of_votes"
+                ],
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "Auto-incrementing ID of the vote",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "vote_text": {
+                        "title": "Vote text",
+                        "description": "Vote text",
+                        "type": "string",
+                        "format": "string"
+                    },
+                    "number_of_votes": {
+                        "title": "Number of votes received",
+                        "description": "Number of number of votes received",
+                        "type": "integer",
+                        "format": "integer",
+                        "default": "0"
+                    },
+                    "question_id": {
+                        "title": "Question ID",
+                        "description": "ID of the question where this vote belongs",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "created_at": {
+                        "title": "Created at",
+                        "description": "Date and time when the vote was created",
+                        "type": "string",
+                        "format": "datetime",
+                        "default": "now",
+                        "example": "2023-06-18 12:01:01"
+                    },
+                    "updated_at": {
+                        "title": "Updated at",
+                        "description": "Date and time when the vote was updated",
+                        "type": "string",
+                        "format": "datetime",
+                        "default": "now",
+                        "example": "2023-06-18 12:01:01"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "Vote"
+                }
+            }
+        }
+    }
+}
