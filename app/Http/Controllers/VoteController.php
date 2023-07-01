@@ -7,6 +7,15 @@ use App\Models\Vote;
 use App\Traits\WithPushNotification;
 use Illuminate\Http\Request;
 
+/**
+ * @OA\SecurityScheme(
+ *     securityScheme="bearerAuth",
+ *     type="http",
+ *     scheme="bearer",
+ *     bearerFormat="JWT"
+ * )
+ */
+
 class VoteController extends Controller
 {
 
@@ -47,6 +56,89 @@ class VoteController extends Controller
     }
 
   }
+
+  /**
+   * @OA\Put(
+   *     path="/questions/{question_id}/votes/{vote_id}",
+   *     tags={"OAuth", "vote"},
+   *     summary="Modify vote",
+   *     operationId="modifyVote",
+   *     description="Modify a specific vote associated with a question.",
+   *     security={{ "bearerAuth": {} }},
+   *     @OA\Parameter(
+   *         name="question_id",
+   *         in="path",
+   *         description="ID of the question",
+   *         required=true,
+   *         @OA\Schema(
+   *             type="integer",
+   *             format="int64"
+   *         )
+   *     ),
+   *     @OA\Parameter(
+   *         name="vote_id",
+   *         in="path",
+   *         description="ID of the vote",
+   *         required=true,
+   *         @OA\Schema(
+   *             type="integer",
+   *             format="int64"
+   *         )
+   *     ),
+   *     @OA\RequestBody(
+   *         required=true,
+   *         @OA\JsonContent(
+   *             @OA\Property(
+   *                 property="vote_text",
+   *                 type="string",
+   *                 description="The updated vote text"
+   *             ),
+   *             @OA\Property(
+   *                 property="number_of_votes",
+   *                 type="integer",
+   *                 description="The updated number of votes"
+   *             )
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response="200",
+   *         description="Vote modified successfully",
+   *         @OA\JsonContent(ref="#/components/schemas/Vote"),
+   *     ),
+   *     @OA\Response(
+   *         response="404",
+   *         description="Question or vote not found",
+   *         @OA\JsonContent(
+   *             @OA\Property(
+   *                 property="status",
+   *                 type="string",
+   *                 example="error"
+   *             ),
+   *             @OA\Property(
+   *                 property="message",
+   *                 type="string",
+   *                 example="Question or vote not found"
+   *             )
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response="500",
+   *         description="Internal server error",
+   *         @OA\JsonContent(
+   *             @OA\Property(
+   *                 property="status",
+   *                 type="string",
+   *                 example="error"
+   *             ),
+   *             @OA\Property(
+   *                 property="message",
+   *                 type="string",
+   *                 example="Internal server error"
+   *             )
+   *         )
+   *     )
+   * )
+   */
 
   public function modifyVote($question_id, $vote_id, Request $request)
   {
@@ -89,7 +181,7 @@ class VoteController extends Controller
 
   /**
    * @OA\Patch(
-   *     path="/api/questions/{question_id}/votes/{vote_id}",
+   *     path="/questions/{question_id}/votes/{vote_id}",
    *     tags={"no-auth", "vote"},
    *     summary="Increase vote number",
    *     description="Increase the number of votes for a specific vote associated with a question.",

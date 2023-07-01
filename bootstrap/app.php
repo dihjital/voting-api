@@ -23,9 +23,6 @@ $app = new Laravel\Lumen\Application(
     dirname(__DIR__)
 );
 
-# $app->instance('path.config', app()->configPath());
-# $app->instance('path.storage', app()->storagePath());
-
 $app->withFacades();
 $app->withEloquent();
 

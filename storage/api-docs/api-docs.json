@@ -240,7 +240,193 @@
                 }
             }
         },
-        "/api/questions/{question_id}/votes/{vote_id}": {
+        "/questions/{question_id}/votes/{vote_id}": {
+            "get": {
+                "tags": [
+                    "no-auth",
+                    "vote"
+                ],
+                "summary": "Show one voting option",
+                "description": "Show one voting option belonging to a question",
+                "operationId": "showOneVote",
+                "parameters": [
+                    {
+                        "name": "question_id",
+                        "in": "path",
+                        "description": "Question ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "vote_id",
+                        "in": "path",
+                        "description": "Vote ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Vote"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Vote or Question not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "oneOf": [
+                                        {
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "error"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Vote not found"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "error"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Question not found"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "OAuth",
+                    "vote"
+                ],
+                "summary": "Modify vote",
+                "description": "Modify a specific vote associated with a question.",
+                "operationId": "modifyVote",
+                "parameters": [
+                    {
+                        "name": "question_id",
+                        "in": "path",
+                        "description": "ID of the question",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "vote_id",
+                        "in": "path",
+                        "description": "ID of the vote",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "vote_text": {
+                                        "description": "The updated vote text",
+                                        "type": "string"
+                                    },
+                                    "number_of_votes": {
+                                        "description": "The updated number of votes",
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Vote modified successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Vote"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Question or vote not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Question or vote not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "patch": {
                 "tags": [
                     "no-auth",
@@ -318,86 +504,6 @@
                                         }
                                     },
                                     "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/questions/{question_id}/votes/{vote_id}": {
-            "get": {
-                "tags": [
-                    "no-auth",
-                    "vote"
-                ],
-                "summary": "Show one voting option",
-                "description": "Show one voting option belonging to a question",
-                "operationId": "showOneVote",
-                "parameters": [
-                    {
-                        "name": "question_id",
-                        "in": "path",
-                        "description": "Question ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "vote_id",
-                        "in": "path",
-                        "description": "Vote ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "successful operation",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Vote"
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Vote or Question not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "oneOf": [
-                                        {
-                                            "properties": {
-                                                "status": {
-                                                    "type": "string",
-                                                    "example": "error"
-                                                },
-                                                "message": {
-                                                    "type": "string",
-                                                    "example": "Vote not found"
-                                                }
-                                            },
-                                            "type": "object"
-                                        },
-                                        {
-                                            "properties": {
-                                                "error": {
-                                                    "type": "string",
-                                                    "example": "error"
-                                                },
-                                                "message": {
-                                                    "type": "string",
-                                                    "example": "Question not found"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    ]
                                 }
                             }
                         }
@@ -574,6 +680,13 @@
                 "xml": {
                     "name": "Vote"
                 }
+            }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
             }
         }
     }
