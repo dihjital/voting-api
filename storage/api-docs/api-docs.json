@@ -240,6 +240,154 @@
                 }
             }
         },
+        "/questions/{question_id}/votes": {
+            "get": {
+                "tags": [
+                    "no-auth",
+                    "vote"
+                ],
+                "summary": "Get all votes for a question",
+                "description": "Retrieve all votes associated with a specific question.",
+                "operationId": "showAllVotesforQuestion",
+                "parameters": [
+                    {
+                        "name": "question_id",
+                        "in": "path",
+                        "description": "ID of the question",
+                        "required": true,
+                        "schema": {
+                            "type": "integer",
+                            "format": "int64"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Vote"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Question not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Question not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "OAuth",
+                    "vote"
+                ],
+                "summary": "Create a new vote",
+                "description": "Create a new vote associated with a question.",
+                "operationId": "createVote",
+                "parameters": [
+                    {
+                        "name": "question_id",
+                        "in": "path",
+                        "description": "ID of the question",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "vote_text": {
+                                        "description": "The updated vote text",
+                                        "type": "string"
+                                    },
+                                    "number_of_votes": {
+                                        "description": "The updated number of votes",
+                                        "type": "integer",
+                                        "default": 0
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Vote created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Vote"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Question not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Question not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/questions/{question_id}/votes/{vote_id}": {
             "get": {
                 "tags": [
@@ -501,64 +649,6 @@
                                         "message": {
                                             "type": "string",
                                             "example": "Internal server error"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/questions/{question_id}/votes": {
-            "get": {
-                "tags": [
-                    "no-auth",
-                    "vote"
-                ],
-                "summary": "Get all votes for a question",
-                "description": "Retrieve all votes associated with a specific question.",
-                "operationId": "showAllVotesforQuestion",
-                "parameters": [
-                    {
-                        "name": "question_id",
-                        "in": "path",
-                        "description": "ID of the question",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Success",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Vote"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Question not found",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "error"
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Question not found"
                                         }
                                     },
                                     "type": "object"

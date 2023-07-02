@@ -21,6 +21,64 @@ class VoteController extends Controller
 
   use WithPushNotification;
 
+  /**
+   * Create a new vote for a question.
+   *
+   * @OA\Post(
+   *     path="/questions/{question_id}/votes",
+   *     summary="Create a new vote",
+   *     tags={"OAuth", "vote"},
+   *     operationId="createVote",
+   *     description="Create a new vote associated with a question.",
+   *     security={{ "bearerAuth": {} }},
+   *     @OA\Parameter(
+   *         name="question_id",
+   *         in="path",
+   *         required=true,
+   *         description="ID of the question",
+   *         @OA\Schema(type="integer")
+   *     ),
+   *     @OA\RequestBody(
+   *         required=true,
+   *         @OA\JsonContent(
+   *             @OA\Property(
+   *                 property="vote_text",
+   *                 type="string",
+   *                 description="The updated vote text"
+   *             ),
+   *             @OA\Property(
+   *                 property="number_of_votes",
+   *                 type="integer",
+   *                 default=0,
+   *                 description="The updated number of votes"
+   *             )
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=201,
+   *         description="Vote created successfully",
+   *         @OA\JsonContent(ref="#/components/schemas/Vote")
+   *     ),
+   *     @OA\Response(
+   *         response=404,
+   *         description="Question not found",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="message", type="string", example="Question not found")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=500,
+   *         description="Internal server error",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="message", type="string", example="Internal server error")
+   *         )
+   *     ),
+   *     security={
+   *         {"bearerAuth": {}}
+   *     }
+   * )
+   */
+
   public function createVote($question_id, Request $request)
   {
 
@@ -146,7 +204,7 @@ class VoteController extends Controller
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json('Question not found', 404);
+      return response()->json(['status' => 'error', 'message' => 'Question not found'], 404);
     }
 
     $validator = validator()->make(request()->all(), [
@@ -161,7 +219,7 @@ class VoteController extends Controller
     $new_vote = $question->votes->where('id', '=', $vote_id)->first();
 
     if (!$new_vote) {
-      return response()->json('Vote not found', 404);
+      return response()->json(['status' => 'error', 'message' => 'Vote not found'], 404);
     }
 
     try {
