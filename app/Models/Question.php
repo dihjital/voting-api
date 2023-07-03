@@ -62,7 +62,7 @@ class Question extends Model
 
     /**
      * @OA\Property(
-     *     property="last_updated_at_vote",
+     *     property="last_vote_at",
      *     format="datetime",
      *     description="Date and time when the last vote was received for the question (calculated field)",
      *     title="Last date and time when a vote was updated",
@@ -112,7 +112,7 @@ class Question extends Model
         return Vote::where('question_id', '=', $this->id)->count();
     }
 
-    public function getLastUpdatedAtVoteAttribute()
+    public function getLastVoteAtAttribute()
     {
         return Vote::where('question_id', $this->id)->max('updated_at');
     }
@@ -141,7 +141,7 @@ class Question extends Model
 
     protected $appends = [
         'number_of_votes',
-        'last_updated_at_vote'
+        'last_vote_at'
     ];
 
 }

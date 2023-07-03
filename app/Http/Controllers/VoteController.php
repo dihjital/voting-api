@@ -27,7 +27,7 @@ class VoteController extends Controller
    * @OA\Post(
    *     path="/questions/{question_id}/votes",
    *     summary="Create a new vote",
-   *     tags={"OAuth", "vote"},
+   *     tags={"OAuth", "Vote"},
    *     operationId="createVote",
    *     description="Create a new vote associated with a question.",
    *     security={{ "bearerAuth": {} }},
@@ -58,6 +58,13 @@ class VoteController extends Controller
    *         response=201,
    *         description="Vote created successfully",
    *         @OA\JsonContent(ref="#/components/schemas/Vote")
+   *     ),
+   *     @OA\Response(
+   *         response=400,
+   *         description="Bad Request",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="message", type="string", example="The vote_text field is required")
+   *         )
    *     ),
    *     @OA\Response(
    *         response=404,
@@ -94,7 +101,7 @@ class VoteController extends Controller
     ]);
 
     if ($validator->fails()) {
-      return response()->json($validator->errors()->first(), 500);
+      return response()->json($validator->errors()->first(), 400);
     }
 
     try {
@@ -118,7 +125,7 @@ class VoteController extends Controller
   /**
    * @OA\Put(
    *     path="/questions/{question_id}/votes/{vote_id}",
-   *     tags={"OAuth", "vote"},
+   *     tags={"OAuth", "Vote"},
    *     summary="Modify vote",
    *     operationId="modifyVote",
    *     description="Modify a specific vote associated with a question.",
@@ -162,6 +169,13 @@ class VoteController extends Controller
    *         response="200",
    *         description="Vote modified successfully",
    *         @OA\JsonContent(ref="#/components/schemas/Vote"),
+   *     ),
+   *     @OA\Response(
+   *         response=400,
+   *         description="Bad Request",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="message", type="string", example="The vote_text field is required")
+   *         )
    *     ),
    *     @OA\Response(
    *         response="404",
@@ -213,7 +227,7 @@ class VoteController extends Controller
     ]);
 
     if ($validator->fails()) {
-      return response()->json($validator->errors()->first(), 500);
+      return response()->json($validator->errors()->first(), 400);
     }
 
     $new_vote = $question->votes->where('id', '=', $vote_id)->first();
@@ -240,7 +254,7 @@ class VoteController extends Controller
   /**
    * @OA\Patch(
    *     path="/questions/{question_id}/votes/{vote_id}",
-   *     tags={"no-auth", "vote"},
+   *     tags={"no-auth", "Vote"},
    *     summary="Increase vote number",
    *     description="Increase the number of votes for a specific vote associated with a question.",
    *     operationId="increaseVoteNumber",
@@ -347,7 +361,7 @@ class VoteController extends Controller
   /**
      * @OA\Get(
      *     path="/questions/{question_id}/votes/{vote_id}",
-     *     tags={"no-auth", "vote"},
+     *     tags={"no-auth", "Vote"},
      *     summary="Show one voting option",
      *     description="Show one voting option belonging to a question",
      *     operationId="showOneVote",
@@ -414,7 +428,7 @@ class VoteController extends Controller
   /**
    * @OA\Get(
    *     path="/questions/{question_id}/votes",
-   *     tags={"no-auth", "vote"},
+   *     tags={"no-auth", "Vote"},
    *     summary="Get all votes for a question",
    *     description="Retrieve all votes associated with a specific question.",
    *     operationId="showAllVotesforQuestion",
@@ -472,6 +486,55 @@ class VoteController extends Controller
 
   }
 
+  /**
+   * @OA\Delete(
+   *     path="/questions/{question_id}/votes/{vote_id}",
+   *     tags={"OAuth", "Vote"},
+   *     summary="Delete a vote",
+   *     description="Deletes a specific vote from a question.",
+   *     security={{ "bearerAuth": {} }},
+   *     operationId="deleteVote",
+   *     @OA\Parameter(
+   *         name="question_id",
+   *         in="path",
+   *         required=true,
+   *         description="ID of the question",
+   *         @OA\Schema(type="integer")
+   *     ),
+   *     @OA\Parameter(
+   *         name="vote_id",
+   *         in="path",
+   *         required=true,
+   *         description="ID of the vote",
+   *         @OA\Schema(type="integer")
+   *     ),
+   *     @OA\Response(
+   *         response=200,
+   *         description="Vote deleted successfully",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="status", type="string", example="success"),
+   *             @OA\Property(property="message", type="string", example="Vote deleted successfully")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response="404",
+   *         description="Vote or Question not found",
+   *         @OA\JsonContent(
+   *             oneOf={
+   *                 @OA\Schema(
+   *                     @OA\Property(property="status", type="string", example="error"),
+   *                     @OA\Property(property="message", type="string", example="Vote not found"),
+   *                 ),
+   *                 @OA\Schema(
+   *                     @OA\Property(property="error", type="string", example="error"),
+   *                     @OA\Property(property="message", type="string", example="Question not found"),
+   *                 ),
+   *             }
+   *         ),
+   *    ),
+   * )
+   */
+
   public function deleteVote($question_id, $vote_id)
   {
 
@@ -493,13 +556,54 @@ class VoteController extends Controller
 
   }
 
+  /**
+   * @OA\Delete(
+   *     path="/questions/{question_id}/votes",
+   *     tags={"OAuth", "Vote"},
+   *     summary="Delete all votes for a question",
+   *     description="Deletes all votes associated with a specific question.",
+   *     security={{ "bearerAuth": {} }},
+   *     operationId="deleteAllVotesforQuestion",
+   *     @OA\Parameter(
+   *         name="question_id",
+   *         in="path",
+   *         required=true,
+   *         description="ID of the question",
+   *         @OA\Schema(type="integer")
+   *     ),
+   *     @OA\Response(
+   *         response=200,
+   *         description="All votes deleted successfully",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="status", type="string", example="success"),
+   *             @OA\Property(property="message", type="string", example="All votes deleted successfully")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=404,
+   *         description="Question not found",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="status", type="string", example="error"),
+   *             @OA\Property(property="message", type="string", example="Question not found")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=500,
+   *         description="Internal server error",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="message", type="string", example="Internal server error")
+   *         )
+   *     ),
+   * )
+   */
+
   public function deleteAllVotesforQuestion($question_id)
   {
 
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json(['status' => 'error', 'message' => 'Question not found'], 404);
+      return response()->json(['status' => 'error', 'message' => __('Question not found')], 404);
     }
 
     try {
@@ -508,7 +612,7 @@ class VoteController extends Controller
       return response()->json($e->getMessage(), 500);
     }
 
-    return response()->json(['status' => 'success', 'message' => 'All votes deleted successfully'], 200);
+    return response()->json(['status' => 'success', 'message' => __('All votes deleted successfully')], 200);
 
   }
 
