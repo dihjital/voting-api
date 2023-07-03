@@ -285,19 +285,19 @@ class VoteController extends Controller
    *     ),
    *     @OA\Response(
    *         response="404",
-   *         description="Question or vote not found",
+   *         description="Vote or Question not found",
    *         @OA\JsonContent(
-   *             @OA\Property(
-   *                 property="status",
-   *                 type="string",
-   *                 example="error"
-   *             ),
-   *             @OA\Property(
-   *                 property="message",
-   *                 type="string",
-   *                 example="Question or vote not found"
-   *             )
-   *         )
+   *             oneOf={
+   *                 @OA\Schema(
+   *                     @OA\Property(property="status", type="string", example="error"),
+   *                     @OA\Property(property="message", type="string", example="Vote not found"),
+   *                 ),
+   *                 @OA\Schema(
+   *                     @OA\Property(property="error", type="string", example="error"),
+   *                     @OA\Property(property="message", type="string", example="Question not found"),
+   *                 ),
+   *             }
+   *         ),
    *     ),
    *     @OA\Response(
    *         response="500",
@@ -324,13 +324,13 @@ class VoteController extends Controller
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json('Question not found', 404);
+      return response()->json(['status' => 'error', 'message' => __('Question not found')], 404);
     }
 
     $new_vote = $question->votes->where('id', '=', $vote_id)->first();
 
     if (!$new_vote) {
-      return response()->json('Vote not found', 404);
+      return response()->json(['status' => 'error', 'message' => __('Vote not found')], 404);
     }
 
     try {

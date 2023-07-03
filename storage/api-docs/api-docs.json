@@ -2,7 +2,7 @@
     "openapi": "3.0.0",
     "info": {
         "title": "voting-api",
-        "description": "This is the voting-api server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).",
+        "description": "This is a voting-api development server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
             "email": "peter.hrobar@gmail.com"
@@ -1113,21 +1113,38 @@
                         }
                     },
                     "404": {
-                        "description": "Question or vote not found",
+                        "description": "Vote or Question not found",
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "properties": {
-                                        "status": {
-                                            "type": "string",
-                                            "example": "error"
+                                    "oneOf": [
+                                        {
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "example": "error"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Vote not found"
+                                                }
+                                            },
+                                            "type": "object"
                                         },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Question or vote not found"
+                                        {
+                                            "properties": {
+                                                "error": {
+                                                    "type": "string",
+                                                    "example": "error"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "example": "Question not found"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
-                                    },
-                                    "type": "object"
+                                    ]
                                 }
                             }
                         }
