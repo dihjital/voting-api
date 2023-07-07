@@ -104,14 +104,18 @@ class Vote extends Model
     public function question()
     {
         return $this->belongsTo(Question::class);
-    }    /**
+    }    
+    
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
         'vote_text', 'number_of_votes', 'question_id'
-    ];    /**
+    ];    
+    
+    /**
      * The attributes that are excluded from the model's JSON form.
      *
      * @var array

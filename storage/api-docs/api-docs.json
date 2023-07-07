@@ -387,6 +387,29 @@
                 ]
             }
         },
+        "/summary": {
+            "get": {
+                "tags": [
+                    "no-auth",
+                    "Summary"
+                ],
+                "summary": "Get Summary",
+                "description": "Retrieve the summary information about various statistics.",
+                "operationId": "getSummary",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Summary"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/token": {
             "post": {
                 "tags": [
@@ -1228,6 +1251,83 @@
                 "xml": {
                     "name": "Question"
                 }
+            },
+            "Summary": {
+                "title": "Summary model",
+                "description": "Summary model, holding information about various statistics.",
+                "properties": {
+                    "number_of_answers": {
+                        "description": "Number of answers.",
+                        "type": "integer"
+                    },
+                    "number_of_questions": {
+                        "description": "Number of questions.",
+                        "type": "integer"
+                    },
+                    "total_number_of_votes": {
+                        "description": "Total number of votes.",
+                        "type": "integer"
+                    },
+                    "highest_vote": {
+                        "description": "Answer with the highest number of votes received",
+                        "properties": {
+                            "id": {
+                                "description": "ID of the question.",
+                                "type": "integer"
+                            },
+                            "question_text": {
+                                "description": "Text of the question.",
+                                "type": "string"
+                            },
+                            "vote_text": {
+                                "description": "Text of the vote.",
+                                "type": "string"
+                            },
+                            "number_of_votes": {
+                                "description": "Number of votes received for the answer.",
+                                "type": "integer"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "highest_question": {
+                        "description": "Question with the most possible answers",
+                        "properties": {
+                            "id": {
+                                "description": "ID of the question.",
+                                "type": "integer"
+                            },
+                            "question_text": {
+                                "description": "Text of the question.",
+                                "type": "string"
+                            },
+                            "number_of_votes": {
+                                "description": "Number of possible answers for the question.",
+                                "type": "integer"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "most_voted_question": {
+                        "description": "Question with the most received votes",
+                        "properties": {
+                            "id": {
+                                "description": "ID of the question.",
+                                "type": "integer"
+                            },
+                            "question_text": {
+                                "description": "Text of the question.",
+                                "type": "string"
+                            },
+                            "total_votes": {
+                                "description": "Total votes received for the question.",
+                                "type": "integer"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
             },
             "Vote": {
                 "title": "Vote model",

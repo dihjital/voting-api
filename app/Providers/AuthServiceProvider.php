@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Dusterio\LumenPassport\LumenPassport;
+use Laravel\Passport\Passport;
+use Carbon\Carbon;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -32,6 +34,9 @@ class AuthServiceProvider extends ServiceProvider
         // the User instance via an API token or any other method necessary.
 
         LumenPassport::routes($this->app);
+        LumenPassport::tokensExpireIn(Carbon::now()->addDays(5), env('PASSPORT_CLIENT_ID')); 
+
+	Passport::tokensExpireIn(now()->addDays(5));
 
         $this->app['auth']->viaRequest('api', function ($request) {
             if ($request->input('api_token')) {

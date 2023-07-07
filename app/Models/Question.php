@@ -114,7 +114,9 @@ class Question extends Model
 
     public function getLastVoteAtAttribute()
     {
-        return Vote::where('question_id', $this->id)->max('updated_at');
+        return Vote::where('question_id', $this->id)
+            ->where('number_of_votes', '>', 0)
+            ->max('updated_at');
     }
 
     /**
@@ -123,7 +125,9 @@ class Question extends Model
     public function votes()
     {
         return $this->hasMany(Vote::class);
-    }    /**
+    }    
+    
+    /**
      * The attributes that are mass assignable.
      *
      * @var array
