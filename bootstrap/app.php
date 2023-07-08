@@ -78,7 +78,7 @@ $app->configure('queue');
 
 $app->middleware([
     App\Http\Middleware\HttpsProtocol::class,
-    App\Http\Middleware\CorsMiddleware::class
+    App\Http\Middleware\CorsMiddleware::class,
 ]);
 
 // $app->middleware([
@@ -87,6 +87,8 @@ $app->middleware([
 
 $app->routeMiddleware([
      'auth' => App\Http\Middleware\Authenticate::class,
+     // Checks if Question model is closed for modification
+     'is_closed' => App\Http\Middleware\CheckQuestionClosed::class,
 ]);
 
 /*

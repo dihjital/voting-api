@@ -100,6 +100,10 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
                                         "message": {
                                             "type": "string",
                                             "example": "The question_text field is required"
@@ -116,6 +120,10 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
                                         "message": {
                                             "type": "string",
                                             "example": "Internal server error"
@@ -264,6 +272,10 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
                                         "message": {
                                             "type": "string",
                                             "example": "The question_text field is required"
@@ -300,6 +312,10 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
                                         "message": {
                                             "type": "string",
                                             "example": "Internal server error"
@@ -316,6 +332,114 @@
                         "bearerAuth": []
                     }
                 ]
+            },
+            "patch": {
+                "tags": [
+                    "OAuth",
+                    "Question"
+                ],
+                "summary": "Open or close a question",
+                "description": "Open or close a question by updating its 'is_closed' status. If a Question is closed no modification can happen to it (including voting).",
+                "operationId": "64b6e78eefa61af988e59db037cbccd5",
+                "parameters": [
+                    {
+                        "name": "question_id",
+                        "in": "path",
+                        "description": "ID of the question",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "is_closed": {
+                                        "description": "New status of the question",
+                                        "type": "boolean"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Question opened or closed successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Question"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The is_closed field is required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Question not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Question not found."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Internal server error."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         "/api/questions/{question_id}": {
@@ -1217,11 +1341,17 @@
                         "type": "string",
                         "format": "string"
                     },
+                    "is_closed": {
+                        "title": "Is closed?",
+                        "description": "Determines if the Question is closed for modification or voting",
+                        "type": "boolean",
+                        "default": false
+                    },
                     "number_of_votes": {
                         "title": "Number of votes",
                         "description": "Number of voting options the question has (calculated field)",
                         "type": "integer",
-                        "format": "integer"
+                        "minimum": 0
                     },
                     "last_vote_at": {
                         "title": "Last date and time when a vote was updated",

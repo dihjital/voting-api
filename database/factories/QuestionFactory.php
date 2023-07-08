@@ -2,9 +2,8 @@
 
 namespace Database\Factories;
 
-use App\Question;
+use App\Models\Question;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 class QuestionFactory extends Factory
 {
@@ -20,6 +19,7 @@ class QuestionFactory extends Factory
     {
         return [
             'question_text' => $this->faker->text(),
+            'is_closed' => 0,
         ];
     }
 }

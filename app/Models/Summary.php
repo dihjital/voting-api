@@ -68,33 +68,52 @@ class Summary extends Model
         return Question::count();
     }
 
+    // Return the answer (Vote model) that received the most votes and it's question
     public function getHighestVoteAttribute()
     {
-        return Vote::select('questions.id', 
-			    'questions.question_text', 
-			    'votes.vote_text', 
-			    DB::raw('MAX(votes.number_of_votes) AS number_of_votes'))
-            ->leftJoin('questions', 'votes.question_id', '=', 'questions.id')
+        $vote = Vote::with('question')
+            ->orderByDesc('number_of_votes')
+            ->limit(1)
             ->get()
-	    ->first();        
+            ->first();
+
+	    $keys = ['id', 'question_text', 'vote_text', 'number_of_votes'];
+
+        return $vote 
+		? array_combine($keys, 
+            [
+            		$vote->question->id,
+            		$vote->question->question_text,
+            		$vote->vote_text,
+            		$vote->number_of_votes
+			])
+		: array_fill_keys($keys, null);
     }
 
+    // Return the question with the most related answer (Vote model)
     public function getHighestQuestionAttribute()
     {
-        return Question::all()->sortByDesc(function ($question) {
-                return $question->number_of_votes;
-            })->first()->only(['id', 'question_text', 'number_of_votes']);
+        $keys = ['id', 'question_text', 'number_of_votes'];
+
+        return 
+            Question::all()->sortByDesc(function ($question) {
+                    return $question->number_of_votes;
+                })->first()?->only(['id', 'question_text', 'number_of_votes'])
+            ?? array_fill_keys($keys, null);
     }
 
+    // Return the question that received the most cumulative votes for all it's answers (Vote model)
     public function getMostVotedQuestionAttribute()
     {
-        return Vote::select('questions.id',
-                            'questions.question_text', 
-                            DB::raw('SUM(votes.number_of_votes) as total_votes'))
-            ->join('questions', 'votes.question_id', '=', 'questions.id')
-            ->groupBy('questions.id')
-            ->orderByRaw('SUM(votes.number_of_votes) DESC')
-            ->first();
+        $keys = ['id', 'question_text', 'total_votes'];
+
+        return 
+            Question::withSum('votes as total_votes', 'number_of_votes')
+                ->orderByDesc('total_votes')
+                ->limit(1)
+                ->get()
+                ->first()?->only(['id', 'question_text', 'total_votes'])
+            ?? array_fill_keys($keys, null);
     }
 
     public function getTotalNumberOfVotesAttribute()

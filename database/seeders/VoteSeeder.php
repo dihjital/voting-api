@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Vote;
+use App\Models\Vote;
 
 class VoteSeeder extends Seeder
 {

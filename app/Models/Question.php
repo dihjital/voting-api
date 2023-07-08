@@ -51,8 +51,21 @@ class Question extends Model
 
      /**
      * @OA\Property(
+     *     property="is_closed",
+     *     type="boolean",
+     *     default=false,
+     *     description="Determines if the Question is closed for modification or voting",
+     *     title="Is closed?",
+     * )
+     *
+     * @var string
+     */
+
+     /**
+     * @OA\Property(
      *     property="number_of_votes",
-     *     format="integer",
+     *     type="integer",
+     *     minimum=0,
      *     description="Number of voting options the question has (calculated field)",
      *     title="Number of votes",
      * )
@@ -133,7 +146,8 @@ class Question extends Model
      * @var array
      */
     protected $fillable = [
-        'question_text'
+        'question_text',
+        'is_closed',
     ];    
     
     /**

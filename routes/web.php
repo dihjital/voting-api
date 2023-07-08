@@ -24,6 +24,10 @@ $router->post('/register', ['uses' => 'AuthController@register']);
 
 $router->group(['middleware' => 'auth'], function () use ($router) {
   $router->post('/logout', ['uses' => 'AuthController@logout']);
+  $router->patch('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@openQuestion']);
+});
+
+$router->group(['middleware' => ['auth', 'is_closed']], function () use ($router) {
   $router->delete('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@deleteQuestion']);
   $router->put('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@modifyQuestion']);
   $router->post('/questions', ['uses' => 'QuestionController@createQuestion']);
@@ -40,7 +44,10 @@ $router->get('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@
 // Votes (A question might have multiple votes)
 $router->get('/questions/{question_id: [0-9]+}/votes', ['uses' => 'VoteController@showAllVotesforQuestion']);
 $router->get('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@showOneVote']);
-$router->patch('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@increaseVoteNumber']);
+
+$router->group(['middleware' => 'is_closed'], function () use ($router) {
+  $router->patch('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@increaseVoteNumber']);
+});
 
 // Tokens for push notifications
 $router->post('/subscribe', ['uses' => 'TokenController@storeToken']);

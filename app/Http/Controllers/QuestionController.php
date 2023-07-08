@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Question;
-use App\Models\Vote;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Validator;
 
 class QuestionController extends Controller
 {
@@ -142,6 +142,7 @@ class QuestionController extends Controller
    *         response=400,
    *         description="Bad Request",
    *         @OA\JsonContent(
+   *             @OA\Property(property="status", type="string", example="error"),
    *             @OA\Property(property="message", type="string", example="The question_text field is required")
    *         )
    *     ),
@@ -149,6 +150,7 @@ class QuestionController extends Controller
    *         response=500,
    *         description="Internal server error",
    *         @OA\JsonContent(
+   *             @OA\Property(property="status", type="string", example="error"),
    *             @OA\Property(property="message", type="string", example="Internal server error")
    *         )
    *     ),
@@ -157,29 +159,28 @@ class QuestionController extends Controller
 
   public function createQuestion(Request $request)
   {
-
-    $validator = validator()->make(request()->all(), [
-      'question_text' => 'required'
+    $validator = Validator::make($request->all(), [
+      'question_text' => 'required',
+      // 'is_closed' => 'nullable|boolean'
     ]);
 
     if ($validator->fails()) {
       $errors = $validator->errors();
-      return response()->json($errors->first('question_text'), 400);
+      return response()->json(['status' => 'error', 'message' => $errors->first('question_text')], 400);
     }
 
     try {
-
       $question = new Question();
       $question->question_text = $request->question_text;
+      /* if (isset($request->is_closed))
+      $new_question->is_closed = $request->is_closed; */
 
       if ($question->save()) {
-        return response()->json(['status' => 'success', 'message' => 'Question successfully created', 'question' => $question], 201);
+        return response()->json(['status' => 'success', 'message' => __('Question successfully created'), 'question' => $question], 201);
       }
-
     } catch (\Exception $e) {
-      return response()->json($e->getMessage(), 500);
+      return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
     }
-
   }
 
   /**
@@ -215,6 +216,7 @@ class QuestionController extends Controller
    *         response=400,
    *         description="Bad Request",
    *         @OA\JsonContent(
+   *             @OA\Property(property="status", type="string", example="error"),
    *             @OA\Property(property="message", type="string", example="The question_text field is required")
    *         )
    *     ),
@@ -230,6 +232,7 @@ class QuestionController extends Controller
    *         response=500,
    *         description="Internal server error",
    *         @OA\JsonContent(
+   *             @OA\Property(property="status", type="string", example="error"),
    *             @OA\Property(property="message", type="string", example="Internal server error")
    *         )
    *     )
@@ -238,34 +241,115 @@ class QuestionController extends Controller
 
   public function modifyQuestion($question_id, Request $request)
   {
-
     try {
       $new_question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
       return response(['status' => 'error', 'message' => __('Question not found')], 404);
     }
 
-    $validator = validator()->make(request()->all(), [
-      'question_text' => 'required'
+    $validator = Validator::make($request->all(), [
+      'question_text' => 'required',
+      // 'is_closed' => 'nullable|boolean'
     ]);
 
     if ($validator->fails()) {
       $errors = $validator->errors();
-      return response()->json($errors->first('question_text'), 400);
+      return response()->json(['status' => 'error', 'message' => $errors->first('question_text')], 400);
     }
 
     try {
 
       $new_question->question_text = $request->question_text;
+      /* if (isset($request->is_closed))
+        $new_question->is_closed = $request->is_closed; */
 
       if ($new_question->save()) {
         return response()->json($new_question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
       }
 
     } catch (\Exception $e) {
-      return response()->json($e->getMessage(), 500);
+      return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+    }
+  }
+
+  /**
+   * @OA\Patch(
+   *     path="/questions/{question_id}",
+   *     summary="Open or close a question",
+   *     description="Open or close a question by updating its 'is_closed' status. If a Question is closed no modification can happen to it (including voting).",
+   *     tags={"OAuth", "Question"},
+   *     @OA\Parameter(
+   *         name="question_id",
+   *         in="path",
+   *         description="ID of the question",
+   *         required=true,
+   *         @OA\Schema(type="integer")
+   *     ),
+   *     @OA\RequestBody(
+   *         required=true,
+   *         @OA\JsonContent(
+   *             @OA\Property(property="is_closed", type="boolean", description="New status of the question")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=200,
+   *         description="Question opened or closed successfully",
+   *         @OA\JsonContent(ref="#/components/schemas/Question")
+   *     ),
+   *     @OA\Response(
+   *         response=400,
+   *         description="Validation error",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="status", type="string", example="error"),
+   *             @OA\Property(property="message", type="string", example="The is_closed field is required.")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=404,
+   *         description="Question not found",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="status", type="string", example="error"),
+   *             @OA\Property(property="message", type="string", example="Question not found.")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=500,
+   *         description="Internal server error",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="status", type="string", example="error"),
+   *             @OA\Property(property="message", type="string", example="Internal server error.")
+   *         )
+   *     )
+   * )
+   */
+
+  public function openQuestion($question_id, Request $request)
+  {
+    try {
+      $question = Question::findOrFail($question_id);
+    } catch (\Exception $e) {
+      return response(['status' => 'error', 'message' => __('Question not found')], 404);
     }
 
+    $validator = Validator::make($request->all(), [
+      'is_closed' => 'required|boolean',
+    ]);
+
+    if ($validator->fails()) {
+      $errors = $validator->errors();
+      return response()->json(['status' => 'error', 'message' => $errors->first('is_closed')], 400);
+    }
+
+    try {
+      $question->is_closed = $request->is_closed;
+
+      if ($question->save()) {
+        // TODO: Could be a 204 but then return it without content ...
+        return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
+      }
+    } catch (\Exception $e) {
+      return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+    }
   }
 
   /**
@@ -304,7 +388,6 @@ class QuestionController extends Controller
 
   public function deleteQuestion($question_id)
   {
-
     try {
       Question::findOrFail($question_id)->delete();
     } catch (\Exception $e) {
@@ -312,7 +395,6 @@ class QuestionController extends Controller
     }
 
     return response()->json(['status' => 'success', 'message' => __('Question deleted successfully')], 200);
-
   }
 
 }

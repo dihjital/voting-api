@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Question;
+use App\Models\Question;
 
 class QuestionSeeder extends Seeder
 {
@@ -15,7 +15,6 @@ class QuestionSeeder extends Seeder
 
     public function run()
     {
-        //
         Question::factory()->count(10)->create();
     }
 }
