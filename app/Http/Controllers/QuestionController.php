@@ -107,7 +107,7 @@ class QuestionController extends Controller
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json(['status' => 'error', 'message' => __('Question not found')], 404);
+      return response()->json(self::eWrap(__('Question not found')), 404);
     }
 
     $votes = $question->votes->makeHidden('question_id')->toArray();
@@ -166,7 +166,7 @@ class QuestionController extends Controller
 
     if ($validator->fails()) {
       $errors = $validator->errors();
-      return response()->json(['status' => 'error', 'message' => $errors->first('question_text')], 400);
+      return response()->json(self::eWrap($errors->first('question_text')), 400);
     }
 
     try {
@@ -176,10 +176,10 @@ class QuestionController extends Controller
       $new_question->is_closed = $request->is_closed; */
 
       if ($question->save()) {
-        return response()->json(['status' => 'success', 'message' => __('Question successfully created'), 'question' => $question], 201);
+        return response()->json([...self::sWrap(__('Question successfully created')), 'question' => $question], 201);
       }
     } catch (\Exception $e) {
-      return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+      return response()->json(self::eWrap($e->getMessage()), 500);
     }
   }
 
@@ -244,9 +244,12 @@ class QuestionController extends Controller
     try {
       $new_question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response(['status' => 'error', 'message' => __('Question not found')], 404);
+      return response()->json(self::eWrap(__('Question not found')), 404);
     }
 
+    // TODO: When Question is closed modification is not allowed (403)
+    // However if it is NOT closed then is_closed should always be the defaul value (false)
+    // Unless it is specifically given in the PUT request (and it should be BTW)
     $validator = Validator::make($request->all(), [
       'question_text' => 'required',
       // 'is_closed' => 'nullable|boolean'
@@ -254,7 +257,7 @@ class QuestionController extends Controller
 
     if ($validator->fails()) {
       $errors = $validator->errors();
-      return response()->json(['status' => 'error', 'message' => $errors->first('question_text')], 400);
+      return response()->json(self::eWrap($errors->first('question_text')), 400);
     }
 
     try {
@@ -268,7 +271,7 @@ class QuestionController extends Controller
       }
 
     } catch (\Exception $e) {
-      return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+      return response()->json(self::eWrap($e->getMessage()), 500);
     }
   }
 
@@ -328,7 +331,7 @@ class QuestionController extends Controller
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response(['status' => 'error', 'message' => __('Question not found')], 404);
+      return response(self::eWrap(__('Question not found')), 404);
     }
 
     $validator = Validator::make($request->all(), [
@@ -337,7 +340,7 @@ class QuestionController extends Controller
 
     if ($validator->fails()) {
       $errors = $validator->errors();
-      return response()->json(['status' => 'error', 'message' => $errors->first('is_closed')], 400);
+      return response()->json(self::eWrap($errors->first('is_closed')), 400);
     }
 
     try {
@@ -348,7 +351,7 @@ class QuestionController extends Controller
         return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
       }
     } catch (\Exception $e) {
-      return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+      return response()->json(self::eWrap($e->getMessage()), 500);
     }
   }
 
@@ -388,13 +391,14 @@ class QuestionController extends Controller
 
   public function deleteQuestion($question_id)
   {
+    // TODO: What about Internal Server Error?
     try {
       Question::findOrFail($question_id)->delete();
     } catch (\Exception $e) {
-      return response(['status' => 'error', 'message' => __('Question not found')], 404);
+      return response()->json(self::eWrap(__('Question not found')), 404);
     }
 
-    return response()->json(['status' => 'success', 'message' => __('Question deleted successfully')], 200);
+    return response()->json(self::sWrap(__('Question deleted successfully')), 200);
   }
 
 }
