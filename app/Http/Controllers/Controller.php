@@ -22,5 +22,22 @@ use Laravel\Lumen\Routing\Controller as BaseController;
 
 class Controller extends BaseController
 {
-    //
+    protected static function eWrap($message): array
+    {
+        return self::wrap(true, $message);
+    }
+
+    protected static function sWrap($message): array
+    {
+        return self::wrap(false, $message);
+    }
+
+    protected static function wrap(bool $error = false, $message): array
+    {
+        return match($error) {
+        true => ['status' => 'error', 'message' => $message],
+        false => ['status' => 'success', 'message' => $message],
+        default => ['status' => 'success', 'message' => $message],
+        };
+    }
 }

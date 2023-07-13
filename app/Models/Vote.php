@@ -98,21 +98,15 @@ class Vote extends Model
      * @var \DateTime
      */
 
-    /**
-     * Get the question that this voting option belongs to
-     */
-    public function question()
-    {
-        return $this->belongsTo(Question::class);
-    }    
-    
-    /**
+     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'vote_text', 'number_of_votes', 'question_id'
+        'vote_text', 
+        'number_of_votes', 
+        'question_id',
     ];    
     
     /**
@@ -121,4 +115,12 @@ class Vote extends Model
      * @var array
      */
     protected $hidden = [];
+
+    /**
+     * Get the question that this voting option belongs to
+     */
+    public function question()
+    {
+        return $this->belongsTo(Question::class);
+    }    
 }

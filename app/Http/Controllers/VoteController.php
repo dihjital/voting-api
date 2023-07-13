@@ -92,7 +92,7 @@ class VoteController extends Controller
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json('Question not found', 404);
+      return response()->json(self::eWrap(__('Question not found')), 404);
     }
 
     $validator = validator()->make(request()->all(), [
@@ -101,7 +101,7 @@ class VoteController extends Controller
     ]);
 
     if ($validator->fails()) {
-      return response()->json($validator->errors()->first(), 400);
+      return response()->json(self::eWrap(__($validator->errors()->first())), 400);
     }
 
     try {
@@ -117,7 +117,7 @@ class VoteController extends Controller
       }
 
     } catch (\Exception $e) {
-      return response()->json($e->getMessage(), 500);
+      return response()->json(self::eWrap(__($e->getMessage())), 500);
     }
 
   }
@@ -218,7 +218,7 @@ class VoteController extends Controller
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json(['status' => 'error', 'message' => 'Question not found'], 404);
+      return response()->json(self::eWrap(__('Question not found')), 404);
     }
 
     $validator = validator()->make(request()->all(), [
@@ -227,13 +227,13 @@ class VoteController extends Controller
     ]);
 
     if ($validator->fails()) {
-      return response()->json($validator->errors()->first(), 400);
+      return response()->json(self::eWrap(__($validator->errors()->first())), 400);
     }
 
     $new_vote = $question->votes->where('id', '=', $vote_id)->first();
 
     if (!$new_vote) {
-      return response()->json(['status' => 'error', 'message' => 'Vote not found'], 404);
+      return response()->json(self::eWrap(__('Vote not found')), 404);
     }
 
     try {
@@ -324,13 +324,13 @@ class VoteController extends Controller
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json(['status' => 'error', 'message' => __('Question not found')], 404);
+      return response()->json(self::eWrap(__('Question not found')), 404);
     }
 
     $new_vote = $question->votes->where('id', '=', $vote_id)->first();
 
     if (!$new_vote) {
-      return response()->json(['status' => 'error', 'message' => __('Vote not found')], 404);
+      return response()->json(self::eWrap(__('Vote not found')), 404);
     }
 
     try {
@@ -346,14 +346,14 @@ class VoteController extends Controller
             "http://localhost:8200/questions/$question_id/votes"
           )->sendPushNotification();
         } catch (\Exception $e) {
-          return response()->json($e->getMessage(), 500);
+          return response()->json(self::eWrap($e->getMessage()), 500);
         }
         
         return response()->json($new_vote, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
       }
 
     } catch (\Exception $e) {
-      return response()->json($e->getMessage(), 500);
+      return response()->json(self::eWrap($e->getMessage()), 500);
     }
 
   }
@@ -408,21 +408,19 @@ class VoteController extends Controller
      */
   public function showOneVote($question_id, $vote_id)
   {
-
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json(['status' => 'error', 'message' => 'Question not found'], 404);
+      return response()->json(self::eWrap(__('Question not found')), 404);
     }
 
     $vote = $question->votes->where('id', '=', $vote_id)->first();
 
     if (!$vote) {
-      return response()->json(['status' => 'error', 'message' => 'Vote not found'], 404);
+      return response()->json(self::eWrap(__('Vote not found')), 404);
     }
 
     return response()->json($vote, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
-
   }
 
   /**
@@ -473,17 +471,15 @@ class VoteController extends Controller
 
   public function showAllVotesforQuestion($question_id)
   {
-
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json(['status' => 'error', 'message' => 'Question not found'], 404);
+      return response()->json(self::eWrap(__('Question not found')), 404);
     }
 
     $votes = $question->votes;
 
     return response()->json($votes, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
-
   }
 
   /**
@@ -537,23 +533,21 @@ class VoteController extends Controller
 
   public function deleteVote($question_id, $vote_id)
   {
-
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json(['status' => 'error', 'message' => 'Question not found'], 404);
+      return response()->json(self::eWrap(__('Question not found')), 404);
     }
 
     $vote = $question->votes->where('id', '=', $vote_id)->first();
 
     if (!$vote) {
-      return response()->json(['status' => 'error', 'message' => 'Vote not found'], 404);
+      return response()->json(self::eWrap(__('Vote not found')), 404);
     }
 
     $vote->delete();
 
-    return response()->json(['status' => 'success', 'message' => 'Vote deleted successfully'], 200);
-
+    return response()->json(self::sWrap(__('Vote deleted successfully')), 200);
   }
 
   /**
@@ -599,21 +593,19 @@ class VoteController extends Controller
 
   public function deleteAllVotesforQuestion($question_id)
   {
-
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json(['status' => 'error', 'message' => __('Question not found')], 404);
+      return response()->json(self::eWrap(__('Question not found')), 404);
     }
 
     try {
       Vote::where('question_id', $question_id)->delete();
     } catch (\Exception $e) {
-      return response()->json($e->getMessage(), 500);
+      return response()->json(self::eWrap(__($e->getMessage())), 500);
     }
 
-    return response()->json(['status' => 'success', 'message' => __('All votes deleted successfully')], 200);
-
+    return response()->json(self::sWrap(__('All votes deleted successfully')), 200);
   }
 
 }
