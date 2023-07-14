@@ -4,7 +4,6 @@ namespace App\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Events\VoteAttachedToLocation;
-use Illuminate\Support\Facades\Log;
 
 class AttachVoteToLocationListener implements ShouldQueue
 {
@@ -16,12 +15,7 @@ class AttachVoteToLocationListener implements ShouldQueue
      */
     public function handle(VoteAttachedToLocation $event)
     {
-        $location = $event->location;
-        $voteId = $event->voteId;
-
-        Log::info('Attaching location: '.$location->id." to vote: ".$voteId);
-
-        $location->votes()->attach($voteId);
+        $event->location->votes()->attach($event->voteId);
     }
 }
 

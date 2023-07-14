@@ -10,9 +10,6 @@ class VoteAttachedToLocation
 {
     use Dispatchable, SerializesModels;
 
-    public Location $location;
-    public $voteId;
-
     /**
      * Create a new event instance.
      *
@@ -20,10 +17,9 @@ class VoteAttachedToLocation
      * @param  int  $voteId
      * @return void
      */
-    public function __construct(Location $location, int $voteId)
+    public function __construct(public Location $location, public int $voteId)
     {
-        $this->location = $location;
-        $this->voteId = $voteId;
+        //
     }
 }
 
