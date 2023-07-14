@@ -24,15 +24,15 @@ class Controller extends BaseController
 {
     protected static function eWrap($message): array
     {
-        return self::wrap(true, $message);
+        return self::wrap($message, true);
     }
 
     protected static function sWrap($message): array
     {
-        return self::wrap(false, $message);
+        return self::wrap($message, false);
     }
 
-    protected static function wrap(bool $error = false, $message): array
+    protected static function wrap($message, bool $error = false): array
     {
         return match($error) {
             true => ['status' => 'error', 'message' => $message],
