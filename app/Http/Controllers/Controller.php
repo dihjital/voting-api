@@ -35,9 +35,9 @@ class Controller extends BaseController
     protected static function wrap(bool $error = false, $message): array
     {
         return match($error) {
-        true => ['status' => 'error', 'message' => $message],
-        false => ['status' => 'success', 'message' => $message],
-        default => ['status' => 'success', 'message' => $message],
+            true => ['status' => 'error', 'message' => $message],
+            false => ['status' => 'success', 'message' => $message],
+            default => ['status' => 'success', 'message' => $message],
         };
     }
 }

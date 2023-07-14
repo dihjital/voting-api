@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Question;
 use App\Models\Vote;
+use App\Traits\WithIpLocation;
 use App\Traits\WithPushNotification;
 use Illuminate\Http\Request;
 
@@ -19,7 +20,7 @@ use Illuminate\Http\Request;
 class VoteController extends Controller
 {
 
-  use WithPushNotification;
+  use WithPushNotification, WithIpLocation;
 
   /**
    * Create a new vote for a question.
@@ -345,6 +346,10 @@ class VoteController extends Controller
             'Votes increased to ' . $new_vote->number_of_votes,
             "http://localhost:8200/questions/$question_id/votes"
           )->sendPushNotification();
+
+          // This is where we also gather the voter location based on the request IP address
+          $this->initWithIpLocation()->gatherIpLocation(request()->ip());
+          // $this->initWithIpLocation()->gatherIpLocation('185.166.230.103');
         } catch (\Exception $e) {
           return response()->json(self::eWrap($e->getMessage()), 500);
         }

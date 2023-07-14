@@ -111,6 +111,28 @@ class Question extends Model
      * @var \DateTime
      */
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'question_text',
+        'is_closed',
+    ];    
+    
+    /**
+     * The attributes that are excluded from the model's JSON form.
+     *
+     * @var array
+     */
+    protected $hidden = [];
+
+    protected $appends = [
+        'number_of_votes',
+        'last_vote_at'
+    ];
+
     public static function boot()
     {
         parent::boot();
@@ -139,27 +161,4 @@ class Question extends Model
     {
         return $this->hasMany(Vote::class);
     }    
-    
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'question_text',
-        'is_closed',
-    ];    
-    
-    /**
-     * The attributes that are excluded from the model's JSON form.
-     *
-     * @var array
-     */
-    protected $hidden = [];
-
-    protected $appends = [
-        'number_of_votes',
-        'last_vote_at'
-    ];
-
 }
