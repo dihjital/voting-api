@@ -9,7 +9,7 @@ use App\Events\VoteAttachedToLocation;
 trait WithIpLocation
 {
     protected $ipstackUrl;
-    protected $voteId;
+    protected $voteId; // TODO: Lehet ez a neve ennek a paraméternek ... ?
 
     public function initWithIpLocation($voteId): self 
     {
