@@ -22,11 +22,11 @@ trait WithIpLocation
     {
         // TODO: Log error if an invalid IP address was provided ...
         if (self::isValidIpAddress($ipAddress)) {
-            if (! $location = self::isLocationExists($ipAddress)) {
-                dispatch(new GatherIpLocation($this->vote_id, $this->ipstackUrl, $ipAddress));
-            } else { // Location already exists but we still register this to capture the voter
+            if ($location = self::isLocationExists($ipAddress)) { // Location already exists but we still register this to capture the voter
                 event(new VoteAttachedToLocation((clone $location), $this->vote_id));
                 // $location->votes()->attach($this->vote_id);
+            } else { 
+                dispatch(new GatherIpLocation($this->vote_id, $this->ipstackUrl, $ipAddress));
             }
         }
     }
