@@ -48,7 +48,7 @@ class GatherIpLocation extends Job
 
         $data = $response->json()['data'];
 
-        $location = new Location();
+        $location = new Location;
         try {
             $location->fill([
                 'ip' => $data['ip'],
