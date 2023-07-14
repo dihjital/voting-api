@@ -59,6 +59,8 @@ class GatherIpLocation extends Job
             ]);
             $location->save();
 
+            dd($location);
+
             event(new VoteAttachedToLocation((clone $location), $this->vote_id));
             // $location->votes()->attach($this->vote_id);
         } catch (\Exception $e) {
