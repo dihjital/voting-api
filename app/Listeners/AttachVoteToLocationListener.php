@@ -15,7 +15,7 @@ class AttachVoteToLocationListener implements ShouldQueue
      */
     public function handle(VoteAttachedToLocation $event)
     {
-        dd($event->location);
+        dd($event->voteId);
         $event->location->votes()->attach($event->voteId);
     }
 }
