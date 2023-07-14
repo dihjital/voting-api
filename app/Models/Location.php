@@ -29,7 +29,6 @@ class Location extends Model
      * @var array
      */
     protected $hidden = [];
-
     protected $appends = [];
 
     /**
@@ -37,6 +36,7 @@ class Location extends Model
      */
     public function votes()
     {
-        return $this->belongsToMany(Vote::class);
+        return $this->belongsToMany(Vote::class)
+                    ->withTimestamps();
     }    
 }

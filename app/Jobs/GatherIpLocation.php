@@ -4,11 +4,13 @@ namespace App\Jobs;
 
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Events\VoteAttachedToLocation;
 
 use App\Models\Location;
 
 class GatherIpLocation extends Job
 {
+    private $vote_id;
     private $url;
     private $ipAddress;
     
@@ -17,8 +19,9 @@ class GatherIpLocation extends Job
      *
      * @return void
      */
-    public function __construct($url, $ipAddress)
+    public function __construct($vote_id, $url, $ipAddress)
     {
+        $this->vote_id = $vote_id;
         $this->url = $url;
         $this->ipAddress = $ipAddress;
     }
@@ -55,6 +58,8 @@ class GatherIpLocation extends Job
                 'longitude' => $data['longitude'],
             ]);
             $location->save();
+
+            event(new VoteAttachedToLocation($location, $this->vote_id));
         } catch (\Exception $e) {
             Log::error(__('Failed to save location: ').$e->getMessage());
         }

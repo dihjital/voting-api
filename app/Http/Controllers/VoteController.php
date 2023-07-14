@@ -7,6 +7,7 @@ use App\Models\Vote;
 use App\Traits\WithIpLocation;
 use App\Traits\WithPushNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * @OA\SecurityScheme(
@@ -96,7 +97,7 @@ class VoteController extends Controller
       return response()->json(self::eWrap(__('Question not found')), 404);
     }
 
-    $validator = validator()->make(request()->all(), [
+    $validator = Validator::make($request->all(), [
       'vote_text' => 'required',
       'number_of_votes' => 'numeric|integer'
     ]);
@@ -222,7 +223,7 @@ class VoteController extends Controller
       return response()->json(self::eWrap(__('Question not found')), 404);
     }
 
-    $validator = validator()->make(request()->all(), [
+    $validator = Validator::make($request->all(), [
       'vote_text' => 'required',
       'number_of_votes' => 'numeric|integer|required',
     ]);
@@ -348,8 +349,7 @@ class VoteController extends Controller
           )->sendPushNotification();
 
           // This is where we also gather the voter location based on the request IP address
-          $this->initWithIpLocation()->gatherIpLocation(request()->ip());
-          // $this->initWithIpLocation()->gatherIpLocation('185.166.230.103');
+          $this->initWithIpLocation($new_vote->id)->gatherIpLocation('185.166.230.103');
         } catch (\Exception $e) {
           return response()->json(self::eWrap($e->getMessage()), 500);
         }
