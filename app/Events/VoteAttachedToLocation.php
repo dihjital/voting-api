@@ -10,7 +10,7 @@ class VoteAttachedToLocation
 {
     use Dispatchable, SerializesModels;
 
-    public $location;
+    public Location $location;
     public $voteId;
 
     /**
