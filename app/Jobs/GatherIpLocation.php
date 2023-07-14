@@ -59,7 +59,8 @@ class GatherIpLocation extends Job
             ]);
             $location->save();
 
-            event(new VoteAttachedToLocation($location, $this->vote_id));
+            // event(new VoteAttachedToLocation($location, $this->vote_id));
+            $location->votes()->attach($this->vote_id);
         } catch (\Exception $e) {
             Log::error(__('Failed to save location: ').$e->getMessage());
         }
