@@ -41,6 +41,7 @@ class GatherIpLocation extends Job
         ]);
 
         // Handle the responses
+        // TODO: Check returned data ...
         if (!$response->successful()) {
             Log::error($response->status().":".$response->body());
                throw new \Exception($response->body());
