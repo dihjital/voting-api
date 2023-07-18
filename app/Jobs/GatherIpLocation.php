@@ -8,8 +8,9 @@ use App\Events\VoteAttachedToLocation;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 
 use App\Models\Location;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class GatherIpLocation extends Job
+class GatherIpLocation extends Job implements ShouldQueue
 {
     private $voteId;
     private $url;
@@ -71,9 +72,10 @@ class GatherIpLocation extends Job
 
     }
 
-    public function middleware()
+    public function middleware(): array
     {
-        return [(new WithoutOverlapping($this->ipAddress))->releaseAfter(15)->expireAfter(180)];
+        Log::info('IP address to look for: '.$this->ipAddress);
+        return [(new WithoutOverlapping($this->ipAddress))->releaseAfter(15)];
     }
 
     protected static function isLocationExists($ipAddress)
