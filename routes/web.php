@@ -49,6 +49,9 @@ $router->group(['middleware' => 'is_closed'], function () use ($router) {
   $router->patch('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@increaseVoteNumber']);
 });
 
+// Locations (A vote might have multiple locations)
+$router->get('/questions/{question_id: [0-9]+}/votes/locations', ['uses' => 'LocationController@showAllLocationsforQuestion']);
+
 // Tokens for push notifications
 $router->post('/subscribe', ['uses' => 'TokenController@storeToken']);
 $router->delete('/unsubscribe', ['uses' => 'TokenController@deleteToken']);

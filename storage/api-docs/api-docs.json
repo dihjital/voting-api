@@ -1322,6 +1322,76 @@
     },
     "components": {
         "schemas": {
+            "Location": {
+                "title": "Location model",
+                "description": "Location model holding Geo information about the voters",
+                "required": [
+                    "ip",
+                    "country_name",
+                    "city",
+                    "latitude",
+                    "longitude"
+                ],
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "Auto-incrementing ID of the location",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "ip": {
+                        "title": "IP address (IPV4)",
+                        "description": "The IP address of the location",
+                        "type": "string",
+                        "format": "ipv4",
+                        "example": "8.8.8.8"
+                    },
+                    "country_name": {
+                        "title": "Country name",
+                        "description": "The name of the country",
+                        "type": "string",
+                        "example": "Hungary"
+                    },
+                    "city": {
+                        "title": "City name",
+                        "description": "The name of the city",
+                        "type": "string",
+                        "example": "Budapest"
+                    },
+                    "latitude": {
+                        "title": "Latitude",
+                        "description": "The latitude coordinates",
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "longitude": {
+                        "title": "Longitude",
+                        "description": "The longitude coordinates",
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "created_at": {
+                        "title": "Created at",
+                        "description": "Date and time when the location was created",
+                        "type": "string",
+                        "format": "datetime",
+                        "default": "now",
+                        "example": "2023-06-18 12:01:01"
+                    },
+                    "updated_at": {
+                        "title": "Updated at",
+                        "description": "Date and time when the location was updated",
+                        "type": "string",
+                        "format": "datetime",
+                        "default": "now",
+                        "example": "2023-06-18 12:01:01"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "Location"
+                }
+            },
             "Question": {
                 "title": "Question model",
                 "description": "Question model",
