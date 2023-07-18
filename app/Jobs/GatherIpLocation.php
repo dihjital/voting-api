@@ -33,10 +33,7 @@ class GatherIpLocation extends Job
      * @return void
      */
     public function handle()
-    { 
-        // TODO: Wait 3 seconds so I can test QUEUE_CONNECTION ... should be removed from PROD
-        sleep(3);
-
+    {
         if ($location = self::isLocationExists($this->ipAddress)) {
             Log::info(__('Location already exists: ').$this->ipAddress);
             event(new VoteAttachedToLocation($location, $this->voteId));
