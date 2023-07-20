@@ -4,10 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Question;
 use App\Models\Vote;
-use App\Traits\WithIpLocation;
-use App\Traits\WithPushNotification;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
+use App\Models\Location;
 
 /**
  * @OA\SecurityScheme(
@@ -29,12 +26,14 @@ class LocationController extends Controller
       return response()->json(self::eWrap(__('Question not found')), 404);
     }
 
-    $locations = 
-      $question->votes()->with('locations')
-        ->get()
-        ->pluck('locations')
-        ->flatten()
-        ->unique('id');
+    // Get votes related to the specific question
+    $votes = $question->votes;
+
+    // Get location_id values from the pivot table
+    $locationIds = $votes->pluck('locations.*.id')->flatten()->unique();
+
+    // Query the Location model by the location_id values
+    $locations = Location::whereIn('id', $locationIds->toArray())->get();
 
     return response()->json($locations, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
   }

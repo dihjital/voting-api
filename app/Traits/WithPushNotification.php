@@ -3,7 +3,8 @@
 namespace App\Traits;
 
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Log;
+
 use App\Jobs\PushNotification;
 
 trait WithPushNotification
@@ -43,15 +44,10 @@ trait WithPushNotification
 
     protected function getClientKeys()
     {
-        $storage = Cache::getStore(); // will return instance of FileStore
-        $filesystem = $storage->getFilesystem(); // will return instance of Filesystem
-        $dir = (Cache::getDirectory());
-
-        foreach ($filesystem->allFiles($dir) as $file1) {
-            if (is_dir($file1->getPath())) {
-                foreach ($filesystem->allFiles($file1->getPath()) as $file2) {
-                    yield unserialize(substr(File::get($file2->getRealpath()), 10));
-                }
+        if (Cache::tags('fcm')->has('subscribers')) {
+            $subscribers = Cache::tags('fcm')->get('subscribers');
+            foreach ($subscribers as $subscriber) {
+                yield $subscriber;
             }
         }
     }
@@ -60,6 +56,7 @@ trait WithPushNotification
     {
         // Loop through all subscribed clients
         foreach ($this->data as $payload) {
+            Log::info(__('Sending push notification to: ').$payload['to']);
             dispatch(new PushNotification($this->url, $this->headers, $payload));
         }
     }

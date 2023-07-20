@@ -93,18 +93,28 @@ class TokenController extends Controller
     {
         $key = $request->ip; // key the tokens by the requestor IP address
 
-        if (!Cache::has($key)) {
-            Cache::put($key, $request->token, Carbon::now()->addMinutes(self::CACHE_EXPIRATION_TIME));
-            return response()->json(['status' => 'success', 'message' => __('Token registered successfully')], 201);
-        } else {
-            if ($request->token !== Cache::get($key)) {
-                Cache::forget($key);
-                Cache::put($key, $request->token, Carbon::now()->addMinutes(self::CACHE_EXPIRATION_TIME));
-                return response()->json(['status' => 'success', 'message' => __('Token refreshed successfully.')], 200);
+        // Get subscribers array from cache
+        if (Cache::tags('fcm')->has('subscribers')) {
+            $subscribers = Cache::tags('fcm')->get('subscribers');
+            if (array_key_exists($key, $subscribers)) { // Key is already subscribed
+                if ($subscribers[$key] !== $request->token) { // Token change
+                    $subscribers[$key] = $request->token;
+                    self::refreshCache($subscribers);
+                    return response()->json(self::sWrap(__('Token refreshed successfully.')), 200);
+                }
+                return response()->json(self::eWrap(__('Token is already registered.')), 409);
             }
+            
+            // New subscriber
+            $subscribers[$key] = $request->token;
+            self::refreshCache($subscribers);
+            return response()->json(self::sWrap(__('Token registered successfully.')), 201);
         }
-
-        return response()->json(['status' => 'error', 'message' => __('Token is already registered.')], 409);
+        
+        // First item to store
+        $subscribers[$key] = $request->token;
+        Cache::tags('fcm')->put('subscribers', $subscribers, Carbon::now()->addMinutes(self::CACHE_EXPIRATION_TIME));
+        return response()->json(self::sWrap(__('Token registered successfully.')), 201);
     }
 
     /**
@@ -153,12 +163,22 @@ class TokenController extends Controller
     {
         $key = $request->ip;
 
-        if (Cache::has($key)) {
-            Cache::forget($key);
-            return response()->json(['status' => 'success', 'message' => __('Token successfully deleted.')], 200);
+        if (Cache::tags('fcm')->has('subscribers')) {
+            $subscribers = Cache::tags('fcm')->get('subscribers');
+            if (array_key_exists($key, $subscribers)) {
+                unset($subscribers[$key]);
+                self::refreshCache($subscribers);
+                return response()->json(self::sWrap(__('Token successfully deleted.')), 200);
+            }
         }
 
-        return response()->json(['status' => 'error', 'message' => 'Token not found.'], 404);
+        return response()->json(self::eWrap(__('Token not found.')), 404);
+    }
+
+    public static function refreshCache($subscribers): void
+    {
+        Cache::tags('fcm')->flush();
+        Cache::tags('fcm')->put('subscribers', $subscribers, Carbon::now()->addMinutes(self::CACHE_EXPIRATION_TIME));        
     }
 
 }

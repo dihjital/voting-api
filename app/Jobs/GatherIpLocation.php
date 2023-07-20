@@ -8,9 +8,8 @@ use App\Events\VoteAttachedToLocation;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 
 use App\Models\Location;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
-class GatherIpLocation extends Job implements ShouldQueue
+class GatherIpLocation extends Job
 {
     private $voteId;
     private $url;
@@ -35,6 +34,7 @@ class GatherIpLocation extends Job implements ShouldQueue
      */
     public function handle()
     {
+        sleep(rand(10, 30));
         if ($location = self::isLocationExists($this->ipAddress)) {
             Log::info(__('Location already exists: ').$this->ipAddress);
             event(new VoteAttachedToLocation($location, $this->voteId));
@@ -43,7 +43,6 @@ class GatherIpLocation extends Job implements ShouldQueue
                 'ip_address' => $this->ipAddress,
             ]);
 
-            // Handle the responses
             // TODO: Check returned data ...
             if (!$response->successful()) {
                 Log::error($response->status().":".$response->body());
@@ -51,7 +50,7 @@ class GatherIpLocation extends Job implements ShouldQueue
             }
 
             $data = $response->json()['data'];
-
+ 
             $location = new Location;
             try {
                 $location->fill([
@@ -64,7 +63,6 @@ class GatherIpLocation extends Job implements ShouldQueue
                 $location->save();
 
                 event(new VoteAttachedToLocation($location, $this->voteId));
-                // $location->votes()->attach($this->vote_id);
             } catch (\Exception $e) {
                 Log::error(__('Failed to save location: ').$e->getMessage());
             }
@@ -75,7 +73,7 @@ class GatherIpLocation extends Job implements ShouldQueue
     public function middleware(): array
     {
         Log::info('IP address to look for: '.$this->ipAddress);
-        return [(new WithoutOverlapping($this->ipAddress))->releaseAfter(15)];
+        return [(new WithoutOverlapping($this->ipAddress))->releaseAfter(15)->expireAfter(30)];
     }
 
     protected static function isLocationExists($ipAddress)
