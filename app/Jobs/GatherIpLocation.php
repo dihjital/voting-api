@@ -34,7 +34,6 @@ class GatherIpLocation extends Job
      */
     public function handle()
     {
-        sleep(rand(10, 30));
         if ($location = self::isLocationExists($this->ipAddress)) {
             Log::info(__('Location already exists: ').$this->ipAddress);
             event(new VoteAttachedToLocation($location, $this->voteId));
