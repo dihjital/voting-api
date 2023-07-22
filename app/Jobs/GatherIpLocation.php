@@ -6,10 +6,12 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Events\VoteAttachedToLocation;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\Location;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class GatherIpLocation extends Job
+class GatherIpLocation extends Job implements ShouldQueue
 {
     private $voteId;
     private $url;
@@ -52,6 +54,7 @@ class GatherIpLocation extends Job
  
             $location = new Location;
             try {
+                DB::beginTransaction();
                 $location->fill([
                     'ip' => $data['ip'],
                     'country_name' => $data['country_name'],
@@ -60,13 +63,13 @@ class GatherIpLocation extends Job
                     'longitude' => $data['longitude'],
                 ]);
                 $location->save();
+                DB::commit();
 
                 event(new VoteAttachedToLocation($location, $this->voteId));
             } catch (\Exception $e) {
                 Log::error(__('Failed to save location: ').$e->getMessage());
             }
         }
-
     }
 
     public function middleware(): array

@@ -17,9 +17,9 @@ class VoteAttachedToLocation
      * @param  int  $voteId
      * @return void
      */
-    public function __construct(public Location $location, public int $voteId)
-    {
-        //
-    }
+    public function __construct(
+        public Location $location, 
+        public int $voteId)
+    { }
 }
 

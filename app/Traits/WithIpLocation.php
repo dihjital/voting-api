@@ -32,8 +32,9 @@ trait WithIpLocation
         if (self::isValidIpAddress($ipAddress)) {
             if ($location = self::isLocationExists($ipAddress)) { // Location already exists but we still register this to capture the voter
                 event(new VoteAttachedToLocation($location, $this->voteId));
-            } else { 
-                dispatch(new GatherIpLocation($this->voteId, $this->IpStackFunctionURL, $ipAddress));
+            } else {
+                // dispatch(new GatherIpLocation($this->voteId, $this->IpStackFunctionURL, $ipAddress))->afterCommit();
+                GatherIpLocation::dispatch($this->voteId, $this->IpStackFunctionURL, $ipAddress)->afterCommit();
             }
         }
     }
