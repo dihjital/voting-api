@@ -72,7 +72,7 @@ class GatherIpLocation extends Job implements ShouldQueue
     public function middleware(): array
     {
         Log::info('IP address to look for: '.$this->ipAddress);
-        return [(new WithoutOverlapping($this->ipAddress))->releaseAfter(15)->expireAfter(30)];
+        return [(new WithoutOverlapping($this->ipAddress))->releaseAfter(rand(5, 10))->expireAfter(60)];
     }
 
     protected static function isLocationExists($ipAddress)

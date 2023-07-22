@@ -5,7 +5,7 @@ namespace App\Listeners;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use App\Events\VoteAttachedToLocation;
 
-class AttachVoteToLocationListener
+class AttachVoteToLocationListener implements ShouldQueue
 {
     /**
      * Handle the event.
