@@ -322,7 +322,6 @@ class VoteController extends Controller
 
   public function increaseVoteNumber($question_id, $vote_id)
   {
-
     try {
       $question = Question::findOrFail($question_id);
     } catch (\Exception $e) {
@@ -336,32 +335,29 @@ class VoteController extends Controller
     }
 
     try {
-
       $new_vote->number_of_votes++;
 
       if ($new_vote->save()) {
-        
         try {
           $this->initWithPushNotification(
-            $question->question_text . ' / '. $new_vote->vote_text, 
-            'Votes increased to ' . $new_vote->number_of_votes,
-            "http://localhost:8200/questions/$question_id/votes"
-          )->sendPushNotification();
+              $question->question_text . ' / '. $new_vote->vote_text, 
+              'Votes increased to ' . $new_vote->number_of_votes,
+              "http://localhost:8200/questions/$question_id/votes")
+            ->sendPushNotification();
 
           // This is where we also gather the voter location based on the request IP address
-          $this->initWithIpLocation($new_vote->id)->gatherIpLocation(request()->ip());
-          // $this->initWithIpLocation($new_vote->id)->gatherIpLocation('176.77.152.134');
+          // $this->initWithIpLocation($new_vote->id)->gatherIpLocation(request()->ip());
+          $this->initWithIpLocation($new_vote->id)
+               ->gatherIpLocationIf(self::isValidIpAddress(...), '176.77.152.134');
         } catch (\Exception $e) {
           return response()->json(self::eWrap($e->getMessage()), 500);
         }
         
         return response()->json($new_vote, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
       }
-
     } catch (\Exception $e) {
       return response()->json(self::eWrap($e->getMessage()), 500);
     }
-
   }
 
   /**

@@ -40,4 +40,9 @@ class Controller extends BaseController
             default => ['status' => 'success', 'message' => $message],
         };
     }
+    
+    protected static function isValidIpAddress($ipAddress): bool
+    {
+        return filter_var($ipAddress, FILTER_VALIDATE_IP) !== false;
+    }
 }

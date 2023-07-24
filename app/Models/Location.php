@@ -145,6 +145,11 @@ class Location extends Model
     protected $hidden = [];
     protected $appends = [];
 
+    public static function existsBasedOnIp($ip)
+    {
+        return static::where('ip', $ip)->first() ?? false;
+    }
+
     /**
      * Get the voting options that belong to this Question
      */

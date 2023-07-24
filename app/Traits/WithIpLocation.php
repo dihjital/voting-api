@@ -5,6 +5,7 @@ namespace App\Traits;
 use App\Jobs\GatherIpLocation;
 use App\Models\Location;
 use App\Events\VoteAttachedToLocation;
+use Illuminate\Support\Facades\Log;
 
 trait WithIpLocation
 {
@@ -26,30 +27,20 @@ trait WithIpLocation
         );
     }
 
-    public function gatherIpLocation($ipAddress)
+    public function gatherIpLocationIf($callback, $ipAddress)
     {
-        // TODO: Log error if an invalid IP address was provided ...
-        if (self::isValidIpAddress($ipAddress)) {
-            if ($location = self::isLocationExists($ipAddress)) { // Location already exists but we still register this to capture the voter
-                event(new VoteAttachedToLocation($location, $this->voteId));
-            } else {
-                dispatch(new GatherIpLocation($this->voteId, $this->IpStackFunctionURL, $ipAddress));
-            }
-        }
-    }
-    
-    protected static function isLocationExists($ipAddress)
-    {
-        try {
-            $location = Location::where('ip', $ipAddress)->firstOrFail();
-        } catch (\Exception $e) {
-            return false;
-        }
-        return $location;
+        $callback($ipAddress)
+            ? $this->dispatchIpLocationGathering($ipAddress)
+            : Log::error('IP address is invalid: '.$ipAddress);
     }
 
-    protected static function isValidIpAddress($ipAddress): bool
+    protected function dispatchIpLocationGathering($ipAddress)
     {
-        return filter_var($ipAddress, FILTER_VALIDATE_IP) !== false;
+        if ($location = Location::existsBasedOnIp($ipAddress)) { 
+            // Location already exists but we still register this to capture the voter
+            event(new VoteAttachedToLocation($location, $this->voteId));
+        } else {
+            dispatch(new GatherIpLocation($this->voteId, $this->IpStackFunctionURL, $ipAddress));
+        }
     }
 }
