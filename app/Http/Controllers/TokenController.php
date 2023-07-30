@@ -164,7 +164,7 @@ class TokenController extends Controller
 
     public function deleteToken(Request $request)
     {
-        $key = $request->ip();
+        $key = $request->ip;
 
         if (Cache::tags('fcm')->has('subscribers')) {
             $subscribers = Cache::tags('fcm')->get('subscribers');
