@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class TokenController extends Controller
 {
@@ -108,12 +109,14 @@ class TokenController extends Controller
             // New subscriber
             $subscribers[$key] = $request->token;
             self::refreshCache($subscribers);
+            Log::info('Token: '.$request->token.' registered successfully for: '.$key);
             return response()->json(self::sWrap(__('Token registered successfully.')), 201);
         }
         
         // First item to store
         $subscribers[$key] = $request->token;
         Cache::tags('fcm')->put('subscribers', $subscribers, Carbon::now()->addMinutes(self::CACHE_EXPIRATION_TIME));
+        Log::info('Token: '.$request->token.' registered successfully for: '.$key);
         return response()->json(self::sWrap(__('Token registered successfully.')), 201);
     }
 
@@ -168,6 +171,7 @@ class TokenController extends Controller
             if (array_key_exists($key, $subscribers)) {
                 unset($subscribers[$key]);
                 self::refreshCache($subscribers);
+                Log::info('Token: '.$request->token.' deleted successfully for: '.$key);
                 return response()->json(self::sWrap(__('Token successfully deleted.')), 200);
             }
         }
