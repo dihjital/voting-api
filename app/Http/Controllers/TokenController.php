@@ -92,7 +92,7 @@ class TokenController extends Controller
 
     public function storeToken(Request $request)
     {
-        $key = $request->ip; // key the tokens by the requestor IP address
+        $key = $request->ip(); // key the tokens by the requestor IP address
 
         // Get subscribers array from cache
         if (Cache::tags('fcm')->has('subscribers')) {
@@ -164,7 +164,7 @@ class TokenController extends Controller
 
     public function deleteToken(Request $request)
     {
-        $key = $request->ip;
+        $key = $request->ip();
 
         if (Cache::tags('fcm')->has('subscribers')) {
             $subscribers = Cache::tags('fcm')->get('subscribers');
