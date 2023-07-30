@@ -14,12 +14,11 @@ class SessionController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'user_id' => 'required|uuid',
-          ]);
+        ]);
       
-          if ($validator->fails()) {
-            $errors = $validator->errors();
-            return response()->json(self::eWrap($errors->first('user_id')), 400);
-          }
+        if ($validator->fails()) {
+            return response()->json(self::eWrap($validator->errors->first()), 400);
+        }
 
         // generate a new session ID
         $sessionId = Str::uuid()->toString();
