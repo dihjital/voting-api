@@ -119,6 +119,7 @@ class Question extends Model
     protected $fillable = [
         'question_text',
         'is_closed',
+        'user_id',
     ];    
     
     /**
@@ -126,7 +127,9 @@ class Question extends Model
      *
      * @var array
      */
-    protected $hidden = [];
+    protected $hidden = [
+        'user_id',
+    ];
 
     protected $appends = [
         'number_of_votes',

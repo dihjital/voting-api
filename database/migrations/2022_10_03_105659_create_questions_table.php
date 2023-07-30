@@ -17,6 +17,7 @@ class CreateQuestionsTable extends Migration
             $table->bigIncrements('id');
             $table->string('question_text');
             $table->boolean('is_closed')->default(false);
+            $table->uuid('user_id');
             $table->timestamps();
         });
     }

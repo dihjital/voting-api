@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\CreateNewVote;
+use App\Actions\DeleteVote;
+use App\Actions\ModifyVote;
 use App\Models\Question;
 use App\Models\Vote;
 use App\Traits\WithIpLocation;
@@ -20,7 +23,6 @@ use Illuminate\Support\Facades\Validator;
 
 class VoteController extends Controller
 {
-
   use WithPushNotification, WithIpLocation;
 
   /**
@@ -88,40 +90,19 @@ class VoteController extends Controller
    * )
    */
 
-  public function createVote($question_id, Request $request)
+  public function createVote($question_id, Request $request, CreateNewVote $createNewVote)
   {
+    $input = [
+      ...$request->all(), 'question_id' => $question_id
+    ];
 
     try {
-      $question = Question::findOrFail($question_id);
+      $vote = $createNewVote->create($input);
     } catch (\Exception $e) {
-      return response()->json(self::eWrap(__('Question not found')), 404);
+      return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
     }
 
-    $validator = Validator::make($request->all(), [
-      'vote_text' => 'required',
-      'number_of_votes' => 'numeric|integer'
-    ]);
-
-    if ($validator->fails()) {
-      return response()->json(self::eWrap(__($validator->errors()->first())), 400);
-    }
-
-    try {
-
-      $vote = new Vote();
-      $vote->vote_text = $request->vote_text;
-      $vote->number_of_votes = intval($request->number_of_votes) ?? 0; // Default is 0
-      $vote->question_id = $question_id;
-
-      if ($vote->save()) {
-        // return response()->json(['status' => 'success', 'message' => 'Vote successfully created', 'vote' => $vote], 201);
-        return response()->json($vote, 201);
-      }
-
-    } catch (\Exception $e) {
-      return response()->json(self::eWrap(__($e->getMessage())), 500);
-    }
-
+    return response()->json($vote, 201);
   }
 
   /**
@@ -214,43 +195,19 @@ class VoteController extends Controller
    * )
    */
 
-  public function modifyVote($question_id, $vote_id, Request $request)
+  public function modifyVote($question_id, $vote_id, Request $request, ModifyVote $modifyVote)
   {
+    $input = [
+      ...$request->all(), 'question_id' => $question_id, 'vote_id' => $vote_id,
+    ];
 
     try {
-      $question = Question::findOrFail($question_id);
+      $vote = $modifyVote->update($input);
     } catch (\Exception $e) {
-      return response()->json(self::eWrap(__('Question not found')), 404);
+      return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
     }
-
-    $validator = Validator::make($request->all(), [
-      'vote_text' => 'required',
-      'number_of_votes' => 'numeric|integer|required',
-    ]);
-
-    if ($validator->fails()) {
-      return response()->json(self::eWrap(__($validator->errors()->first())), 400);
-    }
-
-    $new_vote = $question->votes->where('id', '=', $vote_id)->first();
-
-    if (!$new_vote) {
-      return response()->json(self::eWrap(__('Vote not found')), 404);
-    }
-
-    try {
-
-      $new_vote->vote_text = $request->vote_text;
-      $new_vote->number_of_votes = !is_null($request->number_of_votes) ? intval($request->number_of_votes) : $new_vote->number_of_votes + 1;
-
-      if ($new_vote->save()) {
-        return response()->json($new_vote, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
-      }
-
-    } catch (\Exception $e) {
-      return response()->json($e->getMessage(), 500);
-    }
-
+    
+    return response()->json($vote, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
   }
 
   /**
@@ -407,10 +364,21 @@ class VoteController extends Controller
      *     ),
      * )
      */
-  public function showOneVote($question_id, $vote_id)
+  public function showOneVote($question_id, $vote_id, Request $request)
   {
+    $validator = Validator::make($request->all(), [
+      'user_id' => 'nullable|uuid',
+    ]);
+
+    if ($validator->fails()) {
+      $errors = $validator->errors();
+      return response()->json(self::eWrap($errors->first('user_id')), 400);
+    }
+
     try {
-      $question = Question::findOrFail($question_id);
+      $question = $request->user_id 
+        ? Question::whereId($question_id)->where('user_id', $request->user_id)->firstOrFail()
+        : Question::findOrFail($question_id);
     } catch (\Exception $e) {
       return response()->json(self::eWrap(__('Question not found')), 404);
     }
@@ -469,11 +437,21 @@ class VoteController extends Controller
    *     ),
    * )
    */
-
-  public function showAllVotesforQuestion($question_id)
+  public function showAllVotesforQuestion($question_id, Request $request)
   {
+    $validator = Validator::make($request->all(), [
+      'user_id' => 'nullable|uuid',
+    ]);
+
+    if ($validator->fails()) {
+      $errors = $validator->errors();
+      return response()->json(self::eWrap($errors->first('user_id')), 400);
+    }
+
     try {
-      $question = Question::findOrFail($question_id);
+      $question = $request->user_id 
+        ? Question::whereId($question_id)->where('user_id', $request->user_id)->firstOrFail()
+        : Question::findOrFail($question_id);
     } catch (\Exception $e) {
       return response()->json(self::eWrap(__('Question not found')), 404);
     }
@@ -545,23 +523,19 @@ class VoteController extends Controller
    * )
    */
 
-  public function deleteVote($question_id, $vote_id)
+  public function deleteVote($question_id, $vote_id, Request $request, DeleteVote $deleteVote)
   {
+    $input = [...$request->all(), 'question_id' => $question_id, 'vote_id' => $vote_id];
+
     try {
-      $question = Question::findOrFail($question_id);
+      if ($deleteVote->delete($input)) {
+        return response()->json(self::sWrap(__('Vote deleted successfully')), 200);
+      }
     } catch (\Exception $e) {
-      return response()->json(self::eWrap(__('Question not found')), 404);
+      return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
     }
 
-    $vote = $question->votes->where('id', '=', $vote_id)->first();
-
-    if (!$vote) {
-      return response()->json(self::eWrap(__('Vote not found')), 404);
-    }
-
-    $vote->delete();
-
-    return response()->json(self::sWrap(__('Vote deleted successfully')), 200);
+    return response()->json(self::eWrap(__('Internal Server Error')), 500);
   }
 
   /**
@@ -605,21 +579,19 @@ class VoteController extends Controller
    * )
    */
 
-  public function deleteAllVotesforQuestion($question_id)
+  public function deleteAllVotesforQuestion($question_id, $vote_id, Request $request, DeleteVote $deleteVote)
   {
-    try {
-      $question = Question::findOrFail($question_id);
-    } catch (\Exception $e) {
-      return response()->json(self::eWrap(__('Question not found')), 404);
-    }
+    $input = [...$request->all(), 'question_id' => $question_id, 'vote_id' => $vote_id];
 
     try {
-      Vote::where('question_id', $question_id)->delete();
+      if ($deleteVote->deleteAllVotes($input)) {
+        return response()->json(self::sWrap(__('All votes deleted successfully')), 200);
+      }
     } catch (\Exception $e) {
-      return response()->json(self::eWrap(__($e->getMessage())), 500);
+      return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
     }
 
-    return response()->json(self::sWrap(__('All votes deleted successfully')), 200);
+    return response()->json(self::eWrap(__('Internal Server Error')), 500);    
   }
 
 }

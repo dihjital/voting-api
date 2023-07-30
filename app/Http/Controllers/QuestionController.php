@@ -36,9 +36,24 @@ class QuestionController extends Controller
    * )
    */
 
-  public function showAllQuestions()
+  public function showAllQuestions(Request $request)
   {
-    $data = Question::all();
+    $validator = Validator::make($request->all(), [
+      'user_id' => 'nullable|uuid',
+    ]);
+
+    if ($validator->fails()) {
+      $errors = $validator->errors();
+      return response()->json(self::eWrap($errors->first('user_id')), 400);
+    }
+
+    try {
+      $data = $request->user_id 
+        ? Question::where('user_id', $request->user_id)->get()
+        : Question::all();
+    } catch (\Exception $e) {
+        return response()->json(self::eWrap(__('Question not found')), 404);
+    }
 
     if (request('page')) {
       $currentPage = request('page', 1); // Get the current page from the request query parameters
@@ -56,7 +71,7 @@ class QuestionController extends Controller
       return response()->json($paginatedData)->setEncodingOptions(JSON_NUMERIC_CHECK);
     }
 
-    return response()->json(Question::all())->setEncodingOptions(JSON_NUMERIC_CHECK);
+    return response()->json($data)->setEncodingOptions(JSON_NUMERIC_CHECK);
   }
 
   /**
@@ -102,10 +117,21 @@ class QuestionController extends Controller
    * )
    */
 
-  public function showOneQuestion($question_id)
+  public function showOneQuestion($question_id, Request $request)
   {
+    $validator = Validator::make($request->all(), [
+      'user_id' => 'nullable|uuid',
+    ]);
+
+    if ($validator->fails()) {
+      $errors = $validator->errors();
+      return response()->json(self::eWrap($errors->first('user_id')), 400);
+    }
+
     try {
-      $question = Question::findOrFail($question_id);
+      $question = $request->user_id 
+        ? Question::whereId($question_id)->where('user_id', $request->user_id)->firstOrFail()
+        : Question::findOrFail($question_id);
     } catch (\Exception $e) {
       return response()->json(self::eWrap(__('Question not found')), 404);
     }
@@ -162,16 +188,21 @@ class QuestionController extends Controller
     $validator = Validator::make($request->all(), [
       'question_text' => 'required',
       // 'is_closed' => 'nullable|boolean'
+      'user_id' => 'required|uuid',
     ]);
 
     if ($validator->fails()) {
       $errors = $validator->errors();
-      return response()->json(self::eWrap($errors->first('question_text')), 400);
+      return response()->json(self::eWrap($errors), 400);
     }
 
     try {
       $question = new Question();
-      $question->question_text = $request->question_text;
+      $question->fill([
+        'question_text' => $request->question_text,
+        'user_id' => $request->user_id,
+      ]);
+
       /* if (isset($request->is_closed))
       $new_question->is_closed = $request->is_closed; */
 
@@ -241,35 +272,34 @@ class QuestionController extends Controller
 
   public function modifyQuestion($question_id, Request $request)
   {
-    try {
-      $new_question = Question::findOrFail($question_id);
-    } catch (\Exception $e) {
-      return response()->json(self::eWrap(__('Question not found')), 404);
-    }
-
     // TODO: When Question is closed modification is not allowed (403)
     // However if it is NOT closed then is_closed should always be the defaul value (false)
     // Unless it is specifically given in the PUT request (and it should be BTW)
     $validator = Validator::make($request->all(), [
       'question_text' => 'required',
-      // 'is_closed' => 'nullable|boolean'
+      // 'is_closed' => 'nullable|boolean',
+      'user_id' => 'required|uuid',
     ]);
 
     if ($validator->fails()) {
       $errors = $validator->errors();
-      return response()->json(self::eWrap($errors->first('question_text')), 400);
+      return response()->json(self::eWrap($errors), 400);
     }
 
     try {
+      $newQuestion = Question::whereId($question_id)->where('user_id', $request->user_id)->firstOrFail();
+    } catch (\Exception $e) {
+      return response()->json(self::eWrap(__('Question not found')), 404);
+    }
 
-      $new_question->question_text = $request->question_text;
+    try {
+      $newQuestion->question_text = $request->question_text;
       /* if (isset($request->is_closed))
         $new_question->is_closed = $request->is_closed; */
 
-      if ($new_question->save()) {
-        return response()->json($new_question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
+      if ($newQuestion->save()) {
+        return response()->json($newQuestion, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
       }
-
     } catch (\Exception $e) {
       return response()->json(self::eWrap($e->getMessage()), 500);
     }
@@ -328,19 +358,20 @@ class QuestionController extends Controller
 
   public function openQuestion($question_id, Request $request)
   {
-    try {
-      $question = Question::findOrFail($question_id);
-    } catch (\Exception $e) {
-      return response(self::eWrap(__('Question not found')), 404);
-    }
-
     $validator = Validator::make($request->all(), [
       'is_closed' => 'required|boolean',
+      'user_id' => 'required|uuid',
     ]);
 
     if ($validator->fails()) {
       $errors = $validator->errors();
-      return response()->json(self::eWrap($errors->first('is_closed')), 400);
+      return response()->json(self::eWrap($errors), 400);
+    }
+
+    try {
+      $question = Question::whereId($question_id)->where('user_id', $request->user_id)->firstOrFail();
+    } catch (\Exception $e) {
+      return response(self::eWrap(__('Question not found')), 404);
     }
 
     try {
@@ -389,11 +420,24 @@ class QuestionController extends Controller
    * )
    */
 
-  public function deleteQuestion($question_id)
+  public function deleteQuestion($question_id, Request $request)
   {
-    // TODO: What about Internal Server Error?
+    $validator = Validator::make($request->all(), [
+      'user_id' => 'required|uuid',
+    ]);
+
+    if ($validator->fails()) {
+      $errors = $validator->errors();
+      return response()->json(self::eWrap($errors->first('user_id')), 400);
+    }
+
     try {
-      Question::findOrFail($question_id)->delete();
+      $question = Question::whereId($question_id)->where('user_id', $request->user_id)->firstOrFail();
+      try {
+        $question->delete();
+      } catch (\Exception $e) {
+        return response()->json(self::eWrap($e->getMessage()), 500);
+      }
     } catch (\Exception $e) {
       return response()->json(self::eWrap(__('Question not found')), 404);
     }
