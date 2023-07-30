@@ -169,9 +169,9 @@ class TokenController extends Controller
         if (Cache::tags('fcm')->has('subscribers')) {
             $subscribers = Cache::tags('fcm')->get('subscribers');
             if (array_key_exists($key, $subscribers)) {
+                Log::info('Token: '.$subscribers[$key].' deleted successfully for: '.$key);
                 unset($subscribers[$key]);
                 self::refreshCache($subscribers);
-                Log::info('Token: '.$request->token.' deleted successfully for: '.$key);
                 return response()->json(self::sWrap(__('Token successfully deleted.')), 200);
             }
         }
