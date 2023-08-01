@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\CreateNewQuestion;
+use App\Actions\OpenQuestion;
 use App\Models\Question;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -183,35 +185,15 @@ class QuestionController extends Controller
    * )
    */
 
-  public function createQuestion(Request $request)
+  public function createQuestion(Request $request, CreateNewQuestion $createNewQuestion)
   {
-    $validator = Validator::make($request->all(), [
-      'question_text' => 'required',
-      // 'is_closed' => 'nullable|boolean'
-      'user_id' => 'required|uuid',
-    ]);
-
-    if ($validator->fails()) {
-      $errors = $validator->errors();
-      return response()->json(self::eWrap($errors), 400);
-    }
-
     try {
-      $question = new Question();
-      $question->fill([
-        'question_text' => $request->question_text,
-        'user_id' => $request->user_id,
-      ]);
-
-      /* if (isset($request->is_closed))
-      $new_question->is_closed = $request->is_closed; */
-
-      if ($question->save()) {
-        return response()->json([...self::sWrap(__('Question successfully created')), 'question' => $question], 201);
-      }
+      $question = $createNewQuestion->create($request->all());
     } catch (\Exception $e) {
-      return response()->json(self::eWrap($e->getMessage()), 500);
+      return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
     }
+
+    return response()->json([...self::sWrap(__('Question successfully created')), 'question' => $question], 201);
   }
 
   /**
@@ -356,33 +338,17 @@ class QuestionController extends Controller
    * )
    */
 
-  public function openQuestion($question_id, Request $request)
+  public function openQuestion($question_id, Request $request, OpenQuestion $openQuestion)
   {
-    $validator = Validator::make($request->all(), [
-      'is_closed' => 'required|boolean',
-      'user_id' => 'required|uuid',
-    ]);
-
-    if ($validator->fails()) {
-      $errors = $validator->errors();
-      return response()->json(self::eWrap($errors), 400);
-    }
+    $input = [
+      ...$request->all(), 'question_id' => $question_id,
+    ];
 
     try {
-      $question = Question::whereId($question_id)->where('user_id', $request->user_id)->firstOrFail();
+      $question = $openQuestion->open($input);
+      return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
     } catch (\Exception $e) {
-      return response(self::eWrap(__('Question not found')), 404);
-    }
-
-    try {
-      $question->is_closed = $request->is_closed;
-
-      if ($question->save()) {
-        // TODO: Could be a 204 but then return it without content ...
-        return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
-      }
-    } catch (\Exception $e) {
-      return response()->json(self::eWrap($e->getMessage()), 500);
+      return response()->json(self::eWrap($e->getMessage()), $e->getCode());
     }
   }
 

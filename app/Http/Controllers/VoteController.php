@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\CreateNewVote;
 use App\Actions\DeleteVote;
+use App\Actions\IncreaseVoteNumber;
 use App\Actions\ModifyVote;
 use App\Models\Question;
 use App\Models\Vote;
@@ -277,43 +278,28 @@ class VoteController extends Controller
    * )
    */
 
-  public function increaseVoteNumber($question_id, $vote_id)
+  public function increaseVoteNumber($question_id, $vote_id, Request $request, IncreaseVoteNumber $increaseVoteNumber)
   {
+    $input = [
+      ...$request->all(), 'question_id' => $question_id, 'vote_id' => $vote_id,
+    ];
+    
     try {
-      $question = Question::findOrFail($question_id);
-    } catch (\Exception $e) {
-      return response()->json(self::eWrap(__('Question not found')), 404);
-    }
-
-    $new_vote = $question->votes->where('id', '=', $vote_id)->first();
-
-    if (!$new_vote) {
-      return response()->json(self::eWrap(__('Vote not found')), 404);
-    }
-
-    try {
-      $new_vote->number_of_votes++;
-
-      if ($new_vote->save()) {
-        try {
-          $this->initWithPushNotification(
-              $question->question_text . ' / '. $new_vote->vote_text, 
-              'Votes increased to ' . $new_vote->number_of_votes,
+      $newVote = $increaseVoteNumber->increase($input);
+      $this->initWithPushNotification(
+              $newVote->question->question_text . ' / '. $newVote->vote_text, 
+              'Votes increased to ' . $newVote->number_of_votes,
               "http://localhost:8200/questions/$question_id/votes")
-            ->sendPushNotification();
+          ->sendPushNotification();
 
-          // This is where we also gather the voter location based on the request IP address
-          $this->initWithIpLocation($new_vote->id)
-               ->gatherIpLocationIf(self::isValidIpAddress(...), request()->ip());
-        } catch (\Exception $e) {
-          return response()->json(self::eWrap($e->getMessage()), 500);
-        }
-        
-        return response()->json($new_vote, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
-      }
+      // This is where we also gather the voter location based on the request IP address
+      $this->initWithIpLocation($newVote->id)
+          ->gatherIpLocationIf(self::isValidIpAddress(...), request()->ip());
     } catch (\Exception $e) {
-      return response()->json(self::eWrap($e->getMessage()), 500);
+      return response()->json(self::eWrap($e->getMessage()), $e->getCode());
     }
+    
+    return response()->json($newVote->makeHidden('question'), 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
   }
 
   /**
