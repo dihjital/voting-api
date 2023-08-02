@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Actions\CreateNewQuestion;
+use App\Actions\DeleteQuestion;
+use App\Actions\ModifyQuestion;
 use App\Actions\OpenQuestion;
 use App\Models\Question;
 use Illuminate\Http\Request;
@@ -252,38 +254,17 @@ class QuestionController extends Controller
    * )
    */
 
-  public function modifyQuestion($question_id, Request $request)
+  public function modifyQuestion($question_id, Request $request, ModifyQuestion $modifyQuestion)
   {
-    // TODO: When Question is closed modification is not allowed (403)
-    // However if it is NOT closed then is_closed should always be the defaul value (false)
-    // Unless it is specifically given in the PUT request (and it should be BTW)
-    $validator = Validator::make($request->all(), [
-      'question_text' => 'required',
-      // 'is_closed' => 'nullable|boolean',
-      'user_id' => 'required|uuid',
-    ]);
-
-    if ($validator->fails()) {
-      $errors = $validator->errors();
-      return response()->json(self::eWrap($errors), 400);
-    }
+    $input = [
+      ...$request->all(), 'question_id' => $question_id,
+    ];
 
     try {
-      $newQuestion = Question::whereId($question_id)->where('user_id', $request->user_id)->firstOrFail();
+      $question = $modifyQuestion->update($input);
+      return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
     } catch (\Exception $e) {
-      return response()->json(self::eWrap(__('Question not found')), 404);
-    }
-
-    try {
-      $newQuestion->question_text = $request->question_text;
-      /* if (isset($request->is_closed))
-        $new_question->is_closed = $request->is_closed; */
-
-      if ($newQuestion->save()) {
-        return response()->json($newQuestion, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
-      }
-    } catch (\Exception $e) {
-      return response()->json(self::eWrap($e->getMessage()), 500);
+      return response()->json(self::eWrap($e->getMessage()), $e->getCode());
     }
   }
 
@@ -386,29 +367,21 @@ class QuestionController extends Controller
    * )
    */
 
-  public function deleteQuestion($question_id, Request $request)
+  public function deleteQuestion($question_id, Request $request, DeleteQuestion $deleteQuestion)
   {
-    $validator = Validator::make($request->all(), [
-      'user_id' => 'required|uuid',
-    ]);
-
-    if ($validator->fails()) {
-      $errors = $validator->errors();
-      return response()->json(self::eWrap($errors->first('user_id')), 400);
-    }
+    $input = [
+      ...$request->all(), 'question_id' => $question_id,
+    ];
 
     try {
-      $question = Question::whereId($question_id)->where('user_id', $request->user_id)->firstOrFail();
-      try {
-        $question->delete();
-      } catch (\Exception $e) {
-        return response()->json(self::eWrap($e->getMessage()), 500);
+      if ($deleteQuestion->delete($input)) {
+        return response()->json(self::sWrap(__('Question deleted successfully')), 200);
       }
     } catch (\Exception $e) {
-      return response()->json(self::eWrap(__('Question not found')), 404);
+      return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
     }
 
-    return response()->json(self::sWrap(__('Question deleted successfully')), 200);
+    return response()->json(self::eWrap(__('Internal Server Error')), 500);
   }
 
 }
