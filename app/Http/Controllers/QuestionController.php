@@ -256,9 +256,7 @@ class QuestionController extends Controller
 
   public function modifyQuestion($question_id, Request $request, ModifyQuestion $modifyQuestion)
   {
-    $input = [
-      ...$request->all(), 'question_id' => $question_id,
-    ];
+    $input = self::mergeQuestionId($request->all(), $question_id);
 
     try {
       $question = $modifyQuestion->update($input);
@@ -321,9 +319,7 @@ class QuestionController extends Controller
 
   public function openQuestion($question_id, Request $request, OpenQuestion $openQuestion)
   {
-    $input = [
-      ...$request->all(), 'question_id' => $question_id,
-    ];
+    $input = self::mergeQuestionId($request->all(), $question_id);
 
     try {
       $question = $openQuestion->open($input);
@@ -369,9 +365,7 @@ class QuestionController extends Controller
 
   public function deleteQuestion($question_id, Request $request, DeleteQuestion $deleteQuestion)
   {
-    $input = [
-      ...$request->all(), 'question_id' => $question_id,
-    ];
+    $input = self::mergeQuestionId($request->all(), $question_id);
 
     try {
       if ($deleteQuestion->delete($input)) {

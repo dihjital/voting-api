@@ -45,4 +45,9 @@ class Controller extends BaseController
     {
         return filter_var($ipAddress, FILTER_VALIDATE_IP) !== false;
     }
+
+    protected static function mergeQuestionId($request, $question_id)
+    {
+        return [...$request, 'question_id' => $question_id];
+    }
 }
