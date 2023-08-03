@@ -6,6 +6,7 @@ use App\Actions\CreateNewQuestion;
 use App\Actions\DeleteQuestion;
 use App\Actions\ModifyQuestion;
 use App\Actions\OpenQuestion;
+use App\Actions\ShowOneQuestion;
 use App\Models\Question;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -64,6 +65,11 @@ class QuestionController extends Controller
 
       $collection = new Collection($data); // Convert the data to a collection
 
+      $totalPages = ceil($collection->count() / self::PER_PAGE);
+      if($currentPage > $totalPages && $totalPages > 0) {
+        $currentPage = $totalPages;
+      }
+
       $paginatedData = new LengthAwarePaginator(
         $collection->forPage($currentPage, self::PER_PAGE),
         $collection->count(),
@@ -121,26 +127,15 @@ class QuestionController extends Controller
    * )
    */
 
-  public function showOneQuestion($question_id, Request $request)
+  public function showOneQuestion($question_id, Request $request, ShowOneQuestion $showOneQuestion)
   {
-    $validator = Validator::make($request->all(), [
-      'user_id' => 'nullable|uuid',
-    ]);
-
-    if ($validator->fails()) {
-      $errors = $validator->errors();
-      return response()->json(self::eWrap($errors->first('user_id')), 400);
-    }
+    $input = self::mergeQuestionId($request->all(), $question_id);
 
     try {
-      $question = $request->user_id 
-        ? Question::whereId($question_id)->where('user_id', $request->user_id)->firstOrFail()
-        : Question::findOrFail($question_id);
+      $question = $showOneQuestion->show($input);
     } catch (\Exception $e) {
-      return response()->json(self::eWrap(__('Question not found')), 404);
+      return response()->json(self::eWrap($e->getMessage()), $e->getCode());
     }
-
-    $votes = $question->votes->makeHidden('question_id')->toArray();
 
     return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
   }
@@ -260,10 +255,11 @@ class QuestionController extends Controller
 
     try {
       $question = $modifyQuestion->update($input);
-      return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
     } catch (\Exception $e) {
       return response()->json(self::eWrap($e->getMessage()), $e->getCode());
     }
+    
+    return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
   }
 
   /**
@@ -323,10 +319,11 @@ class QuestionController extends Controller
 
     try {
       $question = $openQuestion->open($input);
-      return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
     } catch (\Exception $e) {
       return response()->json(self::eWrap($e->getMessage()), $e->getCode());
     }
+
+    return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
   }
 
   /**
