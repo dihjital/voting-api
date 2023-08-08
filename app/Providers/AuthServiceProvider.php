@@ -34,7 +34,8 @@ class AuthServiceProvider extends ServiceProvider
         // the User instance via an API token or any other method necessary.
 
         LumenPassport::routes($this->app);
-        LumenPassport::tokensExpireIn(Carbon::now()->addDays(5), env('PASSPORT_CLIENT_ID')); 
+        LumenPassport::tokensExpireIn(Carbon::now()->addDays(5));
+        // LumenPassport::tokensExpireIn(Carbon::now()->addDays(5), env('PASSPORT_CLIENT_ID')); 
 
         // This is required as well in case our grant-type is token_refresh
 	    Passport::tokensExpireIn(now()->addDays(5));

@@ -79,12 +79,15 @@ class AuthController extends Controller
       $email = $request->email;
       $password = $request->password;
 
+      $clientId = $request->client_id ?? config('service.passport.client_id');
+      $clientSecret = $request->client_secret ?? config('service.passport.client_secret');
+
       try {
 
         $response = Http::asForm()->post(config('service.passport.login_endpoint'), [
-          'client_secret' => config('service.passport.client_secret'),
+          'client_secret' => $clientSecret,
           'grant_type' => 'password',
-          'client_id' => config('service.passport.client_id'),
+          'client_id' => $clientId,
           'username' => $email,
           'password' => $password,
         ]);
