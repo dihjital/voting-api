@@ -35,6 +35,11 @@ class SummaryController extends Controller
     public function getSummary(Request $request)
     {
         $summary = new Summary();
+
+        if ($request->user_id) {
+            $summary->user_id = $request->user_id;
+        }
+
         return response()->json($summary, 200);
     }
 

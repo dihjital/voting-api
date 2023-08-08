@@ -44,7 +44,6 @@ use Illuminate\Support\Facades\DB;
 
 class Summary extends Model
 {
-
     use HasFactory;
 
     protected $table = null;
@@ -58,20 +57,43 @@ class Summary extends Model
         'most_voted_question',
     ];
 
+    protected $hidden = [
+        'uuid',
+    ];
+
+    public function setUserIdAttribute($value)
+    {
+        $this->attributes['uuid'] = $value;
+    }
+
+    public function getUserIdAttribute()
+    {
+        return $this->attributes['uuid'] ?? null;
+    }
+
     public function getNumberOfAnswersAttribute()
     {
-        return Vote::count();
+        return Vote::with('question')
+            ->whereHas('question', fn($q) =>
+                $q->when($this->user_id, fn($sq) =>
+                    $sq->where('user_id', $this->user_id)))    
+            ->count();
     }
 
     public function getNumberOfQuestionsAttribute()
     {
-        return Question::count();
+        return Question::when($this->user_id, fn($q) =>
+                $q->where('user_id', $this->user_id))
+            ->count();
     }
 
     // Return the answer (Vote model) that received the most votes and it's question
     public function getHighestVoteAttribute()
     {
         $vote = Vote::with('question')
+            ->whereHas('question', fn($q) =>
+                $q->when($this->user_id, fn($sq) =>
+                        $sq->where('user_id', $this->user_id)))
             ->orderByDesc('number_of_votes')
             ->limit(1)
             ->get()
@@ -90,15 +112,19 @@ class Summary extends Model
 		: array_fill_keys($keys, null);
     }
 
-    // Return the question with the most related answer (Vote model)
+    // Return the question with the most Votes (number of possible answers)
     public function getHighestQuestionAttribute()
     {
         $keys = ['id', 'question_text', 'number_of_votes'];
 
+        $question = $this->user_id
+            ? Question::where('user_id', $this->user_id)->get()
+            : Question::all();
+
         return 
-            Question::all()->sortByDesc(function ($question) {
-                    return $question->number_of_votes;
-                })->first()?->only(['id', 'question_text', 'number_of_votes'])
+            $question->sortByDesc(fn($q) =>
+                    $q->number_of_votes)
+                ->first()?->only(['id', 'question_text', 'number_of_votes'])
             ?? array_fill_keys($keys, null);
     }
 
@@ -109,6 +135,8 @@ class Summary extends Model
 
         return 
             Question::withSum('votes as total_votes', 'number_of_votes')
+                ->when($this->user_id, fn($q) =>
+                    $q->where('user_id', $this->user_id))
                 ->orderByDesc('total_votes')
                 ->limit(1)
                 ->get()
@@ -118,7 +146,10 @@ class Summary extends Model
 
     public function getTotalNumberOfVotesAttribute()
     {
-	    return Vote::sum('number_of_votes');
+	    return Vote::with('question')
+            ->whereHas('question', fn($q) =>
+                $q->when($this->user_id, fn($sq) =>
+                        $sq->where('user_id', $this->user_id)))
+            ->sum('number_of_votes');
     }
-
 }
