@@ -81,15 +81,12 @@ $app->middleware([
     App\Http\Middleware\CorsMiddleware::class,
 ]);
 
-// $app->middleware([
-//     App\Http\Middleware\ExampleMiddleware::class
-// ]);
-
 $app->routeMiddleware([
      'auth' => App\Http\Middleware\Authenticate::class,
      // Checks if Question model is closed for modification
      'renew_session' => App\Http\Middleware\RenewSession::class,
      'check_session' => App\Http\Middleware\CheckSessionId::class,
+     'merge_user_id' => App\Http\Middleware\GetUserIdFromSession::class,
      'is_closed' => App\Http\Middleware\CheckQuestionClosed::class,
 ]);
 

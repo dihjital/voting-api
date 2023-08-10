@@ -24,6 +24,7 @@ $router->post('/register', ['uses' => 'AuthController@register']);
 
 $router->group(['middleware' => 'auth'], function () use ($router) {
   $router->post('/logout', ['uses' => 'AuthController@logout']);
+  // TODO: This might need a session-id to check if the 'authorized' user is trying to open/close a question
   $router->patch('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@openQuestion']);
   $router->post('/session', ['uses' => 'SessionController@createSession']);
   $router->delete('/session/{session_id}', ['uses' => 'SessionController@deleteSession']);
@@ -39,24 +40,24 @@ $router->group(['middleware' => ['auth', 'renew_session', 'check_session', 'is_c
   $router->delete('/questions/{question_id: [0-9]+}/votes', ['uses' => 'VoteController@deleteAllVotesforQuestion']);
 });
 
-// Questions
-$router->get('/questions', ['uses' => 'QuestionController@showAllQuestions']);
-$router->get('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@showOneQuestion']);
-
-// Votes (A question might have multiple votes)
-$router->get('/questions/{question_id: [0-9]+}/votes', ['uses' => 'VoteController@showAllVotesforQuestion']);
-$router->get('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@showOneVote']);
+// If session-id is provided then we will try to get the relevant user id from cache
+$router->group(['middleware' => ['merge_user_id']], function () use ($router) {
+  // Questions
+  $router->get('/questions', ['uses' => 'QuestionController@showAllQuestions']);
+  $router->get('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@showOneQuestion']);
+  // Votes (A question might have multiple votes)
+  $router->get('/questions/{question_id: [0-9]+}/votes', ['uses' => 'VoteController@showAllVotesforQuestion']);
+  $router->get('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@showOneVote']);
+  // Summary
+  $router->get('/summary', ['uses' => 'SummaryController@getSummary']);
+  // Locations (A vote might have multiple locations)
+  $router->get('/questions/{question_id: [0-9]+}/votes/locations', ['uses' => 'LocationController@showAllLocationsforQuestion']);
+});
 
 $router->group(['middleware' => 'is_closed'], function () use ($router) {
   $router->patch('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@increaseVoteNumber']);
 });
 
-// Locations (A vote might have multiple locations)
-$router->get('/questions/{question_id: [0-9]+}/votes/locations', ['uses' => 'LocationController@showAllLocationsforQuestion']);
-
 // Tokens for push notifications
 $router->post('/subscribe', ['uses' => 'TokenController@storeToken']);
 $router->delete('/unsubscribe', ['uses' => 'TokenController@deleteToken']);
-
-// Summary
-$router->get('/summary', ['uses' => 'SummaryController@getSummary']);

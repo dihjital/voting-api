@@ -79,6 +79,7 @@ class AuthController extends Controller
       $email = $request->email;
       $password = $request->password;
 
+      // Get the client id and client secret from the request and use a fall back option in case these are not provided
       $clientId = $request->client_id ?? config('service.passport.client_id');
       $clientSecret = $request->client_secret ?? config('service.passport.client_secret');
 
