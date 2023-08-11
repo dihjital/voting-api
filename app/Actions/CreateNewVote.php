@@ -3,10 +3,13 @@
 namespace App\Actions;
 
 use App\Models\Vote;
+use App\Models\Question;
+
 use Illuminate\Support\Facades\Validator;
 
 class CreateNewVote extends VoteActions
 {
+    const MAX_NUMBER_OF_VOTES = 5;
     /**
      * Validate and create a newly registered vote.
      *
@@ -24,6 +27,10 @@ class CreateNewVote extends VoteActions
         if ($validator->fails()) {
             throw new \Exception($validator->errors()->first(), 400);
         }
+
+        if (!$this->canCreateNewVote($input['question_id'])) {
+            throw new \Exception(__('You have reached the maximum number of votes per question'), 403);
+        }
       
         try {
             return Vote::create([
@@ -34,5 +41,15 @@ class CreateNewVote extends VoteActions
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage(), 500);
         }
+    }
+
+    protected function canCreateNewVote($questionId): bool
+    {        
+        return Question::findOrFail($questionId)->number_of_votes < self::getMaximumNumberOfVotes();
+    }
+
+    protected static function getMaximumNumberOfVotes(): int
+    {
+        return env('MAX_NUMBER_OF_VOTES', self::MAX_NUMBER_OF_VOTES);
     }
 }

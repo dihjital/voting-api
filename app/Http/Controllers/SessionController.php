@@ -17,7 +17,7 @@ class SessionController extends Controller
         ]);
       
         if ($validator->fails()) {
-            return response()->json(self::eWrap($validator->errors->first()), 400);
+            return response()->json(self::eWrap($validator->errors()->first()), 400);
         }
 
         // generate a new session ID
