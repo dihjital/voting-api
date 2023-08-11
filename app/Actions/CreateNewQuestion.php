@@ -44,7 +44,9 @@ class CreateNewQuestion extends QuestionActions
 
     protected function canCreateNewQuestion($userId): bool
     {        
-        return Question::where('user_id', $userId)->count() < self::getMaximumNumberOfQuestions();
+        return Question::where('user_id', $userId)
+            ->where('is_closed', 0)
+            ->count() < self::getMaximumNumberOfQuestions();
     }
 
     protected static function getMaximumNumberOfQuestions(): int
