@@ -15,8 +15,6 @@ use Carbon\Carbon;
 
 class AuthServiceProvider extends ServiceProvider
 {
-    const MAX_NUMBER_OF_VOTES = 5;
-    const MAX_NUMBER_OF_QUESTIONS = 5;
     /**
      * Register any application services.
      *
@@ -46,6 +44,8 @@ class AuthServiceProvider extends ServiceProvider
         // This is required as well in case our grant-type is token_refresh
 	    Passport::tokensExpireIn(now()->addDays(5));
 
+        Passport::enableImplicitGrant();
+
         $this->app['auth']->viaRequest('api', function ($request) {
             if ($request->input('api_token')) {
                 return User::where('api_token', $request->input('api_token'))->first();
@@ -53,29 +53,19 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('create-new-vote', function (User $user, Question $question) {
-            return $question->number_of_votes < self::getMaximumNumberOfVotes();
+            return $question->number_of_votes < config('api.vote.max_number_of_votes');
         });
 
         Gate::define('create-new-question', function (User $user, string $Uuid) {
             return Question::where('user_id', $Uuid)
                 ->where('is_closed', 0)
-                ->count() < self::getMaximumNumberOfQuestions();
+                ->count() < config('api.question.max_number_of_questions');
         });
 
         Gate::define('open-question', function (User $user, string $Uuid) {
             return Question::where('user_id', $Uuid)
                 ->where('is_closed', 0)
-                ->count() + 1 <= self::getMaximumNumberOfQuestions();
+                ->count() + 1 <= config('api.question.max_number_of_questions');
         });
-    }
-
-    protected static function getMaximumNumberOfVotes(): int
-    {
-        return env('MAX_NUMBER_OF_VOTES', self::MAX_NUMBER_OF_VOTES);
-    }
-
-    protected static function getMaximumNumberOfQuestions(): int
-    {
-        return env('MAX_NUMBER_OF_QUESTIONS', self::MAX_NUMBER_OF_QUESTIONS);
     }
 }
