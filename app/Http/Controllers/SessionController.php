@@ -82,6 +82,7 @@ class SessionController extends Controller
      *     summary="Destroy a session",
      *     operationId="deleteSession",
      *     description="Destroy a session",
+     *     security={{ "bearerAuth": {} }},
      *     @OA\Parameter(
      *         name="session_id",
      *         in="path",

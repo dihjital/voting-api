@@ -3,11 +3,12 @@
 namespace App\Actions;
 
 use App\Models\Question;
+
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
 class CreateNewQuestion extends QuestionActions
 {
-    const MAX_NUMBER_OF_QUESTIONS = 5;
     /**
      * Validate and create a new question.
      *
@@ -25,7 +26,7 @@ class CreateNewQuestion extends QuestionActions
             throw new \Exception($validator->errors()->first(), 400);
         }
 
-        if (!$this->canCreateNewQuestion($input['user_id'])) {
+        if (! Gate::allows('create-new-question', $input['user_id'])) {
             throw new \Exception(__('You have reached the maximum number of questions allowed'), 403);
         }
       
@@ -40,17 +41,5 @@ class CreateNewQuestion extends QuestionActions
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage(), 500);
         }
-    }
-
-    protected function canCreateNewQuestion($userId): bool
-    {        
-        return Question::where('user_id', $userId)
-            ->where('is_closed', 0)
-            ->count() < self::getMaximumNumberOfQuestions();
-    }
-
-    protected static function getMaximumNumberOfQuestions(): int
-    {
-        return env('MAX_NUMBER_OF_QUESTIONS', self::MAX_NUMBER_OF_QUESTIONS);
     }
 }
