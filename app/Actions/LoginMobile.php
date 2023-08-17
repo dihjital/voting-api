@@ -4,9 +4,12 @@ namespace App\Actions;
 
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
+
+use App\Models\User;
 
 use Carbon\Carbon;
 
@@ -20,17 +23,8 @@ class LoginMobile
     protected $client_id;
     protected $client_secret;
 
-    public function __construct(Request $request)
+    public function __construct(protected Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'email|required',
-            'password' => 'required',
-        ]);
-    
-        if ($validator->fails()) {
-            throw new \Exception($validator->errors()->first(), 400);
-        }
-
         $this->api_user = $request->email;
         $this->api_secret = $request->password;
 
@@ -109,8 +103,32 @@ class LoginMobile
         throw new \Exception(json_decode($response->body()), $response->status());
     }
 
+    protected function validateUserLogin()
+    {
+        $validator = Validator::make($this->request->all(), [
+            'email' => 'email|required',
+            'password' => 'required',
+        ]);
+    
+        if ($validator->fails()) {
+            throw new \Exception($validator->errors()->first(), 400);
+        }
+
+        try {
+            $user = User::where('email', $this->request->email)->firstOrFail();
+        } catch (\Exception $e) {
+            throw new \Exception(__('Invalid credentials'), 401);
+        }
+        
+        if (!Hash::check($this->request->password, $user->password)) {
+            throw new \Exception(__('Invalid credentials'), 401);
+        }
+    }
+
     public function login(): array 
     {
+        $this->validateUserLogin();
+        
         $tokens = $this->getTokensFromCache();
 
         return $this->areTokensValid($tokens)
