@@ -15,9 +15,8 @@ class IncreaseVoteNumber extends VoteActions
      */
     public function increase(array $input): Vote
     {
-        // It is optional till full transition
         $validator = Validator::make($input, [
-            'user_id' => 'nullable|uuid',
+            'user_id' => 'required|uuid',
         ]);
       
         if ($validator->fails()) {
@@ -25,9 +24,7 @@ class IncreaseVoteNumber extends VoteActions
         }
       
         try {
-            $question = isset($input['user_id'])
-                ? Question::whereId($input['question_id'])->where('user_id', $input['user_id'])->firstOrFail()
-                : Question::findOrFail($input['question_id']);
+            $question = Question::whereId($input['question_id'])->where('user_id', $input['user_id'])->firstOrFail();
         } catch (\Exception $e) {
             throw new \Exception(__('Question not found'), 404);
         }

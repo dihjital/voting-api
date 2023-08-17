@@ -64,6 +64,7 @@ $app->singleton(
 $app->configure('auth');
 $app->configure('service');
 $app->configure('queue');
+$app->configure('api');
 
 /*
 |--------------------------------------------------------------------------
@@ -83,6 +84,8 @@ $app->middleware([
 
 $app->routeMiddleware([
      'auth' => App\Http\Middleware\Authenticate::class,
+     'scopes' => Laravel\Passport\Http\Middleware\CheckScopes::class,
+     'scope' => Laravel\Passport\Http\Middleware\CheckForAnyScope::class,
      // Checks if Question model is closed for modification
      'renew_session' => App\Http\Middleware\RenewSession::class,
      'check_session' => App\Http\Middleware\CheckSessionId::class,

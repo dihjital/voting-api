@@ -289,6 +289,7 @@ class VoteController extends Controller
       $this->initWithPushNotification(
               $newVote->question->question_text . ' / '. $newVote->vote_text, 
               'Votes increased to ' . $newVote->number_of_votes,
+              // TODO: Should point to current server ...
               "http://localhost:8200/questions/$question_id/votes")
           ->sendPushNotification();
 

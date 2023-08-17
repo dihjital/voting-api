@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Hash;
 
+use App\Actions\LoginMobile;
+
 class AuthController extends Controller
 {
 
@@ -50,6 +52,16 @@ class AuthController extends Controller
 
     }
 
+    public function loginMobile(Request $request)
+    {
+      try {
+        $login = new LoginMobile($request);
+        return response()->json($login->login(), 200);
+      } catch (\Exception $e) {
+        return response()->json(['status' => 'error', 'message' => $e->getMessage()], $e->getCode());
+      }
+    }
+
     public function logout(Request $request)
     {
 
@@ -57,7 +69,7 @@ class AuthController extends Controller
         auth()->user()->tokens()->each(function ($token) {
           $token->delete();
         });
-        return response()->json(['status' => 'success', 'message' => 'User logged out successfully'], 200);
+        return response()->json(['status' => 'success', 'message' => __('User logged out successfully')], 200);
       } catch (\Exception $e) {
         return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
       }
@@ -82,15 +94,20 @@ class AuthController extends Controller
       // Get the client id and client secret from the request and use a fall back option in case these are not provided
       $clientId = $request->client_id ?? config('service.passport.client_id');
       $clientSecret = $request->client_secret ?? config('service.passport.client_secret');
+      
+      // Default scope should allow for listing questions and votes and to vote
+      // TODO: '*' should not be allowed as part of the request
+      $scope = $request->scope ?? 'list-questions list-votes vote';
 
       try {
 
         $response = Http::asForm()->post(config('service.passport.login_endpoint'), [
-          'client_secret' => $clientSecret,
           'grant_type' => 'password',
-          'client_id' => $clientId,
           'username' => $email,
           'password' => $password,
+          'client_id' => $clientId,
+          'client_secret' => $clientSecret,
+	        'scope' => $scope,
         ]);
 
         if ($response->clientError())
