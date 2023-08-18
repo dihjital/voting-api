@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Actions\CreateNewVote;
-use App\Actions\DeleteVote;
-use App\Actions\IncreaseVoteNumber;
 use App\Actions\ModifyVote;
+use App\Actions\DeleteVote;
+
+use App\Actions\IncreaseVoteNumber;
+
 use App\Actions\ShowOneVote;
+use App\Actions\ShowAllVotes;
 use App\Models\Question;
-use App\Models\Vote;
+
 use App\Traits\WithIpLocation;
 use App\Traits\WithPushNotification;
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 /**
  * @OA\SecurityScheme(
@@ -94,9 +97,7 @@ class VoteController extends Controller
 
   public function createVote($question_id, Request $request, CreateNewVote $createNewVote)
   {
-    $input = [
-      ...$request->all(), 'question_id' => $question_id
-    ];
+    $input = self::mergeQuestionId($request->all(), $question_id);
 
     try {
       $vote = $createNewVote->create($input);
@@ -354,7 +355,9 @@ class VoteController extends Controller
      */
   public function showOneVote($question_id, $vote_id, Request $request, ShowOneVote $showOneVote)
   {
-    $input = [...$request->all(), 'question_id' => $question_id, 'vote_id' => $vote_id];
+    $input = [
+      ...$request->all(), 'question_id' => $question_id, 'vote_id' => $vote_id
+    ];
 
     try {
       $vote = $showOneVote->show($input);
@@ -410,26 +413,15 @@ class VoteController extends Controller
    *     ),
    * )
    */
-  public function showAllVotesforQuestion($question_id, Request $request)
+  public function showAllVotesforQuestion($question_id, Request $request, ShowAllVotes $showAllVotes)
   {
-    $validator = Validator::make($request->all(), [
-      'user_id' => 'nullable|uuid',
-    ]);
-
-    if ($validator->fails()) {
-      $errors = $validator->errors();
-      return response()->json(self::eWrap($errors->first('user_id')), 400);
-    }
+    $input = self::mergeQuestionId($request->all(), $question_id);
 
     try {
-      $question = $request->user_id 
-        ? Question::whereId($question_id)->where('user_id', $request->user_id)->firstOrFail()
-        : Question::findOrFail($question_id);
+      $votes = $showAllVotes->show($input);
     } catch (\Exception $e) {
-      return response()->json(self::eWrap(__('Question not found')), 404);
+      return response()->json(self::eWrap($e->getMessage()), $e->getCode());
     }
-
-    $votes = $question->votes;
 
     return response()->json($votes, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
   }
@@ -498,7 +490,9 @@ class VoteController extends Controller
 
   public function deleteVote($question_id, $vote_id, Request $request, DeleteVote $deleteVote)
   {
-    $input = [...$request->all(), 'question_id' => $question_id, 'vote_id' => $vote_id];
+    $input = [
+      ...$request->all(), 'question_id' => $question_id, 'vote_id' => $vote_id
+    ];
 
     try {
       if ($deleteVote->delete($input)) {
@@ -554,7 +548,9 @@ class VoteController extends Controller
 
   public function deleteAllVotesforQuestion($question_id, $vote_id, Request $request, DeleteVote $deleteVote)
   {
-    $input = [...$request->all(), 'question_id' => $question_id, 'vote_id' => $vote_id];
+    $input = [
+      ...$request->all(), 'question_id' => $question_id, 'vote_id' => $vote_id
+    ];
 
     try {
       if ($deleteVote->deleteAllVotes($input)) {
@@ -566,5 +562,4 @@ class VoteController extends Controller
 
     return response()->json(self::eWrap(__('Internal Server Error')), 500);    
   }
-
 }
