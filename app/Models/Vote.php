@@ -115,6 +115,15 @@ class Vote extends Model
      */
     protected $hidden = [];
 
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($vote) {
+            $vote->locations()->detach();
+        });
+    }
+
     /**
      * Get the question that this voting option belongs to
      */
