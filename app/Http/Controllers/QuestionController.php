@@ -6,18 +6,13 @@ use App\Actions\CreateNewQuestion;
 use App\Actions\DeleteQuestion;
 use App\Actions\ModifyQuestion;
 use App\Actions\OpenQuestion;
+use App\Actions\ShowAllQuestions;
 use App\Actions\ShowOneQuestion;
-use App\Models\Question;
+
 use Illuminate\Http\Request;
-use Illuminate\Pagination\LengthAwarePaginator;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Validator;
 
 class QuestionController extends Controller
 {
-
-  const PER_PAGE = 5;
-
   /**
    * @OA\Get(
    *     path="/questions",
@@ -41,44 +36,12 @@ class QuestionController extends Controller
    * )
    */
 
-  public function showAllQuestions(Request $request)
+  public function showAllQuestions(Request $request, ShowAllQuestions $showAllQuestions)
   {
-    $validator = Validator::make($request->all(), [
-      'user_id' => 'nullable|uuid',
-    ]);
-
-    if ($validator->fails()) {
-      $errors = $validator->errors();
-      return response()->json(self::eWrap($errors->first('user_id')), 400);
-    }
-
     try {
-      $data = $request->user_id 
-        ? Question::where('user_id', $request->user_id)->get()
-        : Question::all();
+      $data = $showAllQuestions->show($request->all());
     } catch (\Exception $e) {
-        return response()->json(self::eWrap(__('Question not found')), 404);
-    }
-
-    if (request('page')) {
-      $currentPage = request('page', 1); // Get the current page from the request query parameters
-
-      $collection = new Collection($data); // Convert the data to a collection
-
-      $totalPages = ceil($collection->count() / self::PER_PAGE);
-      if($currentPage > $totalPages && $totalPages > 0) {
-        $currentPage = $totalPages;
-      }
-
-      $paginatedData = new LengthAwarePaginator(
-        $collection->forPage($currentPage, self::PER_PAGE),
-        $collection->count(),
-        self::PER_PAGE,
-        $currentPage,
-        ['path' => url('/questions')]
-      );
-
-      return response()->json($paginatedData)->setEncodingOptions(JSON_NUMERIC_CHECK);
+      return response()->json(self::eWrap($e->getMessage()), $e->getCode());
     }
 
     return response()->json($data)->setEncodingOptions(JSON_NUMERIC_CHECK);
@@ -374,5 +337,4 @@ class QuestionController extends Controller
 
     return response()->json(self::eWrap(__('Internal Server Error')), 500);
   }
-
 }

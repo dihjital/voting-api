@@ -8,5 +8,8 @@ return [
     'vote' => [
       'max_number_of_votes' => env('MAX_NUMBER_OF_VOTES', 5),
     ],
+    'pagination' => [
+      'items_per_page' => 5,
+    ],
   ],
 ];
