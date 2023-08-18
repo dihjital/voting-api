@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Laravel\Lumen\Routing\Controller as BaseController;
 
+use App\Models\Vote;
+
 /**
  * @OA\Info(
  *     description="This is a voting-api development server.  You can find out more about Swagger at [http://swagger.io](http://swagger.io) or on [irc.freenode.net, #swagger](http://swagger.io/irc/).",

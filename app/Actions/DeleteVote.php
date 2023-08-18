@@ -34,4 +34,13 @@ class DeleteVote extends VoteActions
             throw new \Exception($e->getMessage(), 500);
         }
     }
+
+    public static function getVoteData(array $input): Vote
+    {
+        try {
+            return Vote::whereId($input['vote_id'])->firstOrFail();
+        } catch (\Exception $e) {
+            throw new \Exception(__('Vote not found'), 404);
+        }
+    }
 }

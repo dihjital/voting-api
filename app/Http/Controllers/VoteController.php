@@ -292,7 +292,7 @@ class VoteController extends Controller
               $newVote->question->question_text . ' / '. $newVote->vote_text, 
               'Votes increased to ' . $newVote->number_of_votes,
               // TODO: Should point to current server ...
-              "http://localhost:8200/questions/$question_id/votes")
+              config('api.defaults.voting-admin.url')."/$question_id/votes")
           ->sendPushNotification();
 
       // This is where we also gather the voter location based on the request IP address
@@ -495,7 +495,14 @@ class VoteController extends Controller
     ];
 
     try {
+      $vote = $deleteVote::getVoteData($input);
+
       if ($deleteVote->delete($input)) {
+        $this->initWithPushNotification(
+          __('Vote deleted'),
+          __('Vote :vote deleted for :question', ['vote' => $vote->vote_text, 'question' => $vote->question->question_text]),
+          config('api.defaults.voting-admin.url')."/$question_id/votes")
+        ->sendPushNotification();
         return response()->json(self::sWrap(__('Vote deleted successfully')), 200);
       }
     } catch (\Exception $e) {

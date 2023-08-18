@@ -11,5 +11,11 @@ return [
     'pagination' => [
       'items_per_page' => 5,
     ],
+    'voting-admin' => [
+      'url' => env('VOTING_ADMIN_URL', 'https://voting-admin.votes365.org'),
+    ],
+    'voting-results' => [
+      'url' => env('VOTING_RESULTS_URL', 'https://voting-results.votes365.org'),
+    ]
   ],
 ];
