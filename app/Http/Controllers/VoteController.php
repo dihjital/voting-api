@@ -6,6 +6,7 @@ use App\Actions\CreateNewVote;
 use App\Actions\DeleteVote;
 use App\Actions\IncreaseVoteNumber;
 use App\Actions\ModifyVote;
+use App\Actions\ShowOneVote;
 use App\Models\Question;
 use App\Models\Vote;
 use App\Traits\WithIpLocation;
@@ -351,29 +352,14 @@ class VoteController extends Controller
      *     ),
      * )
      */
-  public function showOneVote($question_id, $vote_id, Request $request)
+  public function showOneVote($question_id, $vote_id, Request $request, ShowOneVote $showOneVote)
   {
-    $validator = Validator::make($request->all(), [
-      'user_id' => 'nullable|uuid',
-    ]);
-
-    if ($validator->fails()) {
-      $errors = $validator->errors();
-      return response()->json(self::eWrap($errors->first('user_id')), 400);
-    }
+    $input = [...$request->all(), 'question_id' => $question_id, 'vote_id' => $vote_id];
 
     try {
-      $question = $request->user_id 
-        ? Question::whereId($question_id)->where('user_id', $request->user_id)->firstOrFail()
-        : Question::findOrFail($question_id);
+      $vote = $showOneVote->show($input);
     } catch (\Exception $e) {
-      return response()->json(self::eWrap(__('Question not found')), 404);
-    }
-
-    $vote = $question->votes->where('id', '=', $vote_id)->first();
-
-    if (!$vote) {
-      return response()->json(self::eWrap(__('Vote not found')), 404);
+      return response()->json(self::eWrap($e->getMessage()), $e->getCode());
     }
 
     return response()->json($vote, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
