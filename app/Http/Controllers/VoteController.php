@@ -296,8 +296,9 @@ class VoteController extends Controller
           ->sendPushNotification();
 
       // This is where we also gather the voter location based on the request IP address
+      // or the voter-ip-address (which is the default)
       $this->initWithIpLocation($newVote->id)
-          ->gatherIpLocationIf(self::isValidIpAddress(...), request()->ip());
+          ->gatherIpLocationIf(self::isValidIpAddress(...), $request->header('voter-ip-address') ?? request()->ip());
     } catch (\Exception $e) {
       return response()->json(self::eWrap($e->getMessage()), $e->getCode());
     }
