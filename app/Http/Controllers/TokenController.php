@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class TokenController extends Controller
 {
@@ -19,6 +20,12 @@ class TokenController extends Controller
     public function __construct()
     {
         //
+    }
+
+    protected function checkIfTokenAlreadyExists($subscriber, $token): bool
+    {
+        // $subscriber contains all tokens for the specific user ...
+        return count(array_filter($subscriber, fn($key) => $key === $token));
     }
 
     /**
@@ -92,31 +99,44 @@ class TokenController extends Controller
 
     public function storeToken(Request $request)
     {
-        $key = $request->ip(); // key the tokens by the requestor IP address
+        $validator = Validator::make($request->all(), [
+            'user' => 'required|uuid',
+            'token' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(self::eWrap(__('Required parameter is missing or incorrect.')), 400);
+        }
+
+        $key = $request->user;
 
         // Get subscribers array from cache
         if (Cache::tags('fcm')->has('subscribers')) {
             $subscribers = Cache::tags('fcm')->get('subscribers');
             if (array_key_exists($key, $subscribers)) { // Key is already subscribed
-                if ($subscribers[$key] !== $request->token) { // Token change
-                    $subscribers[$key] = $request->token;
+                if (!$this->checkIfTokenAlreadyExists($subscribers[$key], $request->token)) {
+                    $subscribers[$key][] = $request->token;
                     self::refreshCache($subscribers);
-                    return response()->json(self::sWrap(__('Token refreshed successfully.')), 200);
+                    
+                    return response()->json(self::sWrap(__('Token registered successfully.')), 200);
                 }
+
                 return response()->json(self::eWrap(__('Token is already registered.')), 409);
             }
             
             // New subscriber
-            $subscribers[$key] = $request->token;
+            $subscribers[$key][] = $request->token;
             self::refreshCache($subscribers);
             Log::info('Token: '.$request->token.' registered successfully for: '.$key);
+            
             return response()->json(self::sWrap(__('Token registered successfully.')), 201);
         }
         
         // First item to store
-        $subscribers[$key] = $request->token;
+        $subscribers[$key][] = $request->token;
         Cache::tags('fcm')->put('subscribers', $subscribers, Carbon::now()->addMinutes(self::CACHE_EXPIRATION_TIME));
         Log::info('Token: '.$request->token.' registered successfully for: '.$key);
+        
         return response()->json(self::sWrap(__('Token registered successfully.')), 201);
     }
 
@@ -164,12 +184,22 @@ class TokenController extends Controller
 
     public function deleteToken(Request $request)
     {
-        $key = $request->ip();
+        $validator = Validator::make($request->all(), [
+            'user' => 'required|uuid',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(self::eWrap(__('Required parameter is missing or incorrect.')), 400);
+        }
+
+        $key = $request->user;
 
         if (Cache::tags('fcm')->has('subscribers')) {
             $subscribers = Cache::tags('fcm')->get('subscribers');
             if (array_key_exists($key, $subscribers)) {
-                Log::info('Token: '.$subscribers[$key].' deleted successfully for: '.$key);
+                foreach ($subscribers[$key] as $token) {
+                    Log::info('Token: '.$token.' deleted successfully for: '.$key);
+                }
                 unset($subscribers[$key]);
                 self::refreshCache($subscribers);
                 return response()->json(self::sWrap(__('Token successfully deleted.')), 200);

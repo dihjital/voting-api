@@ -35,7 +35,7 @@ class QuestionActions
         }
       
         try {
-            return Question::where('user_id', $input['user_id'])->get();
+            return Question::where('user_id', $input['user_id'])->orderBy('is_closed')->get();
         } catch (\Exception $e) {
             throw new \Exception(__('Question not found'), 404);
         }

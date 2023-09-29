@@ -289,8 +289,8 @@ class VoteController extends Controller
     try {
       $newVote = $increaseVoteNumber->increase($input);
       $this->initWithPushNotification(
-              $newVote->question->question_text . ' / '. $newVote->vote_text, 
-              'Votes increased to ' . $newVote->number_of_votes,
+              $newVote->question,
+              $newVote,
               // TODO: Should point to current server ...
               config('api.defaults.voting-admin.url')."/$question_id/votes")
           ->sendPushNotification();
@@ -499,11 +499,12 @@ class VoteController extends Controller
       $vote = $deleteVote::getVoteData($input);
 
       if ($deleteVote->delete($input)) {
-        $this->initWithPushNotification(
+        // TODO: Generalize Push Notifications ...
+        /* $this->initWithPushNotification(
           __('Vote deleted'),
           __('Vote :vote deleted for :question', ['vote' => $vote->vote_text, 'question' => $vote->question->question_text]),
           config('api.defaults.voting-admin.url')."/$question_id/votes")
-        ->sendPushNotification();
+        ->sendPushNotification(); */
         return response()->json(self::sWrap(__('Vote deleted successfully')), 200);
       }
     } catch (\Exception $e) {

@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Log;
 
 use App\Jobs\PushNotification;
 
+use App\Models\Question;
+use App\Models\Vote;
+
 trait WithPushNotification
 {
 
@@ -14,11 +17,13 @@ trait WithPushNotification
     protected $data = [];
     protected $fcm_key;
 
-    public function initWithPushNotification($title, $body, $link): self 
+    public function initWithPushNotification(Question $question, Vote $vote, $link): self 
     {
-
         $this->fcm_key = env('FCM_AUTHORIZATION_KEY');
         $this->url = "https://fcm.googleapis.com/fcm/send";
+
+        $title = $this->generateTitleForPushNotification($vote);
+        $body = $this->generateBodyForPushNotification($vote);
 
         $this->headers = [
             'Authorization' => 'key=' . $this->fcm_key,
@@ -26,7 +31,7 @@ trait WithPushNotification
         ];
                 
         // TODO: Tag the client keys so they are not going to be mixed with other cached items
-        foreach ($this->getClientKeys() as $key) {
+        foreach ($this->getClientKeys($question->user_id) as $key) {
             $this->data[] = [
                 'notification' => [
                     'title' => $title,
@@ -39,14 +44,29 @@ trait WithPushNotification
         }
 
         return $this;
-
     }
 
-    protected function getClientKeys()
+    protected function generateTitleForPushNotification(Vote $vote): string
+    {
+        return $vote->question->question_text . ' / '. $vote->vote_text;
+    }
+
+    protected function generateBodyForPushNotification(Vote $vote): string
+    {
+        return __('Number of votes increased to :vote_number', ['vote_number' => $vote->number_of_votes]);
+    }
+
+    protected function getClientKeys(string $user_id = '')
     {
         if (Cache::tags('fcm')->has('subscribers')) {
-            $subscribers = Cache::tags('fcm')->get('subscribers');
-            foreach ($subscribers as $subscriber) {
+            $subscribers = 
+                array_filter(
+                    Cache::tags('fcm')->get('subscribers'), 
+                    fn($subscriber) => $subscriber === $user_id,
+                    ARRAY_FILTER_USE_KEY,
+                );
+
+            foreach (array_values($subscribers)[0] ?? [] as $subscriber) {
                 yield $subscriber;
             }
         }
