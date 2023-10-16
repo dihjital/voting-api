@@ -56,7 +56,7 @@ class LocationController extends Controller
       return response()->json(self::eWrap(__('Question not found')), 404);
     }
 
-    // Get votes related to the specific question
+    /* // Get votes related to the specific question
     $votes = $question->votes;
 
     // Get location_id values from the pivot table
@@ -73,6 +73,23 @@ class LocationController extends Controller
     $locationsWithVoteCount = $locations->map(function ($location) use ($locationVoteCounts) {
         $location['vote_count'] = $locationVoteCounts[$location['id']] ?? 0;
         return $location;
+    }); */
+
+    $locations = Location::whereHas('votes', function ($query) use ($question_id) {
+      $query->where('question_id', $question_id);
+    })->get();
+  
+    $locationsWithVoteCount = $locations->groupBy('city')->map(function ($cityLocations, $index) {
+        return [
+            'id' => $index,
+            'country_name' => $cityLocations->first()->country_name,
+            'city' => $cityLocations->first()->city,
+            'latitude' => $cityLocations->first()->latitude,
+            'longitude' => $cityLocations->first()->longitude,
+            'vote_count' => $cityLocations->sum(function ($location) {
+                return $location->votes->count();
+            })
+        ];
     });
 
     return response()->json($locationsWithVoteCount, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
