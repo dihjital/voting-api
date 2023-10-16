@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Question;
 use App\Models\Location;
-use App\Models\Vote;
 
 class LocationController extends Controller
 {
@@ -56,27 +55,6 @@ class LocationController extends Controller
     } catch (\Exception $e) {
       return response()->json(self::eWrap(__('Question not found')), 404);
     }
-
-    /* // Get votes related to the specific question
-    $votes = $question->votes;
-
-    // Get location_id values from the pivot table
-    $locationIds = $votes->pluck('locations.*.id')->flatten()->unique();
-
-    // Query the Location model by the location_id values
-    $locations = Location::whereIn('id', $locationIds->toArray())->get();
-
-    $locationVoteCounts = $votes
-      ->flatMap(fn($vote) => $vote->locations->pluck('id'))
-      ->countBy()
-      ->toArray();
-
-    $locationsWithVoteCount = $locations->map(function ($location) use ($locationVoteCounts) {
-        $location['vote_count'] = $locationVoteCounts[$location['id']] ?? 0;
-        return $location;
-    }); */
-
-    $counter = 0;
 
     $locations = Location::with(['votes' => function ($query) use ($question_id) {
       $query->where('question_id', $question_id);
