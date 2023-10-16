@@ -78,21 +78,27 @@ class LocationController extends Controller
 
     $counter = 0;
 
-    $locationsWithVoteCount = Location::whereHas('votes', function ($query) use ($question_id) {
+    $locations = Location::with(['votes' => function ($query) use ($question_id) {
       $query->where('question_id', $question_id);
-    })
-    ->withCount(['votes' => function ($query) use ($question_id) {
-        $query->where('question_id', $question_id);
     }])
-    ->get()
-    ->map(function ($location) use (&$counter) {
+    ->whereHas('votes', function ($query) use ($question_id) {
+        $query->where('question_id', $question_id);
+    })
+    ->get();
+
+    $counter = 0;
+    
+    // Group by city and aggregate results
+    $locationsWithVoteCount = $locations->groupBy('city')->map(function ($cityLocations) use (&$counter) {
         return [
             'id' => $counter++,
-            'country_name' => $location->country_name,
-            'city' => $location->city,
-            'latitude' => $location->latitude,
-            'longitude' => $location->longitude,
-            'vote_count' => $location->votes_count,
+            'country_name' => $cityLocations->first()->country_name,
+            'city' => $cityLocations->first()->city,
+            'latitude' => $cityLocations->first()->latitude,
+            'longitude' => $cityLocations->first()->longitude,
+            'vote_count' => $cityLocations->sum(function ($location) {
+                return $location->votes->count();
+            })
         ];
     })->keyBy('id');
     
