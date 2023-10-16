@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Question;
 use App\Models\Location;
+use App\Models\Vote;
 
 class LocationController extends Controller
 {
@@ -75,24 +76,26 @@ class LocationController extends Controller
         return $location;
     }); */
 
-    $locations = Location::whereHas('votes', function ($query) use ($question_id) {
-      $query->where('question_id', $question_id);
-    })->get();
-
     $counter = 0;
-    $locationsWithVoteCount = $locations->groupBy('city')->map(function ($cityLocations) use (&$counter) {
+
+    $locationsWithVoteCount = Location::whereHas('votes', function ($query) use ($question_id) {
+      $query->where('question_id', $question_id);
+    })
+    ->withCount(['votes' => function ($query) use ($question_id) {
+        $query->where('question_id', $question_id);
+    }])
+    ->get()
+    ->map(function ($location) use (&$counter) {
         return [
             'id' => $counter++,
-            'country_name' => $cityLocations->first()->country_name,
-            'city' => $cityLocations->first()->city,
-            'latitude' => $cityLocations->first()->latitude,
-            'longitude' => $cityLocations->first()->longitude,
-            'vote_count' => $cityLocations->count(function ($location) {
-                return $location->votes->count();
-            })
+            'country_name' => $location->country_name,
+            'city' => $location->city,
+            'latitude' => $location->latitude,
+            'longitude' => $location->longitude,
+            'vote_count' => $location->votes_count,
         ];
     })->keyBy('id');
-
+    
     return response()->json($locationsWithVoteCount, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
   }
 
