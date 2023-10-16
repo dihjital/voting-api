@@ -87,7 +87,7 @@ class LocationController extends Controller
             'city' => $cityLocations->first()->city,
             'latitude' => $cityLocations->first()->latitude,
             'longitude' => $cityLocations->first()->longitude,
-            'vote_count' => $cityLocations->sum(function ($location) {
+            'vote_count' => $cityLocations->count(function ($location) {
                 return $location->votes->count();
             })
         ];
