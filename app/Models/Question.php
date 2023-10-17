@@ -163,5 +163,13 @@ class Question extends Model
     public function votes()
     {
         return $this->hasMany(Vote::class);
+    }
+
+    /**
+     * Get the the Quizzes that might contain this Question
+     */
+    public function quizzes()
+    {
+        return $this->belongsToMany(Quiz::class, 'question_quiz');
     }    
 }
