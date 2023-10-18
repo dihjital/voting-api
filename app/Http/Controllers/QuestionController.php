@@ -338,7 +338,7 @@ class QuestionController extends Controller
     return response()->json(self::eWrap(__('Internal Server Error')), 500);
   }
 
-  public function getQuizzesForQuestion(\Illuminate\Http\Request $request, $question_id)
+  public function getQuizzesForQuestion(Request $request, $question_id)
   {
     $question = \App\Models\Question::find($question_id);
 

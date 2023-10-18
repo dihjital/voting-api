@@ -23,7 +23,7 @@ class QuizController extends Controller
         $quiz = Quiz::find($quiz_id);
 
         if (!$quiz) {
-            return response()->json(self::eWrap(__('Quiz no found')), 404);
+            return response()->json(self::eWrap(__('Quiz not found')), 404);
         }
 
         $questions = $quiz->questions()->where('is_closed', 0)->get();
