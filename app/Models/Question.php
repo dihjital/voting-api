@@ -133,7 +133,8 @@ class Question extends Model
 
     protected $appends = [
         'number_of_votes',
-        'last_vote_at'
+        'last_vote_at',
+        'belongs_to_quiz',
     ];
 
     public static function boot()
@@ -149,6 +150,11 @@ class Question extends Model
     public function getNumberOfVotesAttribute()
     {
         return Vote::where('question_id', '=', $this->id)->count();
+    }
+
+    public function getBelongsToQuizAttribute()
+    {
+        return $this->quizzes()->exists();
     }
 
     public function getLastVoteAtAttribute()
