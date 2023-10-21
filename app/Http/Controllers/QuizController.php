@@ -6,29 +6,48 @@ use App\Models\Quiz;
 
 use Illuminate\Http\Request;
 
+use App\Actions\ShowAllQuestionsForQuiz;
+use App\Actions\ShowAllQuizzes;
+use App\Actions\DeleteQuiz;
+
 class QuizController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public function getQuestions($quiz_id, Request $request, ShowAllQuestionsForQuiz $showAllQuestionsForQuiz)
     {
-        //
-    }
+        $input = self::mergeQuizId($request->all(), $quiz_id);
 
-    public function getQuestions(Request $request, $quiz_id)
-    {
-        $quiz = Quiz::find($quiz_id);
-
-        if (!$quiz) {
-            return response()->json(self::eWrap(__('Quiz not found')), 404);
+        try {
+            $data = $showAllQuestionsForQuiz->show($input);
+        } catch (\Exception $e) {
+            return response()->json(self::eWrap($e->getMessage()), $e->getCode());
         }
 
-        $questions = $quiz->questions()->where('is_closed', 0)->get();
-        $questions->each(fn($q) => $q->makeHidden('pivot'));
+        return response()->json($data)->setEncodingOptions(JSON_NUMERIC_CHECK);
+    }
 
-        return response()->json($questions);
+    public function showAllQuizzes(Request $request, ShowAllQuizzes $showAllQuizzes)
+    {
+        try {
+            $data = $showAllQuizzes->show($request->all());
+        } catch (\Exception $e) {
+            return response()->json(self::eWrap($e->getMessage()), $e->getCode());
+        }
+
+        return response()->json($data)->setEncodingOptions(JSON_NUMERIC_CHECK);
+    }
+
+    public function deleteQuiz($quiz_id, Request $request, DeleteQuiz $deleteQuiz)
+    {
+        $input = self::mergeQuizId($request->all(), $quiz_id);
+
+        try {
+            if ($deleteQuiz->delete($input)) {
+                return response()->json(self::sWrap(__('Quiz deleted successfully')), 200);
+            }
+        } catch (\Exception $e) {
+            return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
+        }
+
+        return response()->json(self::eWrap(__('Internal Server Error')), 500);
     }
 }

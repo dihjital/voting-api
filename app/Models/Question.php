@@ -142,6 +142,7 @@ class Question extends Model
 
         static::deleting(function ($question) {
             $question->votes()->delete();
+            $question->quizzes()->detach();
         });
     }
 
@@ -170,6 +171,7 @@ class Question extends Model
      */
     public function quizzes()
     {
-        return $this->belongsToMany(Quiz::class, 'question_quiz');
+        return $this->belongsToMany(Quiz::class, 'question_quiz')
+                    ->withTimestamps();
     }    
 }

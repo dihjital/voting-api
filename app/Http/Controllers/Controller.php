@@ -50,4 +50,9 @@ class Controller extends BaseController
     {
         return [...$request, 'question_id' => $question_id];
     }
+
+    protected static function mergeQuizId($request, $quiz_id)
+    {
+        return [...$request, 'quiz_id' => $quiz_id];
+    }
 }

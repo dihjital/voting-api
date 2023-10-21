@@ -129,5 +129,7 @@ $router->delete('/unsubscribe', ['uses' => 'TokenController@deleteToken']);
 
 // Quiz related requests
 // TODO: Move them to a secure place and add new token scopes if required ...
+$router->get('/quizzes', ['uses' => 'QuizController@showAllQuizzes']);
 $router->get('/quizzes/{quiz_id: [0-9]+}/questions', ['uses' => 'QuizController@getQuestions']);
+$router->delete('/quizzes/{quiz_id: [0-9]+}', ['uses' => 'QuizController@deleteQuiz']);
 $router->get('/questions/{question_id: [0-9]+}/quizzes', ['uses' => 'QuestionController@getQuizzesForQuestion']);

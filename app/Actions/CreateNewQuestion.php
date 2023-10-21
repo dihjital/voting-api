@@ -20,6 +20,7 @@ class CreateNewQuestion extends QuestionActions
             'question_text' => 'required',
             // 'is_closed' => 'nullable|boolean'
             'user_id' => 'required|uuid',
+            'quiz_id' => 'nullable|integer|exists:quizzes,id',
         ]);
       
         if ($validator->fails()) {
@@ -34,10 +35,14 @@ class CreateNewQuestion extends QuestionActions
             /* if (isset($request->is_closed))
             $new_question->is_closed = $request->is_closed; */
 
-            return Question::create([
+            $q = Question::create([
               'question_text' => $input['question_text'],
               'user_id' => $input['user_id'],
             ]);
+
+            array_key_exists('quiz_id', $input) && $q->quizzes()->attach($input['quiz_id']);
+
+            return $q;
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage(), 500);
         }

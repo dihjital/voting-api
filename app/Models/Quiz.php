@@ -139,13 +139,30 @@ class Quiz extends Model
      * @var array
      */
     protected $hidden = [];
-    protected $appends = [];
+    protected $appends = [
+        'number_of_questions',
+    ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        static::deleting(function ($quiz) {
+            $quiz->questions()->detach();
+        });
+    }
+
+    public function getNumberOfQuestionsAttribute()
+    {
+        return $this->questions()->where('is_closed', 0)->count();
+    }
 
     /**
      * Get the questions that might belong to this Quiz
      */
     public function questions()
     {
-        return $this->belongsToMany(Question::class, 'question_quiz');
+        return $this->belongsToMany(Question::class, 'question_quiz')
+                    ->withTimestamps();
     }    
 }

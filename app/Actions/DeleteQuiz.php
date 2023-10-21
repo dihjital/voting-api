@@ -2,7 +2,7 @@
 
 namespace App\Actions;
 
-class DeleteQuestion extends QuestionActions
+class DeleteQuiz extends QuizActions
 {
     /**
      * Delete a question
@@ -11,10 +11,10 @@ class DeleteQuestion extends QuestionActions
      */
     public function delete(array $input): bool
     {
-        $question = $this->findQuestionForUserId($input);
+        $quiz = $this->findQuizForUserId($input);
       
         try {
-            return $question->delete();
+            return $quiz->delete();
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage(), 500);
         }          
