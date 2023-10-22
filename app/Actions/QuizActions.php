@@ -4,12 +4,10 @@ namespace App\Actions;
 
 use App\Models\Quiz;
 
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Collection;
 
-use Illuminate\Support\Facades\Validator;
-
-class QuizActions
+class QuizActions Extends Actions
 {
     public function findAllQuestionsForQuiz($input): Collection
     {

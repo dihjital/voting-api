@@ -8,6 +8,7 @@ use App\Actions\ModifyQuestion;
 use App\Actions\OpenQuestion;
 use App\Actions\ShowAllQuestions;
 use App\Actions\ShowOneQuestion;
+use App\Actions\ShowAllQuizzesForQuestion;
 
 use Illuminate\Http\Request;
 
@@ -338,17 +339,16 @@ class QuestionController extends Controller
     return response()->json(self::eWrap(__('Internal Server Error')), 500);
   }
 
-  public function getQuizzesForQuestion(Request $request, $question_id)
+  public function getQuizzesForQuestion($question_id, Request $request, ShowAllQuizzesForQuestion $showAllQuizzesForQuestion)
   {
-    $question = \App\Models\Question::find($question_id);
+    $input = self::mergeQuestionId($request->all(), $question_id);
 
-    if (!$question) {
-      return response()->json(self::eWrap(__('Question not found')), 404);
+    try {
+      $question = $showAllQuizzesForQuestion->show($input);
+    } catch (\Exception $e) {
+      return response()->json(self::eWrap($e->getMessage()), $e->getCode());
     }
 
-    $quizzes = $question->quizzes;
-    $quizzes->each(fn($q) => $q->makeHidden('pivot'));
-
-    return response()->json($quizzes);
+    return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
   }
 }
