@@ -4,10 +4,25 @@ namespace App\Actions;
 
 use App\Models\Question;
 
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Validator;
 
-class QuestionActions
+class QuestionActions Extends Actions
 {
+    public function findAllQuizzesForQuestion($input): Collection
+    {
+        try {
+            $question = Question::findOrFail($input['question_id']);
+        } catch (\Exception $e) {
+            throw new \Exception(__('Question not found'), 404);
+        }
+
+        return $question->quizzes->map(function($quiz) {
+            $quiz->makeHidden('pivot');
+            return $quiz;
+        });
+    }
+
     public function findQuestionForUserId($input): Question
     {
         $validator = Validator::make($input, [
@@ -25,7 +40,7 @@ class QuestionActions
         }
     }
 
-    public function findAllQuestionsForUserId($input)
+    public function findAllQuestionsForUserId($input): Collection
     {
         $validator = Validator::make($input, [
             'user_id' => 'required|uuid',
