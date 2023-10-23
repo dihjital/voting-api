@@ -173,7 +173,7 @@ class LoginMobile
             'client_id' => $this->client_id,
             'username' => $this->api_user,
             'password' => $this->api_secret,
-            'scope' => 'list-questions list-votes vote',
+            'scope' => 'list-quizzes list-questions list-votes vote',
         ]);
 
         if (!$response->ok()) {

@@ -49,13 +49,17 @@ class AuthServiceProvider extends ServiceProvider
 	    Passport::tokensExpireIn(now()->addDays(5));
 
         Passport::tokensCan([
+            'list-quizzes' => 'List quizzes',
             'list-questions' => 'List questions',
             'list-votes' => 'List votes belonging to questions',
+            'create-quiz' => 'Create a new quiz',
             'create-question' => 'Create a new question',
             'create-vote' => 'Create a new vote for a question',
+            'delete-quiz' => 'Delete a single quiz',
             'delete-question' => 'Delete a single question',
             'delete-votes' => 'Delete all votes belonging to a question',
             'delete-vote' => 'Delete a single vote belonging to a question',
+            'modify-quiz' => 'Modify a single quiz',
             'modify-question' => 'Modify a single question',
             'modify-vote' => 'Modify a single vote',
             'close-question' => 'Open/close question for voting',
