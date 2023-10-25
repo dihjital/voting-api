@@ -132,6 +132,8 @@ class Question extends Model
     ];
 
     protected $appends = [
+        'previous_id',
+        'next_id',
         'number_of_votes',
         'last_vote_at',
         'belongs_to_quiz',
@@ -162,6 +164,32 @@ class Question extends Model
         return Vote::where('question_id', $this->id)
             ->where('number_of_votes', '>', 0)
             ->max('updated_at');
+    }
+
+    public function getPreviousIdAttribute()
+    {
+        return request()->has('user_id')
+                ? static::where('id', '<', $this->id)
+                    ->where('user_id', request('user_id'))
+                    ->orderBy('id', 'desc')
+                    ->value('id') 
+                ?? static::where('user_id', request('user_id'))
+                    ->orderBy('id', 'desc')
+                    ->value('id')
+                : null;
+    }
+
+    public function getNextIdAttribute()
+    {
+        return request()->has('user_id')
+                ? static::where('id', '>', $this->id)
+                    ->where('user_id', request('user_id'))
+                    ->orderBy('id', 'asc')
+                    ->value('id')
+                ?? static::where('user_id', request('user_id'))
+                    ->orderBy('id', 'asc')
+                    ->value('id')
+                : null;
     }
 
     /**

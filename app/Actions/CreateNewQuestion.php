@@ -40,6 +40,7 @@ class CreateNewQuestion extends QuestionActions
               'user_id' => $input['user_id'],
             ]);
 
+            // This should go beyond a Gate. Max 5 Questions per Quiz are allowed
             array_key_exists('quiz_id', $input) && $q->quizzes()->attach($input['quiz_id']);
 
             return $q;
