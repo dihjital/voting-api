@@ -133,3 +133,7 @@ $router->get('/quizzes', ['uses' => 'QuizController@showAllQuizzes']);
 $router->get('/quizzes/{quiz_id: [0-9]+}/questions', ['uses' => 'QuizController@getQuestions']);
 $router->delete('/quizzes/{quiz_id: [0-9]+}', ['uses' => 'QuizController@deleteQuiz']);
 $router->get('/questions/{question_id: [0-9]+}/quizzes', ['uses' => 'QuestionController@getQuizzesForQuestion']);
+
+// Opt in Voters so they can receive the result of a voting once the question is closed
+// Or all questions are closed in the relevant quiz
+$router->post('/voters/opt-in', ['uses' => 'VoterController@optInVoter']);

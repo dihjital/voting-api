@@ -3,7 +3,7 @@
 return [
   'defaults' => [
     'question' => [
-      'max_number_of_questions' => env('MAX_NUMBER_OF_QUESTIONS', 5),
+      'max_number_of_questions' => env('MAX_NUMBER_OF_QUESTIONS', 8),
     ],
     'vote' => [
       'max_number_of_votes' => env('MAX_NUMBER_OF_VOTES', 5),
