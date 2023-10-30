@@ -100,7 +100,7 @@ class QuestionController extends Controller
     try {
       $question = $showOneQuestion->show($input);
     } catch (\Exception $e) {
-      Log::debug('Request input parameters: '.print_r($request->all(), true));
+      Log::debug('Request input parameters (showOneQuestion): '.print_r($request->all(), true));
       return response()->json(self::eWrap($e->getMessage()), $e->getCode());
     }
 

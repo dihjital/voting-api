@@ -18,7 +18,7 @@ class ShowOneQuestion extends QuestionActions
         try {
             $question = $this->findQuestionForUserId($input);
         } catch (\Exception $e) {
-            Log::debug('Request input parameters: '.print_r($input, true));
+            Log::debug('Request input parameters (show): '.print_r($input, true));
             throw new \Exception(__('Question not found'), 404);
         }
       
