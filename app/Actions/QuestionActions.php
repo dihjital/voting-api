@@ -33,6 +33,7 @@ class QuestionActions Extends Actions
       
         if ($validator->fails()) {
             Log::debug('Validation error has occured: '.$validator->errors()->first());
+            Log::debug('Request input parameters (findQuestionForUserId): '.print_r($input, true));
             throw new \Exception($validator->errors()->first(), 400);
         }
       
