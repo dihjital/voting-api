@@ -96,6 +96,7 @@ $router->group(['middleware' => [
     'auth', 
     'scopes:list-questions,list-votes',
     // TODO: merge_user_id, renew_session and check_session should be merged together
+    'renew_session',
     'merge_user_id']
   ], 
   function() use ($router) {
