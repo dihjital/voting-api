@@ -18,8 +18,8 @@ class ShowOneQuestion extends QuestionActions
         try {
             $question = $this->findQuestionForUserId($input);
         } catch (\Exception $e) {
-            Log::debug('Request input parameters (show): '.print_r($input, true));
-            throw new \Exception(__('Question not found'), 404);
+            // Log::debug('Request input parameters (show): '.print_r($input, true));
+            throw new \Exception($e->getMessage(), $e->getCode());
         }
       
         $question->votes->makeHidden('question_id')->toArray();

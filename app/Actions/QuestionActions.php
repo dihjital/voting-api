@@ -32,15 +32,15 @@ class QuestionActions Extends Actions
         ]);
       
         if ($validator->fails()) {
-            Log::debug('Validation error has occured: '.$validator->errors()->first());
-            Log::debug('Request input parameters (findQuestionForUserId): '.print_r($input, true));
+            // Log::debug('Validation error has occured: '.$validator->errors()->first());
+            // Log::debug('Request input parameters (findQuestionForUserId): '.print_r($input, true));
             throw new \Exception($validator->errors()->first(), 400);
         }
       
         try {
             return Question::whereId($input['question_id'])->where('user_id', $input['user_id'])->firstOrFail();
         } catch (\Exception $e) {
-            Log::debug('Request input parameters (findQuestionForUserId): '.print_r($input, true));
+            // Log::debug('Request input parameters (findQuestionForUserId): '.print_r($input, true));
             throw new \Exception(__('Question not found'), 404);
         }
     }
