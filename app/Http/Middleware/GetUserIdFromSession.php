@@ -23,6 +23,8 @@ class GetUserIdFromSession
             $request->merge(['user_id' => $userId]);
         }
 
+        // TODO: Itt fog elhasalni .... mert továbbadja úgy, hogy nincsen user_id ...
+
         return $next($request);
     }
 }

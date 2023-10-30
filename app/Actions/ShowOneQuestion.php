@@ -4,6 +4,8 @@ namespace App\Actions;
 
 use App\Models\Question;
 
+use Illuminate\Support\Facades\Log;
+
 class ShowOneQuestion extends QuestionActions
 {
     /**
@@ -16,6 +18,7 @@ class ShowOneQuestion extends QuestionActions
         try {
             $question = $this->findQuestionForUserId($input);
         } catch (\Exception $e) {
+            Log::debug('Request input parameters: '.print_r($input));
             throw new \Exception(__('Question not found'), 404);
         }
       

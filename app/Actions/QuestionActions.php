@@ -5,6 +5,8 @@ namespace App\Actions;
 use App\Models\Question;
 
 use Illuminate\Database\Eloquent\Collection;
+
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class QuestionActions Extends Actions
@@ -36,6 +38,7 @@ class QuestionActions Extends Actions
         try {
             return Question::whereId($input['question_id'])->where('user_id', $input['user_id'])->firstOrFail();
         } catch (\Exception $e) {
+            Log::debug('Request input parameters: '.print_r($input));
             throw new \Exception(__('Question not found'), 404);
         }
     }

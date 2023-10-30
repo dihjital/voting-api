@@ -10,6 +10,8 @@ use App\Actions\ShowAllQuestions;
 use App\Actions\ShowOneQuestion;
 use App\Actions\ShowAllQuizzesForQuestion;
 
+use Illuminate\Support\Facades\Log;
+
 use Illuminate\Http\Request;
 
 class QuestionController extends Controller
@@ -98,6 +100,7 @@ class QuestionController extends Controller
     try {
       $question = $showOneQuestion->show($input);
     } catch (\Exception $e) {
+      Log::debug('Request input parameters: '.$request->all());
       return response()->json(self::eWrap($e->getMessage()), $e->getCode());
     }
 
