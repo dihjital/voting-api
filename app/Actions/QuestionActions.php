@@ -32,6 +32,7 @@ class QuestionActions Extends Actions
         ]);
       
         if ($validator->fails()) {
+            Log::debug('Validation error has occured: '.$validator->errors()->first());
             throw new \Exception($validator->errors()->first(), 400);
         }
       
