@@ -87,7 +87,7 @@ class LoginMobile
             'refresh_token' => $refresh_token,
             'client_id' => $this->client_id,
             'client_secret' => $this->client_secret,
-            'scope' => 'list-questions list-votes vote',
+            'scope' => 'list-quizzes list-questions list-votes vote',
         ]);
 
         if ($response->ok()) {
