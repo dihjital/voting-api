@@ -21,6 +21,7 @@ class QuizActions Extends Actions
             $quiz
                 ->questions()
                 ->where('is_closed', 0)
+                // ->where('user_id', $input['user_id']) Only list those which has the logged in user_id ...
                 ->get()
                 ->map(function ($question) {
                     $question->makeHidden('pivot');
@@ -31,7 +32,7 @@ class QuizActions Extends Actions
     public function findQuizForUserId($input): Quiz
     {
         $validator = Validator::make($input, [
-            'user_id' => 'nullable|uuid',
+            'user_id' => 'required|uuid', // TODO: Add a user_id property to the Quiz model
         ]);
       
         if ($validator->fails()) {
@@ -49,7 +50,7 @@ class QuizActions Extends Actions
     public function findAllQuizzesForUserId($input): Collection
     {
         $validator = Validator::make($input, [
-            'user_id' => 'nullable|uuid',
+            'user_id' => 'required|uuid',
         ]);
       
         if ($validator->fails()) {

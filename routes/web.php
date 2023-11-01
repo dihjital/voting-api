@@ -80,12 +80,13 @@ $router->group(['middleware' => [
 
 $router->group(['middleware' => [
     'auth', 
-    'scopes:delete-question,delete-votes,delete-vote', 
+    'scopes:delete-quiz,delete-question,delete-votes,delete-vote', 
     'renew_session', 
     'check_session', 
     'is_closed']
   ], 
   function () use ($router) {
+    $router->delete('/quizzes/{quiz_id: [0-9]+}', ['uses' => 'QuizController@deleteQuiz']);
     $router->delete('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@deleteQuestion']);
     $router->delete('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@deleteVote']);
     $router->delete('/questions/{question_id: [0-9]+}/votes', ['uses' => 'VoteController@deleteAllVotesforQuestion']);
@@ -94,15 +95,19 @@ $router->group(['middleware' => [
 // If session-id is provided then we will try to get the relevant user id from cache
 $router->group(['middleware' => [
     'auth', 
-    'scopes:list-questions,list-votes',
+    'scopes:list-quizzes,list-questions,list-votes',
     // TODO: merge_user_id, renew_session and check_session should be merged together
     'renew_session',
     'merge_user_id']
   ], 
   function() use ($router) {
+    // Quizzes
+    $router->get('/quizzes', ['uses' => 'QuizController@showAllQuizzes']);
+    $router->get('/quizzes/{quiz_id: [0-9]+}/questions', ['uses' => 'QuizController@getQuestions']);
     // Questions
     $router->get('/questions', ['uses' => 'QuestionController@showAllQuestions']);
     $router->get('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@showOneQuestion']);
+    $router->get('/questions/{question_id: [0-9]+}/quizzes', ['uses' => 'QuestionController@getQuizzesForQuestion']);
     // Votes (A question might have multiple votes)
     $router->get('/questions/{question_id: [0-9]+}/votes', ['uses' => 'VoteController@showAllVotesforQuestion']);
     $router->get('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@showOneVote']);
@@ -127,13 +132,6 @@ $router->group(['middleware' => [
 // Request FCM tokens for push notifications
 $router->post('/subscribe', ['uses' => 'TokenController@storeToken']);
 $router->delete('/unsubscribe', ['uses' => 'TokenController@deleteToken']);
-
-// Quiz related requests
-// TODO: Move them to a secure place and add new token scopes if required ...
-$router->get('/quizzes', ['uses' => 'QuizController@showAllQuizzes']);
-$router->get('/quizzes/{quiz_id: [0-9]+}/questions', ['uses' => 'QuizController@getQuestions']);
-$router->delete('/quizzes/{quiz_id: [0-9]+}', ['uses' => 'QuizController@deleteQuiz']);
-$router->get('/questions/{question_id: [0-9]+}/quizzes', ['uses' => 'QuestionController@getQuizzesForQuestion']);
 
 // Opt in Voters so they can receive the result of a voting once the question is closed
 // Or all questions are closed in the relevant quiz
