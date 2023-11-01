@@ -138,9 +138,16 @@ class LoginMobile
 
     protected function areTokensValid(array $tokens): bool
     {
-        // Currently we only check the number of items returned and if any of them is null.
-        // More complex valiation can be addedd here if required.
-        return count($tokens) === 4 && !in_array(null, $tokens, true);
+        if (count($tokens) !== 4 || in_array(null, $tokens, true)) return false;
+
+        $response = Http::withToken($tokens['access_token'])
+            ->get($this->api_endpoint.'/validate');
+
+        if (!$response->ok()) {
+            throw new \Exception(json_decode($response->body()), $response->status());
+        }
+
+        return $response['valid'] === true;
     }
 
     protected function handleTokenRefreshIfNeeded(array $tokens): array
