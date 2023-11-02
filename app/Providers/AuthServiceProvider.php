@@ -40,13 +40,23 @@ class AuthServiceProvider extends ServiceProvider
         // the User instance via an API token or any other method necessary.
 
         LumenPassport::routes($this->app);
-        LumenPassport::tokensExpireIn(Carbon::now()->addDays(5));
+
+        // voting-results.votes365.org Client Id
+        LumenPassport::tokensExpireIn(Carbon::now()->addDays(90), env('PASSPORT_RESULTS_CLIENT_ID'));
+        Passport::refreshTokensExpireIn(Carbon::now()->addDays(30), env('PASSPORT_RESULTS_CLIENT_ID'));
+
+        // voting-admin.votes365.org Client Id
+        LumenPassport::tokensExpireIn(Carbon::now()->addDays(90), env('PASSPORT_ADMIN_CLIENT_ID'));
+        Passport::refreshTokensExpireIn(Carbon::now()->addDays(30), env('PASSPORT_ADMIN_CLIENT_ID'));
+
+        // voting-client.votes365.org Client Id
+        LumenPassport::tokensExpireIn(Carbon::now()->addDays(30), env('PASSPORT_MOBILE_CLIENT_ID'));
+        Passport::refreshTokensExpireIn(Carbon::now()->addDays(15), env('PASSPORT_MOBILE_CLIENT_ID'));
 
         // TODO: For the mobile users token we should have a longer exiry date
         // LumenPassport::tokensExpireIn(Carbon::now()->addDays(5), env('PASSPORT_CLIENT_ID')); 
-
         // This is required as well in case our grant-type is token_refresh
-	    Passport::tokensExpireIn(now()->addDays(5));
+	    // Passport::tokensExpireIn(now()->addDays(5));
 
         Passport::tokensCan([
             'list-quizzes' => 'List quizzes',

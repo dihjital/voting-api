@@ -97,7 +97,7 @@ class AuthController extends Controller
       
       // Default scope should allow for listing questions and votes and to vote
       // TODO: '*' should not be allowed as part of the request
-      $scope = $request->scope ?? 'list-questions list-votes vote';
+      $scope = $request->scope ?? 'list-quizzes list-questions list-votes vote';
 
       try {
 
