@@ -21,7 +21,7 @@ class QuizActions Extends \App\Actions\Actions
             $quiz
                 ->questions()
                 ->where('is_closed', 0)
-                // ->where('user_id', $input['user_id']) Only list those which has the logged in user_id ...
+                ->where('user_id', $input['user_id']) // Only list those which has the logged in user_id ...
                 ->get()
                 ->map(function ($question) {
                     $question->makeHidden('pivot');
@@ -40,7 +40,9 @@ class QuizActions Extends \App\Actions\Actions
         }
       
         try {
-            return Quiz::whereId($input['quiz_id'])->where('user_id', $input['user_id'])->firstOrFail();
+            return Quiz::whereId($input['quiz_id'])
+                ->where('user_id', $input['user_id'])
+                ->firstOrFail();
         } catch (\Exception $e) {
             throw new \Exception(__('Quiz not found'), 404);
         }
@@ -57,13 +59,15 @@ class QuizActions Extends \App\Actions\Actions
         }
       
         try {
-            // return Quiz::where('user_id', $input['user_id'])->get();
             return 
-                Quiz::with('questions')->get()->map(
-                    function($quiz) {
-                        $quiz->questions->makeHidden('pivot');
-                        return $quiz;
-                    }
+                Quiz::with('questions')
+                    ->where('user_id', $input['user_id'])
+                    ->get()
+                    ->map(
+                        function($quiz) {
+                            $quiz->questions->makeHidden('pivot');
+                            return $quiz;
+                        }
                 );
         } catch (\Exception $e) {
             throw new \Exception(__('Quiz not found'), 404);
