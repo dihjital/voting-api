@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Models\User;
+use App\Models\Quiz;
 use App\Models\Question;
 
 use Illuminate\Support\Facades\Gate;
@@ -49,7 +50,7 @@ class AuthServiceProvider extends ServiceProvider
         LumenPassport::tokensExpireIn(Carbon::now()->addDays(90), env('PASSPORT_ADMIN_CLIENT_ID'));
         Passport::refreshTokensExpireIn(Carbon::now()->addDays(30), env('PASSPORT_ADMIN_CLIENT_ID'));
 
-        // voting-client.votes365.org Client Id
+        // voting-client.votes365.org Client Id and used by votes365 mobile Client as well
         LumenPassport::tokensExpireIn(Carbon::now()->addDays(30), env('PASSPORT_MOBILE_CLIENT_ID'));
         Passport::refreshTokensExpireIn(Carbon::now()->addDays(15), env('PASSPORT_MOBILE_CLIENT_ID'));
 
@@ -90,6 +91,15 @@ class AuthServiceProvider extends ServiceProvider
             return Question::where('user_id', $Uuid)
                 ->where('is_closed', 0)
                 ->count() < config('api.defaults.question.max_number_of_questions');
+        });
+
+        Gate::define('create-new-quiz', function (User $user, string $Uuid) {
+            return Quiz::where('user_id', $Uuid)
+                ->count() < config('api.defaults.quiz.max_number_of_quizzes');
+        });
+
+        Gate::define('add-new-question-to-quiz', function (User $user, Quiz $quiz) {
+            return $quiz->number_of_questions < config('api.defaults.quiz.max_number_of_questions');
         });
 
         Gate::define('open-question', function (User $user, string $Uuid) {

@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\Quizzes;
 
 use App\Models\Quiz;
 
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Database\Eloquent\Collection;
 
-class QuizActions Extends Actions
+class QuizActions Extends \App\Actions\Actions
 {
     public function findAllQuestionsForQuiz($input): Collection
     {
@@ -32,7 +32,7 @@ class QuizActions Extends Actions
     public function findQuizForUserId($input): Quiz
     {
         $validator = Validator::make($input, [
-            'user_id' => 'required|uuid', // TODO: Add a user_id property to the Quiz model
+            'user_id' => 'required|uuid',
         ]);
       
         if ($validator->fails()) {
@@ -40,8 +40,7 @@ class QuizActions Extends Actions
         }
       
         try {
-            // return Quiz::whereId($input['question_id'])->where('user_id', $input['user_id'])->firstOrFail();            
-            return Quiz::whereId($input['quiz_id'])->firstOrFail();
+            return Quiz::whereId($input['quiz_id'])->where('user_id', $input['user_id'])->firstOrFail();
         } catch (\Exception $e) {
             throw new \Exception(__('Quiz not found'), 404);
         }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\Questions;
 
 use App\Models\Question;
 
@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
-class QuestionActions Extends Actions
+class QuestionActions Extends \App\Actions\Actions
 {
     public function findAllQuizzesForQuestion($input): Collection
     {

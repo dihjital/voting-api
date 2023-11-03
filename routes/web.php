@@ -56,24 +56,26 @@ $router->group(['middleware' => [
 
 $router->group(['middleware' => [
     'auth', 
-    'scopes:create-question,create-vote', 
+    'scopes:create-quiz,create-question,create-vote', 
     'renew_session', 
     'check_session', 
     'is_closed']
   ], 
   function () use ($router) {
+    $router->post('/quizzes', ['uses' => 'QuizController@createQuiz']);
     $router->post('/questions', ['uses' => 'QuestionController@createQuestion']);
     $router->post('/questions/{question_id: [0-9]+}/votes', ['uses' => 'VoteController@createVote']);
 });
 
 $router->group(['middleware' => [
     'auth', 
-    'scopes:modify-question,modify-vote', 
+    'scopes:modify-quiz,modify-question,modify-vote', 
     'renew_session', 
     'check_session', 
     'is_closed']
   ], 
   function () use ($router) {
+    $router->put('/quizzes/{quiz_id: [0-9]+}', ['uses' => 'QuizController@modifyQuiz']);
     $router->put('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@modifyQuestion']);
     $router->put('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@modifyVote']);
 });
@@ -103,6 +105,7 @@ $router->group(['middleware' => [
   function() use ($router) {
     // Quizzes
     $router->get('/quizzes', ['uses' => 'QuizController@showAllQuizzes']);
+    $router->get('/quizzes/{quiz_id: [0-9]+}', ['uses' => 'QuizController@showOneQuiz']);
     $router->get('/quizzes/{quiz_id: [0-9]+}/questions', ['uses' => 'QuizController@getQuestions']);
     // Questions
     $router->get('/questions', ['uses' => 'QuestionController@showAllQuestions']);

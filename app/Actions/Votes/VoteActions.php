@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\Votes;
 
 use App\Models\Question;
 use Illuminate\Support\Facades\Validator;
 
-class VoteActions
+class VoteActions Extends \App\Actions\Actions
 {
     public function findQuestionForVote($input): Question
     {

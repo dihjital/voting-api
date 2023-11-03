@@ -1,20 +1,19 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\Quizzes;
 
-class ShowAllQuizzesForQuestion extends QuestionActions
+class ShowAllQuestionsForQuiz extends QuizActions
 {
-    // With this you can override how many Quizzes are returned per page
     const PER_PAGE = 5;
 
     /**
-     * Show all the Quizzes belonging to a specific Question.
+     * Show all the Questions belonging to a specific Quiz.
      *
      * @param  array<string, string>  $input
      */
     public function show(array $input)
     {
-        $data = $this->findAllQuizzesForQuestion($input);
+        $data = $this->findAllQuestionsForQuiz($input);
 
         $perPage = config('api.defaults.pagination.items_per_page') ?? self::PER_PAGE;
 

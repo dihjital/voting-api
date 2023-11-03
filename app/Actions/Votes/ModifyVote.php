@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\Votes;
 
 use App\Models\Vote;
 use Illuminate\Support\Facades\Validator;

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\CreateNewQuestion;
-use App\Actions\DeleteQuestion;
-use App\Actions\ModifyQuestion;
-use App\Actions\OpenQuestion;
-use App\Actions\ShowAllQuestions;
-use App\Actions\ShowOneQuestion;
-use App\Actions\ShowAllQuizzesForQuestion;
+use App\Actions\Questions\CreateNewQuestion;
+use App\Actions\Questions\DeleteQuestion;
+use App\Actions\Questions\ModifyQuestion;
+use App\Actions\Questions\OpenQuestion;
+use App\Actions\Questions\ShowAllQuestions;
+use App\Actions\Questions\ShowOneQuestion;
+use App\Actions\Questions\ShowAllQuizzesForQuestion;
 
 use Illuminate\Http\Request;
 

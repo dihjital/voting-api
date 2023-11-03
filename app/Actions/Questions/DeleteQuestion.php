@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\Questions;
 
 class DeleteQuestion extends QuestionActions
 {

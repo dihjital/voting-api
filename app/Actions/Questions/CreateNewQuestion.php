@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Actions;
+namespace App\Actions\Questions;
 
+use App\Models\Quiz;
 use App\Models\Question;
 
 use Illuminate\Support\Facades\Gate;
@@ -30,6 +31,12 @@ class CreateNewQuestion extends QuestionActions
         if (! Gate::allows('create-new-question', $input['user_id'])) {
             throw new \Exception(__('You have reached the maximum number of questions allowed'), 403);
         }
+
+        if (array_key_exists('quiz_id', $input)) {
+            if (! Gate::allows('add-new-question-to-quiz', Quiz::findOrFail($input['quiz_id']))) {
+                throw new \Exception(__('You have reached the maximum number of questions allowed for this quiz'), 403);
+            }
+        }
       
         try {
             /* if (isset($request->is_closed))
@@ -40,7 +47,6 @@ class CreateNewQuestion extends QuestionActions
               'user_id' => $input['user_id'],
             ]);
 
-            // This should go beyond a Gate. Max 5 Questions per Quiz are allowed
             array_key_exists('quiz_id', $input) && $q->quizzes()->attach($input['quiz_id']);
 
             return $q;

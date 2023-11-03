@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\CreateNewVote;
-use App\Actions\ModifyVote;
-use App\Actions\DeleteVote;
+use App\Actions\Votes\CreateNewVote;
+use App\Actions\Votes\ModifyVote;
+use App\Actions\Votes\DeleteVote;
+use App\Actions\Votes\IncreaseVoteNumber;
+use App\Actions\Votes\ShowOneVote;
+use App\Actions\Votes\ShowAllVotes;
 
-use App\Actions\IncreaseVoteNumber;
-
-use App\Actions\ShowOneVote;
-use App\Actions\ShowAllVotes;
 use App\Models\Question;
 
 use App\Traits\WithIpLocation;

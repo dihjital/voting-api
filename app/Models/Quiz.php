@@ -131,6 +131,7 @@ class Quiz extends Model
      */
     protected $fillable = [
         'name',
+        'user_id',
     ];    
     
     /**
@@ -138,7 +139,10 @@ class Quiz extends Model
      *
      * @var array
      */
-    protected $hidden = [];
+    protected $hidden = [
+        'user_id',
+    ];
+
     protected $appends = [
         'number_of_questions',
     ];
