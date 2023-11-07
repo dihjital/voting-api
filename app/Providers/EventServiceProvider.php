@@ -18,5 +18,8 @@ class EventServiceProvider extends ServiceProvider
         \App\Events\VoteAttachedToLocation::class => [
             \App\Listeners\AttachVoteToLocationListener::class,
         ],
+        \App\Events\QuestionClosed::class => [
+            \App\Listeners\QuestionClosedListener::class,
+        ],
     ];
 }

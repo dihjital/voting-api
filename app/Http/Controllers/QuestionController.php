@@ -10,6 +10,8 @@ use App\Actions\Questions\ShowAllQuestions;
 use App\Actions\Questions\ShowOneQuestion;
 use App\Actions\Questions\ShowAllQuizzesForQuestion;
 
+use App\Events\QuestionClosed;
+
 use Illuminate\Http\Request;
 
 class QuestionController extends Controller
@@ -283,6 +285,7 @@ class QuestionController extends Controller
 
     try {
       $question = $openQuestion->open($input);
+      $question->is_closed && event(new QuestionClosed($question));
     } catch (\Exception $e) {
       return response()->json(self::eWrap($e->getMessage()), $e->getCode());
     }
