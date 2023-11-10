@@ -16,9 +16,9 @@ class ShowOneVote extends VoteActions
         $question = $this->findQuestionForVote($input);
 
         try {
-            return $question->votes->where('id', '=', $input['vote_id'])->firstOrFail();
+            return Vote::findOrFail($input['vote_id']);
         } catch (\Exception $e) {
-            throw new \Exception($e->getMessage(), $e->getCode());
+            throw new \Exception(__('Vote not found'), 404);
         }
     }
 }
