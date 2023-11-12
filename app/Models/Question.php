@@ -58,7 +58,7 @@ class Question extends Model
      *     title="Is closed?",
      * )
      *
-     * @var string
+     * @var boolean
      */
 
      /**
@@ -85,6 +85,18 @@ class Question extends Model
      * @var \DateTime
      */
 
+    /**
+     * @OA\Property(
+     *     property="belongs_to_quiz",
+     *     type="boolean",
+     *     default=false,
+     *     description="Determines if the Question belongs to a Quiz or not",
+     *     title="Is this Question belongs to a Quiz?",
+     * )
+     *
+     * @var boolean
+     */
+
      /**
      * @OA\Property(
      *     property="created_at",
@@ -109,6 +121,28 @@ class Question extends Model
      * )
      *
      * @var \DateTime
+     */
+
+    /**
+     * @OA\Property(
+     *     property="previous_id",
+     *     format="integer",
+     *     description="ID of the previous Question belonging to the same User",
+     *     title="Previous ID",
+     * )
+     *
+     * @var integer
+     */
+
+    /**
+     * @OA\Property(
+     *     property="next_id",
+     *     format="integer",
+     *     description="ID of the next Question belonging to the same User",
+     *     title="Next ID",
+     * )
+     *
+     * @var integer
      */
 
     /**

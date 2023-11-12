@@ -45,10 +45,6 @@
                                                 "format": "int64",
                                                 "example": 1
                                             },
-                                            "ip": {
-                                                "type": "string",
-                                                "format": "ipv4"
-                                            },
                                             "country_name": {
                                                 "type": "string",
                                                 "example": "Hungary"
@@ -66,16 +62,6 @@
                                                 "type": "number",
                                                 "format": "float",
                                                 "example": 18.910800933838
-                                            },
-                                            "created_at": {
-                                                "type": "string",
-                                                "format": "datetime",
-                                                "example": "2023-07-19T08:27:32.000000Z"
-                                            },
-                                            "updated_at": {
-                                                "type": "string",
-                                                "format": "datetime",
-                                                "example": "2023-07-19T08:27:32.000000Z"
                                             },
                                             "vote_count": {
                                                 "type": "integer",
@@ -142,7 +128,10 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/Question"
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Question"
+                                    }
                                 }
                             }
                         }
@@ -1758,6 +1747,12 @@
                         "format": "datetime",
                         "example": "2023-06-18 12:01:01"
                     },
+                    "belongs_to_quiz": {
+                        "title": "Is this Question belongs to a Quiz?",
+                        "description": "Determines if the Question belongs to a Quiz or not",
+                        "type": "boolean",
+                        "default": false
+                    },
                     "created_at": {
                         "title": "Created at",
                         "description": "Date and time when the question was created",
@@ -1773,6 +1768,18 @@
                         "format": "datetime",
                         "default": "now",
                         "example": "2023-06-18 12:01:01"
+                    },
+                    "previous_id": {
+                        "title": "Previous ID",
+                        "description": "ID of the previous Question belonging to the same User",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "next_id": {
+                        "title": "Next ID",
+                        "description": "ID of the next Question belonging to the same User",
+                        "type": "integer",
+                        "format": "integer"
                     }
                 },
                 "type": "object",

@@ -34,7 +34,10 @@ class QuestionController extends Controller
    *     @OA\Response(
    *         response=200,
    *         description="successful operation",
-   *         @OA\JsonContent(ref="#/components/schemas/Question"),
+   *         @OA\JsonContent(
+   *             type="array",
+   *             @OA\Items(ref="#/components/schemas/Question")
+   *         )
    *     ),
    * )
    */

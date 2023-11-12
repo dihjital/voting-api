@@ -24,13 +24,10 @@ class LocationController extends Controller
    *             type="array",
    *             @OA\Items(
    *                 @OA\Property(property="id", type="integer", format="int64", example=1),
-   *                 @OA\Property(property="ip", type="string", format="ipv4"),
    *                 @OA\Property(property="country_name", type="string", example="Hungary"),
    *                 @OA\Property(property="city", type="string", example="Budaörs"),
    *                 @OA\Property(property="latitude", type="number", format="float", example=47.438499450684),
    *                 @OA\Property(property="longitude", type="number", format="float", example=18.910800933838),
-   *                 @OA\Property(property="created_at", type="string", format="datetime", example="2023-07-19T08:27:32.000000Z"),
-   *                 @OA\Property(property="updated_at", type="string", format="datetime", example="2023-07-19T08:27:32.000000Z"),
    *                 @OA\Property(property="vote_count", type="integer", format="int32", example=5),
    *             )
    *         )
