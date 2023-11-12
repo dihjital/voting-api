@@ -412,19 +412,6 @@ class VoteController extends Controller
     return response()->json($votes, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
   }
 
-  public function showAllLocationsforQuestion($question_id)
-  {
-    try {
-      $question = Question::findOrFail($question_id);
-    } catch (\Exception $e) {
-      return response()->json(self::eWrap(__('Question not found')), 404);
-    }
-
-    $locations = $question->votes->locations;
-
-    return response()->json($locations, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
-  }
-
   /**
    * @OA\Delete(
    *     path="/questions/{question_id}/votes/{vote_id}",
@@ -464,8 +451,8 @@ class VoteController extends Controller
    *                     @OA\Property(property="message", type="string", example="Question not found"),
    *                 ),
    *             }
-   *         ),
-   *    ),
+   *         )
+   *     )
    * )
    */
 

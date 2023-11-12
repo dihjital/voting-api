@@ -17,21 +17,18 @@
         "/questions/{question_id}/votes/locations": {
             "get": {
                 "tags": [
-                    "no-auth",
+                    "OAuth",
                     "Location"
                 ],
-                "summary": "Get all locations for all the votes belonging to a specific question",
-                "operationId": "123aad836767a254573a0b987f66b1e0",
+                "summary": "Get all Locations for Votes",
+                "description": "Get all voters Locations for all the Votes belonging to a specific Question",
+                "operationId": "showAllLocationsforQuestion",
                 "parameters": [
                     {
-                        "name": "question_id",
-                        "in": "path",
-                        "description": "ID of the question",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
+                        "$ref": "#/components/parameters/sessionId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/questionId"
                     }
                 ],
                 "responses": {
@@ -93,9 +90,31 @@
                         }
                     },
                     "404": {
-                        "description": "Question not found"
+                        "description": "Question not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Question not found"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/questions": {

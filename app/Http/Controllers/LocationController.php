@@ -7,22 +7,16 @@ use App\Models\Location;
 
 class LocationController extends Controller
 {
-
   /**
    * @OA\Get(
    *     path="/questions/{question_id}/votes/locations",
-   *     summary="Get all locations for all the votes belonging to a specific question",
-   *     tags={"no-auth", "Location"},
-   *     @OA\Parameter(
-   *         name="question_id",
-   *         in="path",
-   *         description="ID of the question",
-   *         required=true,
-   *         @OA\Schema(
-   *             type="integer",
-   *             format="int64"
-   *         )
-   *     ),
+   *     tags={"OAuth", "Location"},
+   *     summary="Get all Locations for Votes",
+   *     description="Get all voters Locations for all the Votes belonging to a specific Question",
+   *     security={{ "bearerAuth": {} }},
+   *     operationId="showAllLocationsforQuestion",
+   *     @OA\Parameter(ref="#/components/parameters/sessionId"),
+   *     @OA\Parameter(ref="#/components/parameters/questionId"),
    *     @OA\Response(
    *         response=200,
    *         description="Successful operation",
@@ -42,12 +36,15 @@ class LocationController extends Controller
    *         )
    *     ),
    *     @OA\Response(
-   *         response=404,
-   *         description="Question not found"
-   *     )
+   *         response="404",
+   *         description="Question not found",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="status",type="string",example="error"),
+   *             @OA\Property(property="message",type="string",example="Question not found")
+   *         )
+   *     ),
    * )
-  */
-
+   */
   public function showAllLocationsforQuestion($question_id)
   {
     try {
@@ -82,5 +79,4 @@ class LocationController extends Controller
     
     return response()->json($locationsWithVoteCount, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
   }
-
 }
