@@ -39,6 +39,7 @@ class VoteController extends Controller
    *     operationId="createVote",
    *     description="Create a new vote associated with a question.",
    *     security={{ "bearerAuth": {} }},
+   *     @OA\Parameter(ref="#/components/parameters/sessionId"),
    *     @OA\Parameter(
    *         name="question_id",
    *         in="path",
@@ -71,13 +72,23 @@ class VoteController extends Controller
    *         response=400,
    *         description="Bad Request",
    *         @OA\JsonContent(
+   *             @OA\Property(property="status", type="string", example="error"),
    *             @OA\Property(property="message", type="string", example="The vote_text field is required")
+   *         )
+   *     ),
+   *     @OA\Response(
+   *         response=419,
+   *         description="Expired",
+   *         @OA\JsonContent(
+   *             @OA\Property(property="status", type="string", example="error"),
+   *             @OA\Property(property="message", type="string", example="Session expired or invalid")
    *         )
    *     ),
    *     @OA\Response(
    *         response=404,
    *         description="Question not found",
    *         @OA\JsonContent(
+   *             @OA\Property(property="status", type="string", example="error"),
    *             @OA\Property(property="message", type="string", example="Question not found")
    *         )
    *     ),
@@ -85,6 +96,7 @@ class VoteController extends Controller
    *         response=500,
    *         description="Internal server error",
    *         @OA\JsonContent(
+   *             @OA\Property(property="status", type="string", example="error"),
    *             @OA\Property(property="message", type="string", example="Internal server error")
    *         )
    *     ),
@@ -115,6 +127,7 @@ class VoteController extends Controller
    *     operationId="modifyVote",
    *     description="Modify a specific vote associated with a question.",
    *     security={{ "bearerAuth": {} }},
+   *     @OA\Parameter(ref="#/components/parameters/sessionId"),
    *     @OA\Parameter(
    *         name="question_id",
    *         in="path",
@@ -219,6 +232,7 @@ class VoteController extends Controller
    *     summary="Increase vote number",
    *     description="Increase the number of votes for a specific vote associated with a question.",
    *     operationId="increaseVoteNumber",
+   *     @OA\Parameter(ref="#/components/parameters/sessionId"),
    *     @OA\Parameter(
    *         name="question_id",
    *         in="path",

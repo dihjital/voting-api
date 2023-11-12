@@ -22,14 +22,14 @@ class CheckSessionId
 
         // check if session id is provided
         if (!$sessionId) {
-            return response()->json(['status' => 'error', 'message' => __('Session ID is required')], 400);
+            return response()->json(['status' => 'error', 'message' => __('Session id is required')], 400);
         }
 
         // check if user UUID exists in the cache for this session id
         $userUuid = Cache::get($sessionId);
 
         if (!$userUuid) {
-            return response()->json(['status' => 'error', 'message' => __('Invalid session ID')], 400);
+            return response()->json(['status' => 'error', 'message' => __('Invalid session id')], 400);
         }
 
         // store user uuid as user_id in the request so it can be used later in the application

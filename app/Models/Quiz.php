@@ -13,12 +13,9 @@ use Illuminate\Database\Eloquent\Model;
  * @author  Peter Hrobar <peter.hrobar@gmail.com>
  *
  * @OA\Schema(
- *     description="Location model holding Geo information about the voters",
- *     title="Location model",
- *     required={"ip", "country_name", "city", "latitude", "longitude"},
- *     @OA\Xml(
- *         name="Location"
- *     )
+ *     description="Quiz model, containing questions which belong to this Quiz",
+ *     title="Quiz model",
+ *     required={"name", "user_id"}
  * )
  */
 
@@ -30,72 +27,46 @@ class Quiz extends Model
      * @OA\Property(
      *     property="id",
      *     format="integer",
-     *     description="Auto-incrementing ID of the location",
-     *     title="ID",
+     *     description="Auto-incrementing ID of the Quiz",
+     *     title="Quiz ID",
      * )
      *
      * @var integer
      */
 
-    /** 
+    /**
      * @OA\Property(
-     *     property="ip", 
+     *     property="name", 
+     *     type="string", 
+     *     description="The name of the Quiz",
+     *     title="Quiz name",
+     *     example="A quiz related to the meaning of life?"
+     * )
+     * 
+     * @var string
+     */
+
+    /**
+     * @OA\Property(
+     *     property="user_id",
      *     type="string",
-     *     format="ipv4",
-     *     description="The IP address of the location",
-     *     title="IP address (IPV4)",
-     *     example="8.8.8.8"
+     *     format="uuid",
+     *     description="The UUID of the user who owns this Quiz",
+     *     title="User ID"
      * )
      * 
-     * @var ipv4
+     * @var uuid
      */
 
     /**
      * @OA\Property(
-     *     property="country_name", 
-     *     type="string", 
-     *     description="The name of the country",
-     *     title="Country name",
-     *     example="Hungary"
+     *     property="number_of_questions",
+     *     format="integer",
+     *     description="Number of Questions belonging to this Quiz",
+     *     title="Number of questions"
      * )
-     * 
-     * @var string
-     */
-
-    /**
-     * @OA\Property(
-     *     property="city", 
-     *     type="string", 
-     *     description="The name of the city",
-     *     title="City name",
-     *     example="Budapest"
-     * )
-     * 
-     * @var string
-     */
-
-    /**
-     * @OA\Property(
-     *     property="latitude", 
-     *     type="number", 
-     *     format="float",
-     *     description="The latitude coordinates",
-     *     title="Latitude"
-     * )
-     * 
-     * @var float
-     */
-
-    /**
-     * @OA\Property(
-     *     property="longitude", 
-     *     type="number", 
-     *     format="float", 
-     *     description="The longitude coordinates",
-     *     title="Longitude"
-     * )
-     * 
-     * @var float
+     *
+     * @var integer
      */
 
     /**
@@ -103,7 +74,7 @@ class Quiz extends Model
      *     property="created_at",
      *     format="datetime",
      *     default="now",
-     *     description="Date and time when the location was created",
+     *     description="Date and time when the Quiz was created",
      *     title="Created at",
      *     example="2023-06-18 12:01:01",
      * )
@@ -116,7 +87,7 @@ class Quiz extends Model
      *     property="updated_at",
      *     format="datetime",
      *     default="now",
-     *     description="Date and time when the location was updated",
+     *     description="Date and time when the Quiz was updated",
      *     title="Updated at",
      *     example="2023-06-18 12:01:01",
      * )

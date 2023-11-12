@@ -9,19 +9,16 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 
 /**
- * Class Quiz
+ * Class QptInVoter
  *
  * @package voting-api
  *
  * @author  Peter Hrobar <peter.hrobar@gmail.com>
  *
  * @OA\Schema(
- *     description="Location model holding Geo information about the voters",
- *     title="Location model",
- *     required={"ip", "country_name", "city", "latitude", "longitude"},
- *     @OA\Xml(
- *         name="Location"
- *     )
+ *     description="Model for holding the e-mail address of those voters who would like to receive the result of a vote once the relevant Question is closed.",
+ *     title="Opt-In-Voter model",
+ *     required={"email", "question_id"}
  * )
  */
 
@@ -33,33 +30,21 @@ class OptInVoter extends Model
      * @OA\Property(
      *     property="id",
      *     format="integer",
-     *     description="Auto-incrementing ID of the location",
+     *     description="Auto-incrementing ID of the Opt-In-Voter model",
      *     title="ID",
      * )
      *
      * @var integer
      */
 
-    /** 
-     * @OA\Property(
-     *     property="ip", 
-     *     type="string",
-     *     format="ipv4",
-     *     description="The IP address of the location",
-     *     title="IP address (IPV4)",
-     *     example="8.8.8.8"
-     * )
-     * 
-     * @var ipv4
-     */
-
     /**
      * @OA\Property(
-     *     property="country_name", 
+     *     property="email", 
      *     type="string", 
-     *     description="The name of the country",
-     *     title="Country name",
-     *     example="Hungary"
+     *     format="email",
+     *     description="E-mail address of the voter",
+     *     title="E-mail address",
+     *     example="abc@def.com"
      * )
      * 
      * @var string
@@ -67,38 +52,28 @@ class OptInVoter extends Model
 
     /**
      * @OA\Property(
-     *     property="city", 
-     *     type="string", 
-     *     description="The name of the city",
-     *     title="City name",
-     *     example="Budapest"
+     *     property="question_id", 
+     *     type="integer", 
+     *     format="number",
+     *     description="ID of the relevant Question model",
+     *     title="Question ID",
+     *     example="12"
      * )
      * 
-     * @var string
+     * @var integer
      */
 
     /**
      * @OA\Property(
-     *     property="latitude", 
-     *     type="number", 
-     *     format="float",
-     *     description="The latitude coordinates",
-     *     title="Latitude"
+     *     property="quiz_id", 
+     *     type="integer", 
+     *     format="number",
+     *     description="ID of the relevant Quiz model. There is an either or relation between the Question ID and the Quiz ID.",
+     *     title="Quiz ID",
+     *     example="1"
      * )
      * 
-     * @var float
-     */
-
-    /**
-     * @OA\Property(
-     *     property="longitude", 
-     *     type="number", 
-     *     format="float", 
-     *     description="The longitude coordinates",
-     *     title="Longitude"
-     * )
-     * 
-     * @var float
+     * @var integer
      */
 
     /**
@@ -106,7 +81,7 @@ class OptInVoter extends Model
      *     property="created_at",
      *     format="datetime",
      *     default="now",
-     *     description="Date and time when the location was created",
+     *     description="Date and time when the voter e-mail address was registered",
      *     title="Created at",
      *     example="2023-06-18 12:01:01",
      * )
@@ -119,7 +94,7 @@ class OptInVoter extends Model
      *     property="updated_at",
      *     format="datetime",
      *     default="now",
-     *     description="Date and time when the location was updated",
+     *     description="Date and time when the voter registration was altered",
      *     title="Updated at",
      *     example="2023-06-18 12:01:01",
      * )

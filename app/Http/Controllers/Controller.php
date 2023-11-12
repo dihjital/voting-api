@@ -20,6 +20,17 @@ use Laravel\Lumen\Routing\Controller as BaseController;
  * )
  */
 
+/**
+ * @OA\Parameter(
+ *     parameter="sessionId",
+ *     name="session-id",
+ *     in="header",
+ *     description="Session ID (UUID) used as a key to get the relevant User ID from the cache",
+ *     required=true,
+ *     @OA\Schema(type="string", format="uuid")
+ * )
+ */
+
 class Controller extends BaseController
 {
     protected static function eWrap($message): array

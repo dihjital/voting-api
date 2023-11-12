@@ -964,6 +964,9 @@
                 "operationId": "createVote",
                 "parameters": [
                     {
+                        "$ref": "#/components/parameters/sessionId"
+                    },
+                    {
                         "name": "question_id",
                         "in": "path",
                         "description": "ID of the question",
@@ -1011,9 +1014,33 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
                                         "message": {
                                             "type": "string",
                                             "example": "The vote_text field is required"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "419": {
+                        "description": "Expired",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Session expired or invalid"
                                         }
                                     },
                                     "type": "object"
@@ -1027,6 +1054,10 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
                                         "message": {
                                             "type": "string",
                                             "example": "Question not found"
@@ -1043,6 +1074,10 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "error"
+                                        },
                                         "message": {
                                             "type": "string",
                                             "example": "Internal server error"
@@ -1232,6 +1267,9 @@
                 "description": "Modify a specific vote associated with a question.",
                 "operationId": "modifyVote",
                 "parameters": [
+                    {
+                        "$ref": "#/components/parameters/sessionId"
+                    },
                     {
                         "name": "question_id",
                         "in": "path",
@@ -1450,6 +1488,9 @@
                 "operationId": "increaseVoteNumber",
                 "parameters": [
                     {
+                        "$ref": "#/components/parameters/sessionId"
+                    },
+                    {
                         "name": "question_id",
                         "in": "path",
                         "description": "ID of the question",
@@ -1614,6 +1655,60 @@
                     "name": "Location"
                 }
             },
+            "OptInVoter": {
+                "title": "Opt-In-Voter model",
+                "description": "Model for holding the e-mail address of those voters who would like to receive the result of a vote once the relevant Question is closed.",
+                "required": [
+                    "email",
+                    "question_id"
+                ],
+                "properties": {
+                    "id": {
+                        "title": "ID",
+                        "description": "Auto-incrementing ID of the Opt-In-Voter model",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "email": {
+                        "title": "E-mail address",
+                        "description": "E-mail address of the voter",
+                        "type": "string",
+                        "format": "email",
+                        "example": "abc@def.com"
+                    },
+                    "question_id": {
+                        "title": "Question ID",
+                        "description": "ID of the relevant Question model",
+                        "type": "integer",
+                        "format": "number",
+                        "example": "12"
+                    },
+                    "quiz_id": {
+                        "title": "Quiz ID",
+                        "description": "ID of the relevant Quiz model. There is an either or relation between the Question ID and the Quiz ID.",
+                        "type": "integer",
+                        "format": "number",
+                        "example": "1"
+                    },
+                    "created_at": {
+                        "title": "Created at",
+                        "description": "Date and time when the voter e-mail address was registered",
+                        "type": "string",
+                        "format": "datetime",
+                        "default": "now",
+                        "example": "2023-06-18 12:01:01"
+                    },
+                    "updated_at": {
+                        "title": "Updated at",
+                        "description": "Date and time when the voter registration was altered",
+                        "type": "string",
+                        "format": "datetime",
+                        "default": "now",
+                        "example": "2023-06-18 12:01:01"
+                    }
+                },
+                "type": "object"
+            },
             "Question": {
                 "title": "Question model",
                 "description": "Question model",
@@ -1673,6 +1768,57 @@
                 "xml": {
                     "name": "Question"
                 }
+            },
+            "Quiz": {
+                "title": "Quiz model",
+                "description": "Quiz model, containing questions which belong to this Quiz",
+                "required": [
+                    "name",
+                    "user_id"
+                ],
+                "properties": {
+                    "id": {
+                        "title": "Quiz ID",
+                        "description": "Auto-incrementing ID of the Quiz",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "name": {
+                        "title": "Quiz name",
+                        "description": "The name of the Quiz",
+                        "type": "string",
+                        "example": "A quiz related to the meaning of life?"
+                    },
+                    "user_id": {
+                        "title": "User ID",
+                        "description": "The UUID of the user who owns this Quiz",
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "number_of_questions": {
+                        "title": "Number of questions",
+                        "description": "Number of Questions belonging to this Quiz",
+                        "type": "integer",
+                        "format": "integer"
+                    },
+                    "created_at": {
+                        "title": "Created at",
+                        "description": "Date and time when the Quiz was created",
+                        "type": "string",
+                        "format": "datetime",
+                        "default": "now",
+                        "example": "2023-06-18 12:01:01"
+                    },
+                    "updated_at": {
+                        "title": "Updated at",
+                        "description": "Date and time when the Quiz was updated",
+                        "type": "string",
+                        "format": "datetime",
+                        "default": "now",
+                        "example": "2023-06-18 12:01:01"
+                    }
+                },
+                "type": "object"
             },
             "Summary": {
                 "title": "Summary model",
@@ -1804,6 +1950,18 @@
                 "type": "object",
                 "xml": {
                     "name": "Vote"
+                }
+            }
+        },
+        "parameters": {
+            "sessionId": {
+                "name": "session-id",
+                "in": "header",
+                "description": "Session ID (UUID) used as a key to get the relevant User ID from the cache",
+                "required": true,
+                "schema": {
+                    "type": "string",
+                    "format": "uuid"
                 }
             }
         },
