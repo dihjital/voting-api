@@ -900,22 +900,18 @@
         "/questions/{question_id}/votes": {
             "get": {
                 "tags": [
-                    "no-auth",
+                    "OAuth",
                     "Vote"
                 ],
-                "summary": "Get all votes for a question",
-                "description": "Retrieve all votes associated with a specific question.",
+                "summary": "Get all Votes for a Question",
+                "description": "Retrieve all Votes associated with a specific Question",
                 "operationId": "showAllVotesforQuestion",
                 "parameters": [
                     {
-                        "name": "question_id",
-                        "in": "path",
-                        "description": "ID of the question",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
+                        "$ref": "#/components/parameters/sessionId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/questionId"
                     }
                 ],
                 "responses": {
@@ -952,28 +948,27 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
                     "OAuth",
                     "Vote"
                 ],
-                "summary": "Create a new vote",
-                "description": "Create a new vote associated with a question.",
+                "summary": "Create a new Vote",
+                "description": "Create a new Vote associated with a Question",
                 "operationId": "createVote",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/sessionId"
                     },
                     {
-                        "name": "question_id",
-                        "in": "path",
-                        "description": "ID of the question",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "$ref": "#/components/parameters/questionId"
                     }
                 ],
                 "requestBody": {
@@ -1100,18 +1095,15 @@
                     "OAuth",
                     "Vote"
                 ],
-                "summary": "Delete all votes for a question",
-                "description": "Deletes all votes associated with a specific question.",
+                "summary": "Delete all Votes for a Question",
+                "description": "Deletes all Votes associated with a specific Question",
                 "operationId": "deleteAllVotesforQuestion",
                 "parameters": [
                     {
-                        "name": "question_id",
-                        "in": "path",
-                        "description": "ID of the question",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "$ref": "#/components/parameters/sessionId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/questionId"
                     }
                 ],
                 "responses": {
@@ -1182,7 +1174,7 @@
         "/questions/{question_id}/votes/{vote_id}": {
             "get": {
                 "tags": [
-                    "no-auth",
+                    "OAuth",
                     "Vote"
                 ],
                 "summary": "Show one voting option",
@@ -1190,13 +1182,10 @@
                 "operationId": "showOneVote",
                 "parameters": [
                     {
-                        "name": "question_id",
-                        "in": "path",
-                        "description": "Question ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "$ref": "#/components/parameters/sessionId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/questionId"
                     },
                     {
                         "name": "vote_id",
@@ -1256,29 +1245,27 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "put": {
                 "tags": [
                     "OAuth",
                     "Vote"
                 ],
-                "summary": "Modify vote",
-                "description": "Modify a specific vote associated with a question.",
+                "summary": "Modify Vote",
+                "description": "Modify a specific Vote associated with a Question",
                 "operationId": "modifyVote",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/sessionId"
                     },
                     {
-                        "name": "question_id",
-                        "in": "path",
-                        "description": "ID of the question",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
+                        "$ref": "#/components/parameters/questionId"
                     },
                     {
                         "name": "vote_id",
@@ -1390,18 +1377,15 @@
                     "OAuth",
                     "Vote"
                 ],
-                "summary": "Delete a vote",
-                "description": "Deletes a specific vote from a question.",
+                "summary": "Delete a Vote",
+                "description": "Deletes a specific Vote from a Question",
                 "operationId": "deleteVote",
                 "parameters": [
                     {
-                        "name": "question_id",
-                        "in": "path",
-                        "description": "ID of the question",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
+                        "$ref": "#/components/parameters/sessionId"
+                    },
+                    {
+                        "$ref": "#/components/parameters/questionId"
                     },
                     {
                         "name": "vote_id",
@@ -1480,25 +1464,18 @@
             },
             "patch": {
                 "tags": [
-                    "no-auth",
+                    "OAuth",
                     "Vote"
                 ],
                 "summary": "Increase vote number",
-                "description": "Increase the number of votes for a specific vote associated with a question.",
+                "description": "Increase the number of votes for a specific Vote associated with a Question",
                 "operationId": "increaseVoteNumber",
                 "parameters": [
                     {
                         "$ref": "#/components/parameters/sessionId"
                     },
                     {
-                        "name": "question_id",
-                        "in": "path",
-                        "description": "ID of the question",
-                        "required": true,
-                        "schema": {
-                            "type": "integer",
-                            "format": "int64"
-                        }
+                        "$ref": "#/components/parameters/questionId"
                     },
                     {
                         "name": "vote_id",
@@ -1508,6 +1485,16 @@
                         "schema": {
                             "type": "integer",
                             "format": "int64"
+                        }
+                    },
+                    {
+                        "name": "voter-ip-address",
+                        "in": "header",
+                        "description": "IP address of the voter's device",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "ipv4"
                         }
                     }
                 ],
@@ -1579,7 +1566,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         }
     },
@@ -1962,6 +1954,15 @@
                 "schema": {
                     "type": "string",
                     "format": "uuid"
+                }
+            },
+            "questionId": {
+                "name": "question_id",
+                "in": "path",
+                "description": "ID of the Question",
+                "required": true,
+                "schema": {
+                    "type": "integer"
                 }
             }
         },

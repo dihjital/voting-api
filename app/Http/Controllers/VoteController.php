@@ -30,23 +30,17 @@ class VoteController extends Controller
   use WithPushNotification, WithIpLocation;
 
   /**
-   * Create a new vote for a question.
+   * Create a new Vote for a Question.
    *
    * @OA\Post(
    *     path="/questions/{question_id}/votes",
-   *     summary="Create a new vote",
+   *     summary="Create a new Vote",
    *     tags={"OAuth", "Vote"},
    *     operationId="createVote",
-   *     description="Create a new vote associated with a question.",
+   *     description="Create a new Vote associated with a Question",
    *     security={{ "bearerAuth": {} }},
    *     @OA\Parameter(ref="#/components/parameters/sessionId"),
-   *     @OA\Parameter(
-   *         name="question_id",
-   *         in="path",
-   *         required=true,
-   *         description="ID of the question",
-   *         @OA\Schema(type="integer")
-   *     ),
+   *     @OA\Parameter(ref="#/components/parameters/questionId"),
    *     @OA\RequestBody(
    *         required=true,
    *         @OA\JsonContent(
@@ -123,21 +117,12 @@ class VoteController extends Controller
    * @OA\Put(
    *     path="/questions/{question_id}/votes/{vote_id}",
    *     tags={"OAuth", "Vote"},
-   *     summary="Modify vote",
+   *     summary="Modify Vote",
    *     operationId="modifyVote",
-   *     description="Modify a specific vote associated with a question.",
+   *     description="Modify a specific Vote associated with a Question",
    *     security={{ "bearerAuth": {} }},
    *     @OA\Parameter(ref="#/components/parameters/sessionId"),
-   *     @OA\Parameter(
-   *         name="question_id",
-   *         in="path",
-   *         description="ID of the question",
-   *         required=true,
-   *         @OA\Schema(
-   *             type="integer",
-   *             format="int64"
-   *         )
-   *     ),
+   *     @OA\Parameter(ref="#/components/parameters/questionId"),
    *     @OA\Parameter(
    *         name="vote_id",
    *         in="path",
@@ -228,21 +213,13 @@ class VoteController extends Controller
   /**
    * @OA\Patch(
    *     path="/questions/{question_id}/votes/{vote_id}",
-   *     tags={"no-auth", "Vote"},
+   *     tags={"OAuth", "Vote"},
    *     summary="Increase vote number",
-   *     description="Increase the number of votes for a specific vote associated with a question.",
+   *     description="Increase the number of votes for a specific Vote associated with a Question",
+   *     security={{ "bearerAuth": {} }},
    *     operationId="increaseVoteNumber",
    *     @OA\Parameter(ref="#/components/parameters/sessionId"),
-   *     @OA\Parameter(
-   *         name="question_id",
-   *         in="path",
-   *         description="ID of the question",
-   *         required=true,
-   *         @OA\Schema(
-   *             type="integer",
-   *             format="int64"
-   *         )
-   *     ),
+   *     @OA\Parameter(ref="#/components/parameters/questionId"),
    *     @OA\Parameter(
    *         name="vote_id",
    *         in="path",
@@ -252,6 +229,13 @@ class VoteController extends Controller
    *             type="integer",
    *             format="int64"
    *         )
+   *     ),
+   *     @OA\Parameter(
+   *         name="voter-ip-address",
+   *         in="header",
+   *         description="IP address of the voter's device",
+   *         required=false,
+   *         @OA\Schema(type="string", format="ipv4")
    *     ),
    *     @OA\Response(
    *         response="200",
@@ -323,19 +307,13 @@ class VoteController extends Controller
   /**
      * @OA\Get(
      *     path="/questions/{question_id}/votes/{vote_id}",
-     *     tags={"no-auth", "Vote"},
+     *     tags={"OAuth", "Vote"},
      *     summary="Show one voting option",
      *     description="Show one voting option belonging to a question",
+     *     security={{ "bearerAuth": {} }},
      *     operationId="showOneVote",
-     *     @OA\Parameter(
-     *         name="question_id",
-     *         description="Question ID",
-     *         in="path",
-     *         required=true,
-     *         @OA\Schema(
-     *             type="integer"
-     *         )
-     *     ),
+     *     @OA\Parameter(ref="#/components/parameters/sessionId"),
+     *     @OA\Parameter(ref="#/components/parameters/questionId"),
      *     @OA\Parameter(
      *         name="vote_id",
      *         description="Vote ID",
@@ -386,20 +364,13 @@ class VoteController extends Controller
   /**
    * @OA\Get(
    *     path="/questions/{question_id}/votes",
-   *     tags={"no-auth", "Vote"},
-   *     summary="Get all votes for a question",
-   *     description="Retrieve all votes associated with a specific question.",
+   *     tags={"OAuth", "Vote"},
+   *     summary="Get all Votes for a Question",
+   *     description="Retrieve all Votes associated with a specific Question",
+   *     security={{ "bearerAuth": {} }},
    *     operationId="showAllVotesforQuestion",
-   *     @OA\Parameter(
-   *         name="question_id",
-   *         in="path",
-   *         required=true,
-   *         description="ID of the question",
-   *         @OA\Schema(
-   *             type="integer",
-   *             format="int64"
-   *         )
-   *     ),
+   *     @OA\Parameter(ref="#/components/parameters/sessionId"),
+   *     @OA\Parameter(ref="#/components/parameters/questionId"),
    *     @OA\Response(
    *         response="200",
    *         description="Success",
@@ -458,17 +429,12 @@ class VoteController extends Controller
    * @OA\Delete(
    *     path="/questions/{question_id}/votes/{vote_id}",
    *     tags={"OAuth", "Vote"},
-   *     summary="Delete a vote",
-   *     description="Deletes a specific vote from a question.",
+   *     summary="Delete a Vote",
+   *     description="Deletes a specific Vote from a Question",
    *     security={{ "bearerAuth": {} }},
    *     operationId="deleteVote",
-   *     @OA\Parameter(
-   *         name="question_id",
-   *         in="path",
-   *         required=true,
-   *         description="ID of the question",
-   *         @OA\Schema(type="integer")
-   *     ),
+   *     @OA\Parameter(ref="#/components/parameters/sessionId"),
+   *     @OA\Parameter(ref="#/components/parameters/questionId"),
    *     @OA\Parameter(
    *         name="vote_id",
    *         in="path",
@@ -533,17 +499,12 @@ class VoteController extends Controller
    * @OA\Delete(
    *     path="/questions/{question_id}/votes",
    *     tags={"OAuth", "Vote"},
-   *     summary="Delete all votes for a question",
-   *     description="Deletes all votes associated with a specific question.",
+   *     summary="Delete all Votes for a Question",
+   *     description="Deletes all Votes associated with a specific Question",
    *     security={{ "bearerAuth": {} }},
    *     operationId="deleteAllVotesforQuestion",
-   *     @OA\Parameter(
-   *         name="question_id",
-   *         in="path",
-   *         required=true,
-   *         description="ID of the question",
-   *         @OA\Schema(type="integer")
-   *     ),
+   *     @OA\Parameter(ref="#/components/parameters/sessionId"),
+   *     @OA\Parameter(ref="#/components/parameters/questionId"),
    *     @OA\Response(
    *         response=200,
    *         description="All votes deleted successfully",

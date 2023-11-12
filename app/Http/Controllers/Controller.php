@@ -31,6 +31,17 @@ use Laravel\Lumen\Routing\Controller as BaseController;
  * )
  */
 
+/**
+ * @OA\Parameter(
+ *     parameter="questionId",
+ *     name="question_id",
+ *     in="path",
+ *     required=true,
+ *     description="ID of the Question",
+ *     @OA\Schema(type="integer")
+ * )
+ */
+
 class Controller extends BaseController
 {
     protected static function eWrap($message): array
