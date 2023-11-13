@@ -19,10 +19,12 @@ class QuestionController extends Controller
   /**
    * @OA\Get(
    *     path="/questions",
-   *     tags={"no-auth", "Question"},
+   *     tags={"OAuth", "Question"},
    *     summary="Show all questions",
-   *     description="Show all questions registered in the database",
+   *     description="Show all Questions registered in the database",
+   *     security={{ "bearerAuth": {} }},
    *     operationId="showAllQuestions",
+   *     @OA\Parameter(ref="#/components/parameters/sessionId"),
    *     @OA\Parameter(
    *         name="page",
    *         in="query",
@@ -154,6 +156,8 @@ class QuestionController extends Controller
   public function createQuestion(Request $request, CreateNewQuestion $createNewQuestion)
   {
     try {
+      \Illuminate\Support\Facades\Log::debug($request->all());
+
       $question = $createNewQuestion->create($request->all());
     } catch (\Exception $e) {
       return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());

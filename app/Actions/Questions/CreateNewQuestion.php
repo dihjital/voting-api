@@ -32,7 +32,7 @@ class CreateNewQuestion extends QuestionActions
             throw new \Exception(__('You have reached the maximum number of questions allowed'), 403);
         }
 
-        if (array_key_exists('quiz_id', $input)) {
+        if (array_key_exists('quiz_id', $input) && $input['quiz_id'] !== null) {
             if (! Gate::allows('add-new-question-to-quiz', Quiz::findOrFail($input['quiz_id']))) {
                 throw new \Exception(__('You have reached the maximum number of questions allowed for this quiz'), 403);
             }
@@ -47,7 +47,9 @@ class CreateNewQuestion extends QuestionActions
               'user_id' => $input['user_id'],
             ]);
 
-            array_key_exists('quiz_id', $input) && $q->quizzes()->attach($input['quiz_id']);
+            array_key_exists('quiz_id', $input)
+                && $input['quiz_id'] !== null 
+                && $q->quizzes()->attach($input['quiz_id']);
 
             return $q;
         } catch (\Exception $e) {

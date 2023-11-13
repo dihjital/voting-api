@@ -106,13 +106,16 @@
         "/questions": {
             "get": {
                 "tags": [
-                    "no-auth",
+                    "OAuth",
                     "Question"
                 ],
                 "summary": "Show all questions",
-                "description": "Show all questions registered in the database",
+                "description": "Show all Questions registered in the database",
                 "operationId": "showAllQuestions",
                 "parameters": [
+                    {
+                        "$ref": "#/components/parameters/sessionId"
+                    },
                     {
                         "name": "page",
                         "in": "query",
@@ -136,7 +139,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             },
             "post": {
                 "tags": [
