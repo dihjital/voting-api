@@ -18,7 +18,7 @@ class ModifyVote extends VoteActions
 
         $validator = Validator::make($input, [
             'vote_text' => 'required',
-            'number_of_votes' => 'numeric|integer|required'
+            'number_of_votes' => 'nullable|numeric|integer',
         ]);
       
         if ($validator->fails()) {
@@ -33,12 +33,14 @@ class ModifyVote extends VoteActions
       
         try {
             $vote->vote_text = $input['vote_text'];
-            $vote->number_of_votes = 
-                !is_null($input['number_of_votes']) 
-                    ? intval($input['number_of_votes']) 
-                    : $vote->number_of_votes + 1;
-      
+            $vote->number_of_votes = is_null($input['number_of_votes'])
+                ? $vote->number_of_votes // If number_of_votes is null then we use the current value
+                : ($input['number_of_votes'] === 0 ? 0 : $vote->number_of_votes + 1);
+
             if ($vote->save()) {
+                // If we reset the number of votes to 0 then the attached locations should be also deleted
+                $input['number_of_votes'] === 0 && $vote->locations()->detach();
+
                 return $vote;
             }
         } catch (\Exception $e) {
