@@ -29,7 +29,11 @@ class DeleteVote extends VoteActions
         $this->findQuestionForVote($input);
       
         try {
-            return Vote::where('question_id', $input['question_id'])->delete();
+            // We need to loop through each of them so the image can be deleted 
+            // from the model using the deleting method
+            Vote::where('question_id', $input['question_id'])->get()->each->delete();
+
+            return true;
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage(), 500);
         }

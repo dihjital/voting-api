@@ -459,7 +459,9 @@ class VoteController extends Controller
   public function deleteVote($question_id, $vote_id, Request $request, DeleteVote $deleteVote)
   {
     $input = [
-      ...$request->all(), 'question_id' => $question_id, 'vote_id' => $vote_id
+      ...$request->all(), 
+      'question_id' => $question_id, 
+      'vote_id' => $vote_id,
     ];
 
     try {
@@ -518,10 +520,11 @@ class VoteController extends Controller
    * )
    */
 
-  public function deleteAllVotesforQuestion($question_id, $vote_id, Request $request, DeleteVote $deleteVote)
+  public function deleteAllVotesforQuestion($question_id, Request $request, DeleteVote $deleteVote)
   {
     $input = [
-      ...$request->all(), 'question_id' => $question_id, 'vote_id' => $vote_id
+      ...$request->all(), 
+      'question_id' => $question_id,
     ];
 
     try {
