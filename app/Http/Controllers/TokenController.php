@@ -97,9 +97,9 @@ class TokenController extends Controller
                 return response()->json(self::sWrap(__('Token registered successfully.')), 201);
             }
 
-            return response()->json(self::eWrap(__('Token is already registered.')), 409);
+            return response()->error(__('Token already registered'), 409);
         } catch (\Exception $e) {
-            return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
+            return response()->error($e->getMessage(), $e->getCode());
         }
     }
 
@@ -152,9 +152,9 @@ class TokenController extends Controller
                 return response()->json(self::sWrap(__('Token successfully deleted.')), 200);
             }
 
-            return response()->json(self::eWrap(__('Token not found.')), 404);
+            return response()->error(__('Token not found'), 404);
         } catch (\Exception $e) {
-            return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
+            return response()->error($e->getMessage(), $e->getCode());
         }
     }
 }

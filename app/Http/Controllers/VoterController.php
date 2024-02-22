@@ -15,7 +15,7 @@ class VoterController extends Controller
         try {
             $registerNewOptIn->register($request->all());
         } catch (\Exception $e) {
-            return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
+            return response()->error($e->getMessage(), $e->getCode());
         }
 
         return response()->json(self::sWrap(__('Opted-in successfully')), 201);

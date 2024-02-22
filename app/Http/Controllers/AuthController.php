@@ -30,9 +30,8 @@ class AuthController extends Controller
         'password_confirm' => 'required|same:password',
       ]);
 
-      if ($validator->fails()) {
-        return response()->json(['status' => 'error', 'message' => $validator->errors()->first()], 400);
-      }
+      if ($validator->fails())
+        return response()->error($validator->errors()->first(), 400);
 
       $name = $request->name;
       $email = $request->email;
@@ -47,7 +46,7 @@ class AuthController extends Controller
           return response()->json(['status' => 'success', 'message' => 'User successfully created'], 200);
         }
       } catch (\Exception $e) {
-          return response()->json(['status' => 'error', 'message' => 'Failed to create user'], 500);
+          return response()->error(__('Failed to create user'), 500);
       }
 
     }
@@ -58,7 +57,7 @@ class AuthController extends Controller
         $login = new LoginMobile($request);
         return response()->json($login->login(), 200);
       } catch (\Exception $e) {
-        return response()->json(['status' => 'error', 'message' => $e->getMessage()], $e->getCode());
+        return response()->error($e->getMessage(), $e->getCode());
       }
     }
 
@@ -71,7 +70,7 @@ class AuthController extends Controller
         });
         return response()->json(['status' => 'success', 'message' => __('User logged out successfully')], 200);
       } catch (\Exception $e) {
-        return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        return response()->error($e->getMessage(), 500);
       }
 
     }
@@ -85,7 +84,7 @@ class AuthController extends Controller
       ]);
 
       if ($validator->fails()) {
-        return response()->json(['status' => 'error', 'message' => $validator->errors()->first()], 400);
+        return response()->error($validator->errors()->first(), 400);
       }
 
       $email = $request->email;
@@ -111,17 +110,15 @@ class AuthController extends Controller
         ]);
 
         if ($response->clientError())
-          return response()->json(['status' => 'error', 'message' => 'Client error occured'], $response->status());
+          return response()->error('Client error occured', $response->status());
 
         if ($response->serverError())
-          return response()->json(['status' => 'error', 'message' => 'Server error occured'], $response->status());
+          return response()->error('Server error occured', $response->status());
 
       } catch (RequestException $e) {
-        return response()->json($e->getMessage(), 500);
+        return response()->error($e->getMessage(), 500);
       }
 
       return $response->json();
-
     }
-
 }

@@ -49,7 +49,7 @@ class QuestionController extends Controller
     try {
       $data = $showAllQuestions->show($request->all());
     } catch (\Exception $e) {
-      return response()->json(self::eWrap($e->getMessage()), $e->getCode());
+      return response()->error($e->getMessage(), $e->getCode());
     }
 
     return response()->json($data)->setEncodingOptions(JSON_NUMERIC_CHECK);
@@ -105,7 +105,7 @@ class QuestionController extends Controller
     try {
       $question = $showOneQuestion->show($input);
     } catch (\Exception $e) {
-      return response()->json(self::eWrap($e->getMessage()), $e->getCode());
+      return response()->error($e->getMessage(), $e->getCode());
     }
 
     return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
@@ -156,11 +156,9 @@ class QuestionController extends Controller
   public function createQuestion(Request $request, CreateNewQuestion $createNewQuestion)
   {
     try {
-      \Illuminate\Support\Facades\Log::debug($request->all());
-
       $question = $createNewQuestion->create($request->all());
     } catch (\Exception $e) {
-      return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
+      return response()->error($e->getMessage(), $e->getCode());
     }
 
     return response()->json([...self::sWrap(__('Question successfully created')), 'question' => $question], 201);
@@ -229,7 +227,7 @@ class QuestionController extends Controller
     try {
       $question = $modifyQuestion->update($input);
     } catch (\Exception $e) {
-      return response()->json(self::eWrap($e->getMessage()), $e->getCode());
+      return response()->error($e->getMessage(), $e->getCode());
     }
     
     return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
@@ -294,7 +292,7 @@ class QuestionController extends Controller
       $question = $openQuestion->open($input);
       $question->is_closed && event(new QuestionClosed($question));
     } catch (\Exception $e) {
-      return response()->json(self::eWrap($e->getMessage()), $e->getCode());
+      return response()->error($e->getMessage(), $e->getCode());
     }
 
     return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
@@ -343,10 +341,10 @@ class QuestionController extends Controller
         return response()->json(self::sWrap(__('Question deleted successfully')), 200);
       }
     } catch (\Exception $e) {
-      return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
+      return response()->error($e->getMessage(), $e->getCode());
     }
 
-    return response()->json(self::eWrap(__('Internal Server Error')), 500);
+    return response()->error(__('Internal Server Error'), 500);
   }
 
   public function getQuizzesForQuestion($question_id, Request $request, ShowAllQuizzesForQuestion $showAllQuizzesForQuestion)
@@ -356,7 +354,7 @@ class QuestionController extends Controller
     try {
       $question = $showAllQuizzesForQuestion->show($input);
     } catch (\Exception $e) {
-      return response()->json(self::eWrap($e->getMessage()), $e->getCode());
+      return response()->error($e->getMessage(), $e->getCode());
     }
 
     return response()->json($question, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);

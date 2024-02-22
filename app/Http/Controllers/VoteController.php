@@ -105,9 +105,9 @@ class VoteController extends Controller
     $input = self::mergeQuestionId($request->all(), $question_id);
 
     try {
-      $vote = $createNewVote->create($input);
+      $vote = $createNewVote->create($request, $input);
     } catch (\Exception $e) {
-      return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
+      return response()->error($e->getMessage(), $e->getCode());
     }
 
     return response()->json($vote, 201);
@@ -204,7 +204,7 @@ class VoteController extends Controller
     try {
       $vote = $modifyVote->update($input);
     } catch (\Exception $e) {
-      return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
+      return response()->error($e->getMessage(), $e->getCode());
     }
     
     return response()->json($vote, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
@@ -298,7 +298,7 @@ class VoteController extends Controller
       $this->initWithIpLocation($newVote->id)
           ->gatherIpLocationIf(self::isValidIpAddress(...), $request->header('voter-ip-address') ?? request()->ip());
     } catch (\Exception $e) {
-      return response()->json(self::eWrap($e->getMessage()), $e->getCode());
+      return response()->error($e->getMessage(), $e->getCode());
     }
     
     return response()->json($newVote->makeHidden('question'), 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
@@ -355,7 +355,7 @@ class VoteController extends Controller
     try {
       $vote = $showOneVote->show($input);
     } catch (\Exception $e) {
-      return response()->json(self::eWrap($e->getMessage()), $e->getCode());
+      return response()->error($e->getMessage(), $e->getCode());
     }
 
     return response()->json($vote, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
@@ -406,7 +406,7 @@ class VoteController extends Controller
     try {
       $votes = $showAllVotes->show($input);
     } catch (\Exception $e) {
-      return response()->json(self::eWrap($e->getMessage()), $e->getCode());
+      return response()->error($e->getMessage(), $e->getCode());
     }
 
     return response()->json($votes, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
@@ -476,10 +476,10 @@ class VoteController extends Controller
         return response()->json(self::sWrap(__('Vote deleted successfully')), 200);
       }
     } catch (\Exception $e) {
-      return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
+      return response()->error($e->getMessage(), $e->getCode());
     }
 
-    return response()->json(self::eWrap(__('Internal Server Error')), 500);
+    return response()->error(__('Internal server error'), 500);
   }
 
   /**
@@ -529,7 +529,7 @@ class VoteController extends Controller
         return response()->json(self::sWrap(__('All votes deleted successfully')), 200);
       }
     } catch (\Exception $e) {
-      return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
+      return response()->error($e->getMessage(), $e->getCode());
     }
 
     return response()->json(self::eWrap(__('Internal Server Error')), 500);    

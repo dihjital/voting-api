@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Class Vote
@@ -106,7 +108,12 @@ class Vote extends Model
         'vote_text', 
         'number_of_votes', 
         'question_id',
-    ];    
+        'image_path',
+    ];
+
+    protected $appends = [
+        'image_url',
+    ];
     
     /**
      * The attributes that are excluded from the model's JSON form.
@@ -121,7 +128,17 @@ class Vote extends Model
 
         static::deleting(function ($vote) {
             $vote->locations()->detach();
+
+            if ($vote->image_path)
+                Storage::delete($vote->image_path);
         });
+    }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        return $this->image_path 
+            ? url(str_replace("public", "storage", $this->image_path))
+            : null;
     }
 
     /**

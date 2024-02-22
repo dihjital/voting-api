@@ -12,13 +12,11 @@ class RenewSession
         $sessionId = $request->header('session-id');
 
         // check if session id is provided
-        if (!$sessionId) {
-            return response()->json(['status' => 'error', 'message' => __('Session ID is required')], 400);
-        }
+        if (!$sessionId)
+            return response()->error(__('Session Id is required'), 400);
 
-        if (!Cache::has($sessionId)) {
-            return response()->json(['status' => 'error', 'message' => __('Session expired or invalid')], 419);
-        }
+        if (!Cache::has($sessionId))
+            return response()->error(__('Session expired or invalid'), 419);
 
         // Get user UUID from the cache
         $userUuid = Cache::get($sessionId);

@@ -47,7 +47,7 @@ class LocationController extends Controller
     try {
       $question = Question::with(['votes.locations'])->findOrFail($question_id);
     } catch (\Exception $e) {
-      return response()->json(self::eWrap(__('Question not found')), 404);
+      return response()->error(__('Question not found'), 404);
     }
 
     $locations = Location::with(['votes' => function ($query) use ($question_id) {

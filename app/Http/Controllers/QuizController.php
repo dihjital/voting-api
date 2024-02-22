@@ -20,7 +20,7 @@ class QuizController extends Controller
         try {
             $data = $showAllQuestionsForQuiz->show($input);
         } catch (\Exception $e) {
-            return response()->json(self::eWrap($e->getMessage()), $e->getCode());
+            return response()->error($e->getMessage(), $e->getCode());
         }
 
         return response()->json($data)->setEncodingOptions(JSON_NUMERIC_CHECK);
@@ -31,7 +31,7 @@ class QuizController extends Controller
         try {
             $data = $showAllQuizzes->show($request->all());
         } catch (\Exception $e) {
-            return response()->json(self::eWrap($e->getMessage()), $e->getCode());
+            return response()->error($e->getMessage(), $e->getCode());
         }
 
         return response()->json($data)->setEncodingOptions(JSON_NUMERIC_CHECK);
@@ -44,7 +44,7 @@ class QuizController extends Controller
         try {
             $quiz = $showOneQuiz->show($input);
         } catch (\Exception $e) {
-            return response()->json(self::eWrap($e->getMessage()), $e->getCode());
+            return response()->error($e->getMessage(), $e->getCode());
         }
 
         return response()->json($quiz, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
@@ -55,7 +55,7 @@ class QuizController extends Controller
         try {
             $quiz = $createNewQuiz->create($request->all());
         } catch (\Exception $e) {
-            return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
+            return response()->error($e->getMessage(), $e->getCode());
         }
 
         return response()->json([...self::sWrap(__('Quiz successfully created')), 'quiz' => $quiz], 201);
@@ -68,7 +68,7 @@ class QuizController extends Controller
         try {
             $quiz = $modifyQuiz->update($input);
         } catch (\Exception $e) {
-            return response()->json(self::eWrap($e->getMessage()), $e->getCode());
+            return response()->error($e->getMessage(), $e->getCode());
         }
         
         return response()->json($quiz, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
@@ -83,9 +83,9 @@ class QuizController extends Controller
                 return response()->json(self::sWrap(__('Quiz deleted successfully')), 200);
             }
         } catch (\Exception $e) {
-            return response()->json(self::eWrap(__($e->getMessage())), $e->getCode());
+            return response()->error($e->getMessage(), $e->getCode());
         }
 
-        return response()->json(self::eWrap(__('Internal Server Error')), 500);
+        return response()->error(__('Internal server error'), 500);
     }
 }
