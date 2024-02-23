@@ -24,7 +24,7 @@ $router->get('/', function () use ($router) {
 $router->post('/login', ['uses' => 'AuthController@login']);
 $router->post('/login/mobile', ['uses' => 'AuthController@loginMobile']);
 
-$router->post('/register', ['uses' => 'AuthController@register']);
+// $router->post('/register', ['uses' => 'AuthController@register']);
 
 // This is a simple route to check if the provided Bearer token is still valid or not ...
 $router->get('/v1/oauth/token/validate', function () {
