@@ -10,7 +10,7 @@ return [
       'max_number_of_questions' => env('MAX_NUMBER_OF_QUESTIONS', 8),
     ],
     'vote' => [
-      'max_number_of_votes' => env('MAX_NUMBER_OF_VOTES', 10),
+      'max_number_of_votes' => env('MAX_NUMBER_OF_VOTES', 8),
     ],
     'pagination' => [
       'items_per_page' => 5,
