@@ -29,9 +29,7 @@ class PushNotification extends Job
      * @return void
      */
     public function handle()
-    { 
-        // TODO: Wait 3 seconds so I can test QUEUE_CONNECTION ... should be removed from PROD
-        sleep(3);
+    {
         $response = Http::withHeaders($this->headers)->post($this->url, $this->payload);
 
         // Handle the responses

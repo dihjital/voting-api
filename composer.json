@@ -10,6 +10,7 @@
         "dusterio/lumen-passport": "^0.3.6",
         "guzzlehttp/guzzle": "^7.5",
         "laravel/lumen-framework": "^8.3.1",
+        "pusher/pusher-php-server": "^7.2",
         "zircote/swagger-php": "3.*"
     },
     "require-dev": {

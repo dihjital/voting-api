@@ -14,6 +14,8 @@ use App\Models\Question;
 use App\Traits\WithIpLocation;
 use App\Traits\WithPushNotification;
 
+use App\Events\VoteReceived;
+
 use Illuminate\Http\Request;
 
 /**
@@ -285,6 +287,10 @@ class VoteController extends Controller
     
     try {
       $newVote = $increaseVoteNumber->increase($input);
+
+      // Pusher notification
+      event(new VoteReceived(Question::find($question_id)));
+
       $this->initWithPushNotification(
               $newVote->question,
               $newVote,

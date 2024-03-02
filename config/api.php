@@ -13,7 +13,7 @@ return [
       'max_number_of_votes' => env('MAX_NUMBER_OF_VOTES', 8),
     ],
     'pagination' => [
-      'items_per_page' => 5,
+      'items_per_page' => 6,
     ],
     'voting-admin' => [
       'url' => env('VOTING_ADMIN_URL', 'https://voting-admin.votes365.org'),
