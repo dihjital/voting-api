@@ -19,6 +19,7 @@ class ModifyQuestion extends QuestionActions
         // Unless it is specifically given in the PUT request (and it should be BTW)
         $validator = Validator::make($input, [
             'question_text' => 'required',
+            'closed_at' => 'nullable|date',
             // 'is_closed' => 'nullable|boolean',
             'user_id' => 'required|uuid',
         ]);
@@ -31,6 +32,7 @@ class ModifyQuestion extends QuestionActions
             
         try {
             $question->question_text = $input['question_text'];
+            $question->closed_at = $input['closed_at'] ?? null;
             /* if (isset($input['is_closed']))
               $new_question->is_closed = $input['is_closed']; */
       

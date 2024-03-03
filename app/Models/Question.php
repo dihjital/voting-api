@@ -153,8 +153,18 @@ class Question extends Model
     protected $fillable = [
         'question_text',
         'is_closed',
+        'closed_at',
         'user_id',
-    ];    
+    ];  
+    
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'closed_at' => 'datetime',
+    ];
     
     /**
      * The attributes that are excluded from the model's JSON form.
