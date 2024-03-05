@@ -36,9 +36,12 @@ class QuestionActions Extends \App\Actions\Actions
             // Log::debug('Request input parameters (findQuestionForUserId): '.print_r($input, true));
             throw new \Exception($validator->errors()->first(), 400);
         }
-      
+              
         try {
-            return Question::whereId($input['question_id'])->where('user_id', $input['user_id'])->firstOrFail();
+            return 
+                Question::whereId($input['question_id'])
+                    ->where('user_id', $input['user_id'])
+                    ->firstOrFail();
         } catch (\Exception $e) {
             // Log::debug('Request input parameters (findQuestionForUserId): '.print_r($input, true));
             throw new \Exception(__('Question not found'), 404);
@@ -56,7 +59,11 @@ class QuestionActions Extends \App\Actions\Actions
         }
       
         try {
-            return Question::where('user_id', $input['user_id'])->orderBy('is_closed')->get();
+            return Question::where('user_id', $input['user_id'])
+                ->unless(array_key_exists('closed', $input), fn($q) => $q->where('is_closed', 0))
+                ->unless(array_key_exists('quizzes', $input), fn($q) => $q->whereDoesntHave('quizzes'))
+                ->orderBy('is_closed')
+                ->get();
         } catch (\Exception $e) {
             throw new \Exception(__('Question not found'), 404);
         }
