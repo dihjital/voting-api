@@ -290,7 +290,6 @@ class QuestionController extends Controller
 
     try {
       $question = $openQuestion->open($input);
-      $question->is_closed && event(new QuestionClosed($question));
     } catch (\Exception $e) {
       return response()->error($e->getMessage(), $e->getCode());
     }

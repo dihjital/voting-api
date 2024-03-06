@@ -26,6 +26,6 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('app:close-questions')->dailyAt('01:00');;
+        $schedule->command('app:close-questions')->dailyAt('01:00');
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Events\QuestionClosed;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -186,6 +188,11 @@ class Question extends Model
     public static function boot()
     {
         parent::boot();
+
+        static::updated(function ($question) {
+            $question->is_closed &&
+                event(new QuestionClosed($question));
+        });
 
         static::deleting(function ($question) {
             $question->votes()->delete();
