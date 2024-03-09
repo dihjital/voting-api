@@ -40,6 +40,7 @@ class CloseQuestions extends Command
                         Log::info('app:close-questions is closing question: ' . $question->question_text);
                     });
                 })
+                ->get()
                 ->each
                 ->update(['is_closed' => 1]);
 
