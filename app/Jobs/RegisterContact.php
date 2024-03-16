@@ -45,7 +45,6 @@ class RegisterContact extends Job
 
     protected function getBrevoApiInstance(): ?ContactsApi
     {
-        Log::debug('api-key: ' . $this->apiKey);
         $conf = Configuration::getDefaultConfiguration()
             ->setApiKey('api-key', $this->apiKey);
 
