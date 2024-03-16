@@ -4,6 +4,8 @@ namespace App\Listeners;
 
 use App\Models\OptInVoter;
 use App\Events\QuestionClosed;
+
+use App\Jobs\RegisterContact;
 use App\Jobs\EmailResultsToVoter;
 
 use Illuminate\Support\Facades\Log;
@@ -32,6 +34,7 @@ class QuestionClosedListener implements ShouldQueue
             // Send voting results summary e-mail to opted-in voter ...
             Log::debug('Question to process: '.$voter->question->question_text);
             dispatch(new EmailResultsToVoter($voter->question, $voter->email));
+            dispatch(new RegisterContact($voter->email));
 
             // Once we initiated the e-mail we delete the voter from the opt-in model ...
             $voter->delete();

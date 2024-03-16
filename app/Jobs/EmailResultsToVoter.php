@@ -23,7 +23,7 @@ class EmailResultsToVoter extends Job
         private $voterEmail)
     {
         $this->templateId = 11; // Brevo mail temaplate id
-        $this->apiKey = env('BREVO_API_KEY');
+        $this->apiKey = env('BREVO_RESULTS_API_KEY');
         $this->chartId = 'zm-710fe8ea-3310-45af-807e-e10634eb78b7';
     }
 
