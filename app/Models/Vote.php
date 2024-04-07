@@ -129,7 +129,7 @@ class Vote extends Model
         static::deleting(function ($vote) {
             $vote->locations()->detach();
 
-            if ($vote->image_path)
+            if ($vote->image_path && Storage::exists($vote->image_path))
                 Storage::delete($vote->image_path);
         });
     }

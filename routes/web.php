@@ -78,6 +78,7 @@ $router->group(['middleware' => [
     $router->put('/quizzes/{quiz_id: [0-9]+}', ['uses' => 'QuizController@modifyQuiz']);
     $router->put('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@modifyQuestion']);
     $router->put('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@modifyVote']);
+    $router->post('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@modifyVote']); // With file upload ...
 });
 
 $router->group(['middleware' => [

@@ -204,7 +204,7 @@ class VoteController extends Controller
     ];
 
     try {
-      $vote = $modifyVote->update($input);
+      $vote = $modifyVote->update($request, $input);
     } catch (\Exception $e) {
       return response()->error($e->getMessage(), $e->getCode());
     }

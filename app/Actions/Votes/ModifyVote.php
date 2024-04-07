@@ -5,6 +5,10 @@ namespace App\Actions\Votes;
 use App\Models\Vote;
 use Illuminate\Support\Facades\Validator;
 
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Log;
+
 class ModifyVote extends VoteActions
 {
     /**
@@ -12,13 +16,14 @@ class ModifyVote extends VoteActions
      *
      * @param  array<string, string>  $input
      */
-    public function update(array $input): Vote
+    public function update(Request $request, array $input): Vote
     {
         $question = $this->findQuestionForVote($input);
 
         $validator = Validator::make($input, [
             'vote_text' => 'required',
             'number_of_votes' => 'nullable|numeric|integer',
+            'image' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
       
         if ($validator->fails()) {
@@ -30,6 +35,18 @@ class ModifyVote extends VoteActions
         if (!$vote) {
             throw new \Exception(__('Vote not found'), 404);
         }
+
+        // We need a request parameter to indicate that we intend to delete the image
+        /* if ($request->hasFile('image')) {
+            if ($vote->image_path) {
+                // delete
+            }
+            // store
+            // $imagePath = $request->file('image')->store('public/images')
+        } else {
+            // How to indicate that the image is no longer needed?
+            // Can we have a zero length image object?
+        } */
       
         try {
             $vote->vote_text = $input['vote_text'];
