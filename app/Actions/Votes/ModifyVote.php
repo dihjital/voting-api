@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class ModifyVote extends VoteActions
 {
@@ -35,24 +36,22 @@ class ModifyVote extends VoteActions
         if (!$vote) {
             throw new \Exception(__('Vote not found'), 404);
         }
-
-        // We need a request parameter to indicate that we intend to delete the image
-        /* if ($request->hasFile('image')) {
-            if ($vote->image_path) {
-                // delete
-            }
-            // store
-            // $imagePath = $request->file('image')->store('public/images')
-        } else {
-            // How to indicate that the image is no longer needed?
-            // Can we have a zero length image object?
-        } */
-      
+     
         try {
             $vote->vote_text = $input['vote_text'];
             $vote->number_of_votes = is_null($input['number_of_votes'])
                 ? $vote->number_of_votes // If number_of_votes is null then we use the current value
                 : ($input['number_of_votes'] === 0 ? 0 : $vote->number_of_votes + 1);
+
+            if ($request->hasFile('image')) {
+                if ($vote->image_path && Storage::exists($vote->image_path)) {
+                    Storage::delete($vote->image_path);
+                }
+                $vote->image_path = $request->file('image')->store('public/images');
+            } else {
+                // How to indicate that the image is no longer needed?
+                // Can we have a zero length image object?
+            }
 
             if ($vote->save()) {
                 // If we reset the number of votes to 0 then the attached locations should be also deleted
