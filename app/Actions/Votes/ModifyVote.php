@@ -36,12 +36,12 @@ class ModifyVote extends VoteActions
         if (!$vote) {
             throw new \Exception(__('Vote not found'), 404);
         }
-     
+
         try {
             $vote->vote_text = $input['vote_text'];
-            $vote->number_of_votes = is_null($input['number_of_votes'])
-                ? $vote->number_of_votes // If number_of_votes is null then we use the current value
-                : ($input['number_of_votes'] === 0 ? 0 : $vote->number_of_votes + 1);
+            $vote->number_of_votes = is_numeric($input['number_of_votes'])
+                ? ($input['number_of_votes'] === 0 ? 0 : $vote->number_of_votes + 1)
+                : $vote->number_of_votes; // If number_of_votes is null then we use the current value
 
             if ($request->hasFile('image')) {
                 if ($vote->image_path && Storage::exists($vote->image_path)) {
