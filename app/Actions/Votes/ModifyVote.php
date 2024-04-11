@@ -48,9 +48,6 @@ class ModifyVote extends VoteActions
                     Storage::delete($vote->image_path);
                 }
                 $vote->image_path = $request->file('image')->store('public/images');
-            } else {
-                // How to indicate that the image is no longer needed?
-                // Can we have a zero length image object?
             }
 
             if ($vote->save()) {
