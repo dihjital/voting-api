@@ -93,6 +93,7 @@ $router->group(['middleware' => [
     $router->delete('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@deleteQuestion']);
     $router->delete('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@deleteVote']);
     $router->delete('/questions/{question_id: [0-9]+}/votes', ['uses' => 'VoteController@deleteAllVotesforQuestion']);
+    $router->delete('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}/image', ['uses' => 'VoteController@deleteVoteImage']);
 });
 
 // If session-id is provided then we will try to get the relevant user id from cache

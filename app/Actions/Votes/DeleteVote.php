@@ -3,6 +3,7 @@
 namespace App\Actions\Votes;
 
 use App\Models\Vote;
+use Illuminate\Support\Facades\Storage;
 
 class DeleteVote extends VoteActions
 {
@@ -37,6 +38,27 @@ class DeleteVote extends VoteActions
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage(), 500);
         }
+    }
+
+    public function deleteVoteImage(array $input): bool
+    {
+        $question = $this->findQuestionForVote($input);
+
+        $vote = $question->votes->where('id', '=', $input['vote_id'])->first();
+
+        if (!$vote) {
+            throw new \Exception(__('Vote not found'), 404);
+        }
+
+        if ($vote->image_path && Storage::exists($vote->image_path)) {
+            Storage::delete($vote->image_path);
+        } else {
+            throw new \Exception(__('This vote does not have an image'), 404);
+        }
+
+        $vote->image_path = null;
+        
+        return $vote->save();
     }
 
     public static function getVoteData(array $input): Vote

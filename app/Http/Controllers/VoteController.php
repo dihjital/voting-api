@@ -474,13 +474,14 @@ class VoteController extends Controller
       $vote = $deleteVote::getVoteData($input);
 
       if ($deleteVote->delete($input)) {
-        // TODO: Generalize Push Notifications ...
-        $this->initWithPushNotification(
+        // Use Pusher from now on
+        // Move this to the Vote model
+        /* $this->initWithPushNotification(
           $vote->question,
           $vote,
           config('api.defaults.voting-admin.url')."/$question_id/votes",
           'delete')
-        ->sendPushNotification();
+        ->sendPushNotification(); */
         return response()->json(self::sWrap(__('Vote deleted successfully')), 200);
       }
     } catch (\Exception $e) {
@@ -542,5 +543,27 @@ class VoteController extends Controller
     }
 
     return response()->json(self::eWrap(__('Internal Server Error')), 500);    
+  }
+
+  public function deleteVoteImage($question_id, $vote_id, Request $request, DeleteVote $deleteVote)
+  {
+    $input = [
+      ...$request->all(), 
+      'question_id' => $question_id, 
+      'vote_id' => $vote_id,
+    ];
+
+    try {
+      $vote = $deleteVote::getVoteData($input);
+
+      if ($deleteVote->deleteVoteImage($input)) {
+        // TODO: Generalize Push Notifications ...
+        return response()->json(self::sWrap(__('Vote image deleted successfully')), 200);
+      }
+    } catch (\Exception $e) {
+      return response()->error($e->getMessage(), $e->getCode());
+    }
+
+    return response()->error(__('Internal server error'), 500);
   }
 }
