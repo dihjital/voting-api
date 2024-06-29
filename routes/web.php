@@ -120,9 +120,10 @@ $router->group(['middleware' => [
     $router->get('/summary', ['uses' => 'SummaryController@getSummary']);
     // Locations (A vote might have multiple locations)
     $router->get('/questions/{question_id: [0-9]+}/votes/locations', ['uses' => 'LocationController@showAllLocationsforQuestion']);
+    $router->get('/questions/{question_id: [0-9]+}/check-voter', ['uses' => 'VoterRegistrationController@check']);
 });
 
-// Allows to place a vote
+// Allows to place a vote and register a voter
 $router->group(['middleware' => [
     'auth',
     'scopes:vote',
@@ -132,6 +133,7 @@ $router->group(['middleware' => [
   ], 
   function () use ($router) {
     $router->patch('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@increaseVoteNumber']);
+    $router->post('/questions/{question_id: [0-9]+}/register-voter', ['uses' => 'VoterRegistrationController@register']);
 });
 
 // Request FCM tokens for push notifications

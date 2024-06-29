@@ -6,6 +6,7 @@ use App\Events\QuestionClosed;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class Question
@@ -156,6 +157,7 @@ class Question extends Model
         'question_text',
         'is_closed',
         'closed_at',
+        'is_secure',
         'user_id',
     ];  
     
@@ -166,6 +168,7 @@ class Question extends Model
      */
     protected $casts = [
         'closed_at' => 'datetime',
+        'is_secure' => 'boolean',
     ];
     
     /**
@@ -256,7 +259,11 @@ class Question extends Model
      */
     public function quizzes()
     {
-        return $this->belongsToMany(Quiz::class, 'question_quiz')
-                    ->withTimestamps();
-    }    
+        return $this->belongsToMany(Quiz::class, 'question_quiz')->withTimestamps();
+    }
+
+    public function registered_voters(): HasMany
+    {
+        return $this->hasMany(QuestionVoter::class, 'question_id');
+    }
 }

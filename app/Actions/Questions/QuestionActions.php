@@ -3,11 +3,14 @@
 namespace App\Actions\Questions;
 
 use App\Models\Question;
+use App\Models\QuestionVoter;
 
 use Illuminate\Database\Eloquent\Collection;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class QuestionActions Extends \App\Actions\Actions
 {
@@ -66,6 +69,32 @@ class QuestionActions Extends \App\Actions\Actions
                 ->get();
         } catch (\Exception $e) {
             throw new \Exception(__('Question not found'), 404);
+        }
+    }
+
+    public function findQuestionVoter($input): QuestionVoter
+    {
+        $validator = Validator::make($input, [
+            'email' => 'required|email',
+        ]);
+      
+        if ($validator->fails()) {
+            throw new \Exception($validator->errors()->first(), 400);
+        }
+              
+        try {
+            $question = Question::findOrFail($input['question_id']);
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception(__('Question not found'), 404);
+        }
+        
+        try {
+            return
+                $question->registered_voters()
+                    ->where('email', $input['email'])
+                    ->firstOrFail();
+        } catch (\Exception $e) {
+            throw new \Exception(__('Voter is not registered'), 404);
         }
     }
 }

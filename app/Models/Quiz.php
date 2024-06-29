@@ -137,7 +137,6 @@ class Quiz extends Model
      */
     public function questions()
     {
-        return $this->belongsToMany(Question::class, 'question_quiz')
-                    ->withTimestamps();
+        return $this->belongsToMany(Question::class, 'question_quiz')->withTimestamps();
     }    
 }
