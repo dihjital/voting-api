@@ -39,7 +39,7 @@ class RegisterContact extends Job
             $apiInstance = $this->getBrevoApiInstance();
             $apiInstance->createContact($this->createContact());
         } catch (\Exception $e) {
-            Log::error('RegisterContact: '.$e->getMessage());
+            Log::error('RegisterContact: ' . $e->getMessage());
         }
     }
 

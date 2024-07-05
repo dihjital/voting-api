@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\CloseQuestions;
+use App\Console\Commands\RegisterQuestionVoters;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
@@ -16,6 +17,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         CloseQuestions::class,
+        RegisterQuestionVoters::class,
     ];
 
     /**
@@ -27,5 +29,6 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('app:close-questions')->dailyAt('01:00');
+        $schedule->command('app:register-question-voters')->daily();
     }
 }
