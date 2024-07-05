@@ -66,10 +66,8 @@ class RegisterQuestionVoters extends Command
                 $brevoContactsCount = $brevoContacts->count();
                 // Log::debug('Number of existing contacts retrieved: ' . $brevoContactsCount);
 
-                if ($brevoContactsCount) {
-                    $newContacts = 
-                        $newContacts->whereNotIn('email', $brevoContacts->pluck('email')->all());
-                }
+                $newContacts = 
+                    $newContacts->whereNotIn('email', $brevoContacts->pluck('email')->all());
                 
                 $offset += $limit;
             }
