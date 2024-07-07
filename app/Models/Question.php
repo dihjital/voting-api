@@ -168,7 +168,6 @@ class Question extends Model
      */
     protected $casts = [
         'closed_at' => 'datetime',
-        'is_secure' => 'boolean',
     ];
     
     /**

@@ -42,6 +42,8 @@ $router->group(['middleware' => [
     'check_session']
   ], 
   function() use ($router) {
+    // TODO: Rename the controller action so it reflects the fact that
+    // We can also modify is_secure and not just the is_closed property ...
     $router->patch('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@openQuestion']);
 });
 

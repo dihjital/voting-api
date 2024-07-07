@@ -4,6 +4,7 @@ namespace App\Actions\Questions;
 
 use App\Models\Question;
 
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Validator;
 
@@ -17,7 +18,8 @@ class OpenQuestion extends QuestionActions
     public function open(array $input): Question
     {
         $validator = Validator::make($input, [
-            'is_closed' => 'required|boolean',
+            'is_closed' => 'sometimes|required|boolean',
+            'is_secure' => 'sometimes|required|boolean',
         ]);
       
         if ($validator->fails()) {
@@ -27,12 +29,22 @@ class OpenQuestion extends QuestionActions
         $question = $this->findQuestionForUserId($input);
 
         // When we try to open a question then we need to check whether this fits into the max allowed limit
-        if (! $input['is_closed'] && ! Gate::allows('open-question', $input['user_id'])) {
+        if (isset($input['is_closed']) && 
+            ! $input['is_closed'] && 
+            ! Gate::allows('open-question', $input['user_id'])
+        ) 
+        {
             throw new \Exception(__('You have reached the maximum number of questions allowed'), 403);
         }
       
         try {
-            $question->is_closed = $input['is_closed'];
+            if (isset($input['is_closed'])) {
+                $question->is_closed = $input['is_closed'];
+            }
+
+            if (isset($input['is_secure'])) {
+                $question->is_secure = $input['is_secure'];
+            }
       
             if ($question->save()) {
               return $question;
