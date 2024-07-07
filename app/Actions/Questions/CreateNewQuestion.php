@@ -20,6 +20,7 @@ class CreateNewQuestion extends QuestionActions
         $validator = Validator::make($input, [
             'question_text' => 'required',
             // 'is_closed' => 'nullable|boolean'
+            'is_secure' => 'nullable|boolean',
             'closed_at' => 'nullable|date',
             'user_id' => 'required|uuid',
             'quiz_id' => 'nullable|integer|exists:quizzes,id',
@@ -45,6 +46,7 @@ class CreateNewQuestion extends QuestionActions
 
             $q = Question::create([
               'question_text' => $input['question_text'],
+              'is_secure' => $input['is_secure'] ?? false,
               'closed_at' => $input['closed_at'] ?? null,
               'user_id' => $input['user_id'],
             ]);

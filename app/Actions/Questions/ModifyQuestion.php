@@ -21,6 +21,7 @@ class ModifyQuestion extends QuestionActions
             'question_text' => 'required',
             'closed_at' => 'nullable|date',
             // 'is_closed' => 'nullable|boolean',
+            'is_secure' => 'nullable|boolean',
             'user_id' => 'required|uuid',
         ]);
       
@@ -35,7 +36,11 @@ class ModifyQuestion extends QuestionActions
             $question->closed_at = $input['closed_at'] ?? null;
             /* if (isset($input['is_closed']))
               $new_question->is_closed = $input['is_closed']; */
-      
+
+            if (isset($input['is_secure'])) {
+                $question->is_secure = $input['is_secure'];
+            }
+              
             if ($question->save()) {
               return $question;
             }
