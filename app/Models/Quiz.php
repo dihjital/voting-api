@@ -103,6 +103,7 @@ class Quiz extends Model
     protected $fillable = [
         'name',
         'user_id',
+        'is_secure',
     ];    
     
     /**
@@ -130,6 +131,15 @@ class Quiz extends Model
     public function getNumberOfQuestionsAttribute()
     {
         return $this->questions()->where('is_closed', 0)->count();
+    }
+
+    public function getIsSecureAttribute()
+    {
+        return $this->attributes['is_secure']
+            ?: $this->whereHas(
+                'questions', 
+                fn($q) => $q->where('is_secure', 1)
+            )->exists();
     }
 
     /**

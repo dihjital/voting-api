@@ -7,6 +7,7 @@ use App\Console\Commands\RegisterQuestionVoters;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Laravel\Lumen\Console\Kernel as ConsoleKernel;
+use Laravel\Tinker\Console\TinkerCommand;
 
 class Kernel extends ConsoleKernel
 {
@@ -18,6 +19,7 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         CloseQuestions::class,
         RegisterQuestionVoters::class,
+        TinkerCommand::class,
     ];
 
     /**
