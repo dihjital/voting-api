@@ -3,6 +3,8 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use Carbon\Carbon;
+
 use Illuminate\Support\Facades\Cache;
 
 class RenewSession
@@ -22,7 +24,7 @@ class RenewSession
         $userUuid = Cache::get($sessionId);
 
         // Renew the session
-        Cache::put($sessionId, $userUuid, now()->addHours(1)); // renew for 1 hour
+        Cache::put($sessionId, $userUuid, Carbon::now()->addHours(1)); // renew for 1 hour
 
         return $next($request);
     }
