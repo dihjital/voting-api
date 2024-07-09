@@ -3,12 +3,13 @@
 namespace App\Events;
 
 use App\Models\Question;
-use Illuminate\Foundation\Events\Dispatchable;
+
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Events\Dispatchable;
 
 class QuestionClosed
 {
-    use Dispatchable, SerializesModels;
+    use SerializesModels;
 
     /**
      * Create a new event instance.

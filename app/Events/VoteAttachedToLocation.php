@@ -3,12 +3,13 @@
 namespace App\Events;
 
 use App\Models\Location;
-use Illuminate\Foundation\Events\Dispatchable;
+
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Events\Dispatchable;
 
 class VoteAttachedToLocation
 {
-    use Dispatchable, SerializesModels;
+    use SerializesModels;
 
     /**
      * Create a new event instance.
