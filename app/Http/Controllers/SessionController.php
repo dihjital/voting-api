@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Http\Request;
 
+use Carbon\Carbon;
+
 class SessionController extends Controller
 {
     /**
@@ -68,7 +70,7 @@ class SessionController extends Controller
         $sessionId = Str::uuid()->toString();
 
         // Store the user's UUID in the cache, using the session ID as the key
-        Cache::put($sessionId, $request->user_id, now()->addHours(1)); // cache for 1 hour
+        Cache::put($sessionId, $request->user_id, Carbon::now()->addHours(1)); // cache for 1 hour
 
         // Return the session ID in the response
         return response()->json([...self::sWrap(__('Session successfully created')), 'session_id' => $sessionId], 200);
