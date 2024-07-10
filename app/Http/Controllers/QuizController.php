@@ -10,6 +10,7 @@ use App\Actions\Quizzes\ShowAllQuestionsForQuiz;
 use App\Actions\Quizzes\CreateNewQuiz;
 use App\Actions\Quizzes\ModifyQuiz;
 use App\Actions\Quizzes\DeleteQuiz;
+use App\Actions\Quizzes\SecureQuiz;
 
 class QuizController extends Controller
 {
@@ -67,6 +68,19 @@ class QuizController extends Controller
 
         try {
             $quiz = $modifyQuiz->update($input);
+        } catch (\Exception $e) {
+            return response()->error($e->getMessage(), $e->getCode());
+        }
+        
+        return response()->json($quiz, 200)->setEncodingOptions(JSON_NUMERIC_CHECK);
+    }
+
+    public function secureQuiz($quiz_id, Request $request, SecureQuiz $secureQuiz)
+    {
+        $input = self::mergeQuizId($request->all(), $quiz_id);
+
+        try {
+            $quiz = $secureQuiz->secure($input);
         } catch (\Exception $e) {
             return response()->error($e->getMessage(), $e->getCode());
         }

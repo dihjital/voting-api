@@ -38,6 +38,7 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
 $router->group(['middleware' => [
     'auth', 
     'scope:close-question',
+    // 'scope:close-question,secure-question,secure-quiz'
     'renew_session',
     'check_session']
   ], 
@@ -45,6 +46,7 @@ $router->group(['middleware' => [
     // TODO: Rename the controller action so it reflects the fact that
     // We can also modify is_secure and not just the is_closed property ...
     $router->patch('/questions/{question_id: [0-9]+}', ['uses' => 'QuestionController@openQuestion']);
+    $router->patch('/quizzes/{quiz_id: [0-9]+}', ['uses' => 'QuizController@secureQuiz']);
 });
 
 $router->group(['middleware' => [
@@ -139,8 +141,9 @@ $router->group(['middleware' => [
 });
 
 // Request FCM tokens for push notifications
-$router->post('/subscribe', ['uses' => 'TokenController@storeToken']);
-$router->delete('/unsubscribe', ['uses' => 'TokenController@deleteToken']);
+// Depreciated, should be removed ....
+// $router->post('/subscribe', ['uses' => 'TokenController@storeToken']);
+// $router->delete('/unsubscribe', ['uses' => 'TokenController@deleteToken']);
 
 // Opt in Voters so they can receive the result of a voting once the question is closed
 // Or all questions are closed in the relevant quiz
