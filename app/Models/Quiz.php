@@ -104,7 +104,16 @@ class Quiz extends Model
         'name',
         'user_id',
         'is_secure',
-    ];    
+    ];
+    
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'is_secure' => 'boolean',
+    ];
     
     /**
      * The attributes that are excluded from the model's JSON form.
@@ -117,6 +126,7 @@ class Quiz extends Model
 
     protected $appends = [
         'number_of_questions',
+        'has_secure_question',
     ];
 
     public static function boot()
@@ -133,13 +143,9 @@ class Quiz extends Model
         return $this->questions()->where('is_closed', 0)->count();
     }
 
-    public function getIsSecureAttribute()
+    public function getHasSecureQuestionAttribute(): bool
     {
-        return $this->attributes['is_secure']
-            ?: $this->whereHas(
-                'questions', 
-                fn($q) => $q->where('is_secure', 1)
-            )->exists();
+        return $this->questions()->where('is_secure', 1)->exists();
     }
 
     /**
