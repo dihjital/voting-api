@@ -74,6 +74,8 @@ class AuthServiceProvider extends ServiceProvider
             'modify-question' => 'Modify a single question',
             'modify-vote' => 'Modify a single vote',
             'close-question' => 'Open/close question for voting',
+            'secure-question' => 'Change if a valid e-mail is required from a voter to vote for a question',
+            'secure-quiz' => 'Change if a valid e-mail is required from a voter to vote for a quiz',
             'vote' => 'Submit a vote for a question',
         ]);
 

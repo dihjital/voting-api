@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Validator;
 
 use Illuminate\Database\QueryException;
 
-class RegisterVoter extends QuestionActions
+class RegisterQuestionVoter extends QuestionActions
 {
     /**
      * Validate and register a voter for a question.

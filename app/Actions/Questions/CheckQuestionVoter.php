@@ -6,7 +6,7 @@ use App\Models\QuestionVoter;
 
 use Illuminate\Support\Facades\Log;
 
-class CheckVoter extends QuestionActions
+class CheckQuestionVoter extends QuestionActions
 {
     /**
      * Check if a voter has been registered for the given question.

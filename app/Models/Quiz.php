@@ -2,15 +2,16 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Quiz
  *
  * @package voting-api
  *
- * @author  Peter Hrobar <peter.hrobar@gmail.com>
+ * @author  Peter Hrobar <peter.hrobar@votes365.org>
  *
  * @OA\Schema(
  *     description="Quiz model, containing questions which belong to this Quiz",
@@ -154,5 +155,10 @@ class Quiz extends Model
     public function questions()
     {
         return $this->belongsToMany(Question::class, 'question_quiz')->withTimestamps();
-    }    
+    }
+    
+    public function registered_voters(): HasMany
+    {
+        return $this->hasMany(QuizVoter::class, 'quiz_id');
+    }
 }

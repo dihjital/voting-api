@@ -4,16 +4,16 @@ namespace App\Models;
 
 use App\Events\QuestionClosed;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 /**
  * Class Question
  *
  * @package voting-api
  *
- * @author  Peter Hrobar <peter.hrobar@gmail.com>
+ * @author  Peter Hrobar <peter.hrobar@votes365.org>
  *
  * @OA\Schema(
  *     description="Question model",

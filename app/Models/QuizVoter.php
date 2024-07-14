@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class QuestionVoter extends Model
+class QuizVoter extends Model
 {
     use HasFactory;
 
@@ -15,7 +15,7 @@ class QuestionVoter extends Model
      * @var array
      */
     protected $fillable = [
-        'question_id',
+        'quiz_id',
         'email',
     ];    
     
@@ -34,10 +34,10 @@ class QuestionVoter extends Model
     protected $appends = [];
 
     /**
-     * Get the question associated with the opt-in voter.
+     * Get the quiz associated with the opt-in voter.
      */
-    public function question()
+    public function quiz()
     {
-        return $this->belongsTo(Question::class);
+        return $this->belongsTo(Quiz::class);
     }
 }

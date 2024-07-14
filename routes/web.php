@@ -124,7 +124,9 @@ $router->group(['middleware' => [
     $router->get('/summary', ['uses' => 'SummaryController@getSummary']);
     // Locations (A vote might have multiple locations)
     $router->get('/questions/{question_id: [0-9]+}/votes/locations', ['uses' => 'LocationController@showAllLocationsforQuestion']);
-    $router->get('/questions/{question_id: [0-9]+}/check-voter', ['uses' => 'VoterRegistrationController@check']);
+    // Check voters registration by their e-mail address
+    $router->get('/questions/{question_id: [0-9]+}/check-voter', ['uses' => 'VoterRegistrationController@checkQuestionVoter']);
+    $router->get('/quizzes/{quiz_id: [0-9]+}/check-voter', ['uses' => 'VoterRegistrationController@checkQuizVoter']);
 });
 
 // Allows to place a vote and register a voter
@@ -137,7 +139,9 @@ $router->group(['middleware' => [
   ], 
   function () use ($router) {
     $router->patch('/questions/{question_id: [0-9]+}/votes/{vote_id: [0-9]+}', ['uses' => 'VoteController@increaseVoteNumber']);
-    $router->post('/questions/{question_id: [0-9]+}/register-voter', ['uses' => 'VoterRegistrationController@register']);
+    // Voters can be registered with a valid e-mail address for Quizzes and Questions
+    $router->post('/questions/{question_id: [0-9]+}/register-voter', ['uses' => 'VoterRegistrationController@registerQuestionVoter']);
+    $router->post('/quizzes/{quiz_id: [0-9]+}/register-voter', ['uses' => 'VoterRegistrationController@registerQuizVoter']);
 });
 
 // Request FCM tokens for push notifications

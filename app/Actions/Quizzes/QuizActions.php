@@ -3,9 +3,14 @@
 namespace App\Actions\Quizzes;
 
 use App\Models\Quiz;
+use App\Models\QuizVoter;
 
 use Illuminate\Support\Facades\Validator;
+
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+
+use Exception;
 
 class QuizActions Extends \App\Actions\Actions
 {
@@ -13,8 +18,8 @@ class QuizActions Extends \App\Actions\Actions
     {
         try {
             $quiz = Quiz::findOrFail($input['quiz_id']);
-        } catch (\Exception $e) {
-            throw new \Exception(__('Quiz not found'), 404);
+        } catch (Exception $e) {
+            throw new Exception(__('Quiz not found'), 404);
         }
 
         return 
@@ -36,15 +41,15 @@ class QuizActions Extends \App\Actions\Actions
         ]);
       
         if ($validator->fails()) {
-            throw new \Exception($validator->errors()->first(), 400);
+            throw new Exception($validator->errors()->first(), 400);
         }
       
         try {
             return Quiz::whereId($input['quiz_id'])
                 ->where('user_id', $input['user_id'])
                 ->firstOrFail();
-        } catch (\Exception $e) {
-            throw new \Exception(__('Quiz not found'), 404);
+        } catch (Exception $e) {
+            throw new Exception(__('Quiz not found'), 404);
         }
     }
 
@@ -55,7 +60,7 @@ class QuizActions Extends \App\Actions\Actions
         ]);
       
         if ($validator->fails()) {
-            throw new \Exception($validator->errors()->first(), 400);
+            throw new Exception($validator->errors()->first(), 400);
         }
       
         try {
@@ -69,8 +74,34 @@ class QuizActions Extends \App\Actions\Actions
                             return $quiz;
                         }
                 );
-        } catch (\Exception $e) {
-            throw new \Exception(__('Quiz not found'), 404);
+        } catch (Exception $e) {
+            throw new Exception(__('Quiz not found'), 404);
+        }
+    }
+
+    public function findQuizVoter($input): QuizVoter
+    {
+        $validator = Validator::make($input, [
+            'email' => 'required|email',
+        ]);
+      
+        if ($validator->fails()) {
+            throw new Exception($validator->errors()->first(), 400);
+        }
+              
+        try {
+            $quiz = Quiz::findOrFail($input['quiz_id']);
+        } catch (ModelNotFoundException $e) {
+            throw new Exception(__('Quiz not found'), 404);
+        }
+        
+        try {
+            return
+                $quiz->registered_voters()
+                    ->where('email', $input['email'])
+                    ->firstOrFail();
+        } catch (Exception $e) {
+            throw new Exception(__('Voter is not registered'), 404);
         }
     }
 }
