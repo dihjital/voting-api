@@ -27,6 +27,11 @@ class QuizActions Extends \App\Actions\Actions
                 ->questions()
                 ->where('is_closed', 0)
                 ->where('user_id', $input['user_id']) // Only list those which has the logged in user_id ...
+                ->when(isset($input['exclude_voter']), function($q1) use ($input) {
+                    $q1->whereDoesntHave('registered_voters', function($q2) use ($input) { 
+                        $q2->where('email', $input['exclude_voter']); 
+                    });
+                })
                 ->get()
                 ->map(function ($question) {
                     $question->makeHidden('pivot');
