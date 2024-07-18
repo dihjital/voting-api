@@ -4,6 +4,8 @@ namespace App\Actions\Quizzes;
 
 use Illuminate\Support\Facades\Validator;
 
+use Exception;
+
 class ShowAllQuestionsForQuiz extends QuizActions
 {
     const PER_PAGE = 5;
@@ -20,7 +22,7 @@ class ShowAllQuestionsForQuiz extends QuizActions
         ]);
       
         if ($validator->fails()) {
-            throw new \Exception($validator->errors()->first(), 400);
+            throw new Exception($validator->errors()->first(), 400);
         }
 
         $data = $this->findAllQuestionsForQuiz($input);

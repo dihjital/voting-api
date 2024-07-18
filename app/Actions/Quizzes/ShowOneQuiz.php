@@ -4,6 +4,8 @@ namespace App\Actions\Quizzes;
 
 use App\Models\Quiz;
 
+use Exception;
+
 class ShowOneQuiz extends QuizActions
 {
     /**
@@ -15,8 +17,8 @@ class ShowOneQuiz extends QuizActions
     {
         try {
             $quiz = $this->findQuizForUserId($input);
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage(), $e->getCode());
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage(), $e->getCode());
         }
       
         $quiz->questions->makeHidden('quiz_id')->toArray();

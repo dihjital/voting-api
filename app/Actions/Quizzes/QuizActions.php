@@ -43,6 +43,7 @@ class QuizActions Extends \App\Actions\Actions
     {
         $validator = Validator::make($input, [
             'user_id' => 'required|uuid',
+            'exclude_voter' => 'nullable|sometimes|required|email',
         ]);
       
         if ($validator->fails()) {
@@ -50,8 +51,16 @@ class QuizActions Extends \App\Actions\Actions
         }
       
         try {
-            return Quiz::whereId($input['quiz_id'])
+            return Quiz::query()
+                ->whereId($input['quiz_id'])
                 ->where('user_id', $input['user_id'])
+                ->with(['questions' => function($q1) use ($input) {
+                    $q1->when(isset($input['exclude_voter']), function($q2) use ($input) {
+                        $q2->whereDoesntHave('registered_voters', function($q3) use ($input) {
+                            $q3->where('email', $input['exclude_voter']);
+                        });
+                    });
+                }])
                 ->firstOrFail();
         } catch (Exception $e) {
             throw new Exception(__('Quiz not found'), 404);
