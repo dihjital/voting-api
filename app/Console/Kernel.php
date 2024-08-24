@@ -3,6 +3,8 @@
 namespace App\Console;
 
 use App\Console\Commands\CloseQuestions;
+
+use App\Console\Commands\RegisterQuizVoters;
 use App\Console\Commands\RegisterQuestionVoters;
 
 use Illuminate\Console\Scheduling\Schedule;
@@ -18,6 +20,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         CloseQuestions::class,
+        RegisterQuizVoters::class,
         RegisterQuestionVoters::class,
         TinkerCommand::class,
     ];
@@ -31,6 +34,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('app:close-questions')->dailyAt('01:00');
+
+        $schedule->command('app:register-quiz-voters')->daily();
         $schedule->command('app:register-question-voters')->daily();
     }
 }
