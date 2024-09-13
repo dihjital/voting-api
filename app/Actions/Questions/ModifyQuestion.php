@@ -22,6 +22,7 @@ class ModifyQuestion extends QuestionActions
             'closed_at' => 'nullable|date',
             // 'is_closed' => 'nullable|boolean',
             'is_secure' => 'nullable|boolean',
+            'show_current_votes' => 'required|boolean',
             'user_id' => 'required|uuid',
         ]);
       
@@ -34,6 +35,7 @@ class ModifyQuestion extends QuestionActions
         try {
             $question->question_text = $input['question_text'];
             $question->closed_at = $input['closed_at'] ?? null;
+            $question->show_current_votes = $input['show_current_votes'];
             /* if (isset($input['is_closed']))
               $new_question->is_closed = $input['is_closed']; */
 

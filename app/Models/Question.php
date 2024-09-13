@@ -158,6 +158,7 @@ class Question extends Model
         'is_closed',
         'closed_at',
         'is_secure',
+        'show_current_votes',
         'user_id',
     ];  
     
