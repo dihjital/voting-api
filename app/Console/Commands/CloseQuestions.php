@@ -11,6 +11,8 @@ use App\Events\QuestionClosed;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
+use Carbon\Carbon;
+
 class CloseQuestions extends Command
 {
     /**
@@ -33,7 +35,7 @@ class CloseQuestions extends Command
     public function handle()
     {
         try {
-            Question::where('closed_at', '<', now())
+            Question::where('closed_at', '<', Carbon::now())
                 ->where('is_closed', 0)
                 ->tap(function ($questions) {
                     $questions->each(function ($question) {
