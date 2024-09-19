@@ -160,6 +160,7 @@ class Question extends Model
         'is_secure',
         'show_current_votes',
         'user_id',
+        'correct_vote',
     ];  
     
     /**
@@ -201,6 +202,16 @@ class Question extends Model
             $question->votes()->delete();
             $question->quizzes()->detach();
         });
+    }
+
+    public function hasCorrectVote(): bool
+    {
+        return (bool) isset($this->correct_vote) && Vote::find($this->correct_vote);
+    }
+
+    public function getCorrectVoteModelAttribute(): Vote | null
+    {
+        return Vote::find($this->correct_vote);
     }
 
     public function getNumberOfVotesAttribute()
