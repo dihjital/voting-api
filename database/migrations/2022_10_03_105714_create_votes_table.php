@@ -12,7 +12,7 @@ class CreateVotesTable extends Migration
      * @return void
      */
     public function up()
-    {
+    {        
         Schema::create('votes', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('vote_text');

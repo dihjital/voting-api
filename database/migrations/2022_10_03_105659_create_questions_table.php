@@ -16,9 +16,13 @@ class CreateQuestionsTable extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('question_text');
-            $table->boolean('is_closed')->default(false);
             $table->uuid('user_id');
+            $table->boolean('is_closed')->default(false);
+            $table->unsignedBigInteger('correct_vote')->nullable();
             $table->timestamps();
+
+            // Foreign keys
+            $table->foreign('correct_vote')->references('id')->on('votes')->onDelete('set null');
         });
     }
 
