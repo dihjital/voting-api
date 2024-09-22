@@ -23,6 +23,7 @@ class ModifyQuestion extends QuestionActions
             // 'is_closed' => 'nullable|boolean',
             'is_secure' => 'nullable|boolean',
             'show_current_votes' => 'required|boolean',
+            'correct_vote' => 'nullable|exists:votes,id',
             'user_id' => 'required|uuid',
         ]);
       
@@ -42,6 +43,8 @@ class ModifyQuestion extends QuestionActions
             if (isset($input['is_secure'])) {
                 $question->is_secure = $input['is_secure'];
             }
+
+            $question->correct_vote = $input['correct_vote'] ?? null;
               
             if ($question->save()) {
               return $question;
