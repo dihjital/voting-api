@@ -185,6 +185,7 @@ class Question extends Model
         'previous_id',
         'next_id',
         'number_of_votes',
+        'number_of_votes_received',
         'last_vote_at',
         'belongs_to_quiz',
     ];
@@ -216,7 +217,12 @@ class Question extends Model
 
     public function getNumberOfVotesAttribute()
     {
-        return Vote::where('question_id', '=', $this->id)->count();
+        return $this->votes->count();
+    }
+
+    public function getNumberOfVotesReceivedAttribute()
+    {
+        return $this->votes->sum('number_of_votes');
     }
 
     public function getBelongsToQuizAttribute()
