@@ -55,8 +55,7 @@ class EmailResultsToVoter extends Job
                     implode(',', 
                         $this->question->votes->map(
                             function ($vote, $index) use ($letters) {
-                                // return $vote->vote_text;
-                                return $letters[$index];
+                                return $letters[$index] . ') ' . $vote->vote_text;
                             },
                         )->toArray()
                     ),
