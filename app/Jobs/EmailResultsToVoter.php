@@ -29,6 +29,9 @@ class EmailResultsToVoter extends Job
         // $this->chartId = 'zm-ac035d4b-9b47-4b23-a90e-1a8d0f8e4c4c';
         $this->chartId = 'zm-b0343430-87a5-4500-a691-3c2ccebdac79';
 
+        // This is the URL to edit the chart
+        // https://quickchart.io/chart-maker/edit/zm-b0343430-87a5-4500-a691-3c2ccebdac79
+
         $this->letters = range('A', 'Z');
     }
 
@@ -53,11 +56,10 @@ class EmailResultsToVoter extends Job
             $this->chartId . 
             '?' .
             http_build_query([
-                'title' => $this->question->question_text,
                 'labels' => 
                     implode(',', 
                         $this->question->votes->map(
-                            fn($vote, $index) => $this->letters[$index] . ') ' . $vote->vote_text
+                            fn($vote, $index) => $this->letters[$index] . ') '
                         )->toArray()
                     ),
                 'data1' => 
