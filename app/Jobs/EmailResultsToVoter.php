@@ -81,6 +81,7 @@ class EmailResultsToVoter extends Job
                 'letter' => $this->letters[$index],
                 'text' => $vote->vote_text,
                 'number' => $vote->number_of_votes,
+                'correct_vote' => $this->question->correct_vote === $vote->id ? __('This was the correct vote') : '',
             ]),
         ];
     }
