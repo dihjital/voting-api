@@ -12,6 +12,8 @@ class EmailResultsToVoter extends Job
     private $templateId;
     private $apiKey;
     private $chartId;
+
+    private $letters;
     
     /**
      * Create a new job instance.
@@ -25,6 +27,8 @@ class EmailResultsToVoter extends Job
         $this->templateId = 11; // Brevo mail temaplate id
         $this->apiKey = env('BREVO_RESULTS_API_KEY');
         $this->chartId = 'zm-ac035d4b-9b47-4b23-a90e-1a8d0f8e4c4c';
+
+        $this->letters = range('A', 'Z');
     }
 
     /**
@@ -43,8 +47,6 @@ class EmailResultsToVoter extends Job
 
     protected function createChartUrl()
     {
-        $letters = range('A', 'Z');
-
         return 
             'https://quickchart.io/chart/render/' . 
             $this->chartId . 
@@ -54,9 +56,7 @@ class EmailResultsToVoter extends Job
                 'labels' => 
                     implode(',', 
                         $this->question->votes->map(
-                            function ($vote, $index) use ($letters) {
-                                return $letters[$index] . ') ' . $vote->vote_text;
-                            },
+                            fn($vote, $index) => $this->letters[$index] . ') ' . $vote->vote_text
                         )->toArray()
                     ),
                 'data1' => 
@@ -77,6 +77,11 @@ class EmailResultsToVoter extends Job
             'QUESTION_ID' => $this->question->id,
             'NAME' => $this->voterEmail,
             'CHART_URL' => $this->createChartUrl(),
+            'VOTES' => $this->question->votes->map(fn($vote, $index) => [
+                'letter' => $this->letters[$index],
+                'text' => $vote->vote_text,
+                'number' => $vote->number_of_votes,
+            ]),
         ];
     }
 
