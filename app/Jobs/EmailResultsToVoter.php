@@ -26,11 +26,10 @@ class EmailResultsToVoter extends Job
     {
         $this->templateId = 11; // Brevo mail temaplate id
         $this->apiKey = env('BREVO_RESULTS_API_KEY');
-        // $this->chartId = 'zm-ac035d4b-9b47-4b23-a90e-1a8d0f8e4c4c';
-        $this->chartId = 'zm-b0343430-87a5-4500-a691-3c2ccebdac79';
+        $this->chartId = 'zm-b57c35fe-1eb0-4844-a233-3d1bfcebd046';
 
         // This is the URL to edit the chart
-        // https://quickchart.io/chart-maker/edit/zm-b0343430-87a5-4500-a691-3c2ccebdac79
+        // https://quickchart.io/chart-maker/edit/zm-b57c35fe-1eb0-4844-a233-3d1bfcebd046
 
         $this->letters = range('A', 'Z');
     }
