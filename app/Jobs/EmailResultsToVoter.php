@@ -48,7 +48,7 @@ class EmailResultsToVoter extends Job
         }
     }
 
-    protected function createChartUrl()
+    protected function _createChartUrl()
     {
         return 
             'https://quickchart.io/chart/render/' . 
@@ -69,10 +69,42 @@ class EmailResultsToVoter extends Job
                             },
                         )->toArray()
                     ),
-                'plugins' => [
-                    'roundedBars' => true,
-                ]
             ]);
+    }
+
+    protected function createChartUrl()
+    {
+        $chartURL =  
+            'https://quickchart.io/chart/?c=' .
+            http_build_query([
+                'type' => 'bar',
+                'data' => [
+                    'labels' => 
+                        implode(',', 
+                            $this->question->votes->map(
+                                fn($vote, $index) => $this->letters[$index] . ') '
+                            )->toArray()
+                        ),
+                    'datasets' => [
+                        'data' => 
+                            implode(',', 
+                                $this->question->votes->map(
+                                    function ($vote) {
+                                        return $vote->number_of_votes;
+                                    },
+                                )->toArray(),
+                            ),
+                    ],
+                ],
+                'options' => [
+                    'plugins' => [
+                        'roundedBars' => true,
+                    ],
+                ],
+            ]);
+        
+        Log::debug('chartURL: ' . $chartURL);
+        return $chartURL;
     }
 
     protected function createParams()
