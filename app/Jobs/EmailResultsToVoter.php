@@ -30,7 +30,7 @@ class EmailResultsToVoter extends Job
         $this->templateId = 11; // Brevo mail temaplate id
         $this->apiKey = env('BREVO_RESULTS_API_KEY');
 
-        $this->serverlessFunctionUrl = "https://faas-fra1-afec6ce7.doserverless.co/api/v1/namespaces/fn-0bc28cb8-f671-491a-a17d-6d724af0f3fc/actions/votes365.org/quickchart?blocking=true&result=true";
+        $this->serverlessFunctionUrl = config('api.serverless-functions.quickchart.url');
         $this->letters = range('A', 'Z');
     }
 

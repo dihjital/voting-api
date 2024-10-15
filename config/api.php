@@ -20,6 +20,15 @@ return [
     ],
     'voting-results' => [
       'url' => env('VOTING_RESULTS_URL', 'https://voting-results.votes365.org'),
-    ]
+    ],
+  ],
+  'serverless-functions' => [
+    'ipstack' => [
+      'url' => env('IPSTACK_FUNCTION_URL', 'https://faas-fra1-afec6ce7.doserverless.co/api/v1/web/fn-0bc28cb8-f671-491a-a17d-6d724af0f3fc/default/ipstack'),
+    ],
+    'quickchart' => [
+      'url' => env('QUICKCHART_FUNCTION_URL', 'https://faas-fra1-afec6ce7.doserverless.co/api/v1/namespaces/fn-0bc28cb8-f671-491a-a17d-6d724af0f3fc/actions/votes365.org/quickchart?blocking=true&result=true'),
+      'auth' => '',
+    ],
   ],
 ];
