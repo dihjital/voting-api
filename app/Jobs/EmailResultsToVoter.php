@@ -81,49 +81,44 @@ class EmailResultsToVoter extends Job
             'height' => 200,
         ]);
 
-        $labels = json_encode(
-            $this->question->votes->map(
-                fn($vote, $index) => $this->letters[$index] . ') '
-            )->toArray()
-        );
+        $mergedData = $this->question->votes->map(
+            fn($vote, $index) => [
+                'label' => $this->letters[$index] . ') ',
+                'votes' => $vote->number_of_votes,
+                'backgroundColor' => $this->question->correct_vote === $vote->id
+                    ? 'red'
+                    : 'lightblue'
+            ]
+        )->toArray();
 
-        $data = json_encode(
-            $this->question->votes->map(
-                function ($vote) {
-                    return $vote->number_of_votes;
-                },
-            )->toArray()
-        );
+        $data = json_encode(array_column($mergedData, 'votes'));
+        $labels = json_encode(array_column($mergedData, 'labels'));
+        $backgroundColor = json_encode(array_column($mergedData, 'backgroundColor'));
 
         $config = <<<EOD
         {
             "type": "bar",
             "data": {
                 "datasets": [
-                {
-                    "label": "Dataset 1",
-                    "data": $data,
-                    "backgroundColor": [
-                        "lightblue",
-                        "lightblue",
-                        "red",
-                        "lightblue"
-                    ],
-                    "fill": false,
-                    "spanGaps": false,
-                    "lineTension": 0.4,
-                    "pointRadius": 3,
-                    "pointHoverRadius": 3,
-                    "pointStyle": "circle",
-                    "borderDash": [
-                        0,
-                        0
-                    ],
-                    "barPercentage": 0.9,
-                    "categoryPercentage": 0.8,
-                    "type": "bar",
-                    "hidden": false
-                }
+                    {
+                        "label": "Dataset 1",
+                        "data": $data,
+                        "backgroundColor": $backgroundColor,
+                        "fill": false,
+                        "spanGaps": false,
+                        "lineTension": 0.4,
+                        "pointRadius": 3,
+                        "pointHoverRadius": 3,
+                        "pointStyle": "circle",
+                        "borderDash": [
+                            0,
+                            0
+                        ],
+                        "barPercentage": 0.9,
+                        "categoryPercentage": 0.8,
+                        "type": "bar",
+                        "hidden": false
+                    }
                 ],
                 "labels": $labels
             },
@@ -314,10 +309,10 @@ class EmailResultsToVoter extends Job
                 ]
                 },
                 "plugins": {
-                "roundedBars": "true"
+                    "roundedBars": "true"
                 },
                 "grid": {
-                "display": false
+                    "display": false
                 },
                 "cutoutPercentage": 50,
                 "rotation": -1.5707963267948966,
