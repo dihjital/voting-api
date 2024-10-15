@@ -82,11 +82,17 @@ class EmailResultsToVoter extends Job
         ]);
 
         $labels = json_encode(
-            implode(',', 
-                $this->question->votes->map(
-                    fn($vote, $index) => $this->letters[$index] . ') '
-                )->toArray()
-            )
+            $this->question->votes->map(
+                fn($vote, $index) => $this->letters[$index] . ') '
+            )->toArray()
+        );
+
+        $data = json_encode(
+            $this->question->votes->map(
+                function ($vote) {
+                    return $vote->number_of_votes;
+                },
+            )->toArray()
         );
 
         $config = <<<EOD
@@ -96,12 +102,7 @@ class EmailResultsToVoter extends Job
                 "datasets": [
                 {
                     "label": "Dataset 1",
-                    "data": [
-                        5,
-                        10,
-                        15,
-                        20
-                    ],
+                    "data": $data,
                     "backgroundColor": [
                         "lightblue",
                         "lightblue",
