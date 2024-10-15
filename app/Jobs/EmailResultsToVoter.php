@@ -7,11 +7,14 @@ use App\Models\Question;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+use Exception;
+
 class EmailResultsToVoter extends Job
 {
     private $templateId;
     private $apiKey;
-    private $chartId;
+
+    private $serverlessFunctionUrl;
 
     private $letters;
     
@@ -27,6 +30,7 @@ class EmailResultsToVoter extends Job
         $this->templateId = 11; // Brevo mail temaplate id
         $this->apiKey = env('BREVO_RESULTS_API_KEY');
 
+        $this->serverlessFunctionUrl = "https://faas-fra1-afec6ce7.doserverless.co/api/v1/namespaces/fn-0bc28cb8-f671-491a-a17d-6d724af0f3fc/actions/votes365.org/quickchart?blocking=true&result=true";
         $this->letters = range('A', 'Z');
     }
 
@@ -39,7 +43,7 @@ class EmailResultsToVoter extends Job
     {        
         try {
             $this->sendEmail();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('EmailResultsToVoter: ' . $e->getMessage());
         }
     }
@@ -55,22 +59,26 @@ class EmailResultsToVoter extends Job
                 : 'lightblue'
         )->toArray();
 
-        $url = "https://faas-fra1-afec6ce7.doserverless.co/api/v1/namespaces/fn-0bc28cb8-f671-491a-a17d-6d724af0f3fc/actions/votes365.org/quickchart?blocking=true&result=true";
+        try {
+            $response = 
+                Http::withHeaders([
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Basic ZjQzMjU0NGUtYTQyNC00NzA5LThjNjgtZDMyZTdhN2Y5ZThjOmtoRFBNRnZGbExjU2kzbHE4VmVvOERhenB0aG5sbjlEOG54b0w5TDc0aEZzZlZnYTBnU1pheFNkRzFCcjJnaTc=',
+                ])
+                ->post($this->serverlessFunctionUrl, [
+                    'labels' => $labels,
+                    'data' => $data,
+                    'backgroundColor' => $backgroundColor,
+                ]);
+        } catch (Exception $e) {
+            Log::error('getChartUrl: ' . $e->getMessage());
+        }
 
-        $response = 
-            Http::withHeaders([
-                'Accept' => 'application/json',
-                'Content-Type' => 'application/json',
-                'Authorization' => 'Basic ZjQzMjU0NGUtYTQyNC00NzA5LThjNjgtZDMyZTdhN2Y5ZThjOmtoRFBNRnZGbExjU2kzbHE4VmVvOERhenB0aG5sbjlEOG54b0w5TDc0aEZzZlZnYTBnU1pheFNkRzFCcjJnaTc=',
-            ])
-            ->post($url, [
-                'labels' => $labels,
-                'data' => $data,
-                'backgroundColor' => $backgroundColor,
-            ])
-            ->throwUnlessStatus(200);
+        ! $response->successful() && 
+            throw new Exception($response->body(), $response->status());
 
-        return $response->json('body');
+        return $response->json('body');        
     }
 
     protected function createParams()
@@ -112,15 +120,13 @@ class EmailResultsToVoter extends Job
                     ],
                     'templateId' => $this->templateId,
                     'params' => $this->createParams(),
-                ])
-                ->throwUnlessStatus(200);
-
-        } catch (\Exception $e) {
-            Log::error('sendEmail: '.$e->getMessage());
+                ]);
+        } catch (Exception $e) {
+            Log::error('sendEmail: ' . $e->getMessage());
         }
 
         ! $response->successful() && 
-            throw new \Exception($response->body(), $response->status());
+            throw new Exception($response->body(), $response->status());
 
         Log::info('Email successfully sent to: '.$this->voterEmail);
         Log::debug('Response was: '.$response->body());
