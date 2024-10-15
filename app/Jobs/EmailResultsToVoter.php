@@ -78,6 +78,9 @@ class EmailResultsToVoter extends Job
         ! $response->successful() && 
             throw new Exception($response->body(), $response->status());
 
+        $response->json('statusCode') >= 400 &&
+            throw new Exception($response->json('body'), $response->json('statusCode'));
+
         return $response->json('body');        
     }
 
