@@ -81,19 +81,23 @@ class EmailResultsToVoter extends Job
             'height' => 200,
         ]);
 
-        $mergedData = $this->question->votes->map(
-            fn($vote, $index) => [
-                'label' => $this->letters[$index] . ') ',
-                'votes' => $vote->number_of_votes,
-                'backgroundColor' => $this->question->correct_vote === $vote->id
+        $labels = json_encode(
+            $this->question->votes->map(
+                fn($vote, $index) => $this->letters[$index] . ') ')->toArray()
+        );
+
+        $data = json_encode(
+            $this->question->votes->map(
+                fn($vote) => $vote->number_of_votes)->toArray()
+        );
+
+        $backgroundColor = json_encode(
+            $this->question->votes->map(
+                fn($vote) => $this->question->correct_vote === $vote->id
                     ? 'red'
                     : 'lightblue'
-            ]
-        )->toArray();
-
-        $data = json_encode(array_column($mergedData, 'votes'));
-        $labels = json_encode(array_column($mergedData, 'labels'));
-        $backgroundColor = json_encode(array_column($mergedData, 'backgroundColor'));
+            )->toArray()
+        );
 
         $config = <<<EOD
         {
