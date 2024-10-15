@@ -81,8 +81,15 @@ class EmailResultsToVoter extends Job
             'height' => 200,
         ]);
 
-        $config = <<<EOD
+        $labels = json_encode(
+            implode(',', 
+                $this->question->votes->map(
+                    fn($vote, $index) => $this->letters[$index] . ') '
+                )->toArray()
+            )
+        );
 
+        $config = <<<EOD
         {
             "type": "bar",
             "data": {
@@ -90,16 +97,16 @@ class EmailResultsToVoter extends Job
                 {
                     "label": "Dataset 1",
                     "data": [
-                    5,
-                    10,
-                    15,
-                    20
+                        5,
+                        10,
+                        15,
+                        20
                     ],
                     "backgroundColor": [
-                    "lightblue",
-                    "lightblue",
-                    "red",
-                    "lightblue"
+                        "lightblue",
+                        "lightblue",
+                        "red",
+                        "lightblue"
                     ],
                     "fill": false,
                     "spanGaps": false,
@@ -108,8 +115,8 @@ class EmailResultsToVoter extends Job
                     "pointHoverRadius": 3,
                     "pointStyle": "circle",
                     "borderDash": [
-                    0,
-                    0
+                        0,
+                        0
                     ],
                     "barPercentage": 0.9,
                     "categoryPercentage": 0.8,
@@ -117,45 +124,40 @@ class EmailResultsToVoter extends Job
                     "hidden": false
                 }
                 ],
-                "labels": [
-                "Label 1",
-                "Label 2",
-                "Label 3",
-                "Label 4"
-                ]
+                "labels": $labels
             },
             "options": {
                 "title": {
-                "display": false,
-                "position": "top",
-                "fontSize": 12,
-                "fontFamily": "sans-serif",
-                "fontColor": "#666666",
-                "fontStyle": "bold",
-                "padding": 10,
-                "lineHeight": 1.2,
-                "text": "Chart title"
-                },
-                "layout": {
-                "padding": {},
-                "left": 0,
-                "right": 0,
-                "top": 0,
-                "bottom": 0
-                },
-                "legend": {
-                "display": false,
-                "position": "top",
-                "align": "center",
-                "fullWidth": true,
-                "reverse": false,
-                "labels": {
+                    "display": false,
+                    "position": "top",
                     "fontSize": 12,
                     "fontFamily": "sans-serif",
                     "fontColor": "#666666",
-                    "fontStyle": "normal",
-                    "padding": 10
-                }
+                    "fontStyle": "bold",
+                    "padding": 10,
+                    "lineHeight": 1.2,
+                    "text": "Chart title"
+                },
+                "layout": {
+                    "padding": {},
+                    "left": 0,
+                    "right": 0,
+                    "top": 0,
+                    "bottom": 0
+                },
+                "legend": {
+                    "display": false,
+                    "position": "top",
+                    "align": "center",
+                    "fullWidth": true,
+                    "reverse": false,
+                    "labels": {
+                        "fontSize": 12,
+                        "fontFamily": "sans-serif",
+                        "fontColor": "#666666",
+                        "fontStyle": "normal",
+                        "padding": 10
+                    }
                 },
                 "scales": {
                 "xAxes": [
@@ -166,28 +168,13 @@ class EmailResultsToVoter extends Job
                     "type": "category",
                     "stacked": false,
                     "offset": true,
-                    "time": {
-                        "unit": false,
-                        "stepSize": 1,
-                        "displayFormats": {
-                        "millisecond": "h:mm:ss.SSS a",
-                        "second": "h:mm:ss a",
-                        "minute": "h:mm a",
-                        "hour": "hA",
-                        "day": "MMM D",
-                        "week": "ll",
-                        "month": "MMM YYYY",
-                        "quarter": "[Q]Q - YYYY",
-                        "year": "YYYY"
-                        }
-                    },
                     "distribution": "linear",
                     "gridLines": {
                         "display": true,
                         "color": "rgba(0, 0, 0, 0.1)",
                         "borderDash": [
-                        1,
-                        1
+                            1,
+                            1
                         ],
                         "lineWidth": 3,
                         "drawBorder": true,
@@ -197,16 +184,16 @@ class EmailResultsToVoter extends Job
                         "zeroLineWidth": 1,
                         "zeroLineColor": "rgba(0, 0, 0, 0.25)",
                         "zeroLineBorderDash": [
-                        0,
-                        0
+                            0,
+                            0
                         ]
                     },
                     "angleLines": {
                         "display": true,
                         "color": "rgba(0, 0, 0, 0.1)",
                         "borderDash": [
-                        0,
-                        0
+                            0,
+                            0
                         ],
                         "lineWidth": 1
                     },
@@ -253,15 +240,15 @@ class EmailResultsToVoter extends Job
                         "unit": false,
                         "stepSize": 1,
                         "displayFormats": {
-                        "millisecond": "h:mm:ss.SSS a",
-                        "second": "h:mm:ss a",
-                        "minute": "h:mm a",
-                        "hour": "hA",
-                        "day": "MMM D",
-                        "week": "ll",
-                        "month": "MMM YYYY",
-                        "quarter": "[Q]Q - YYYY",
-                        "year": "YYYY"
+                            "millisecond": "h:mm:ss.SSS a",
+                            "second": "h:mm:ss a",
+                            "minute": "h:mm a",
+                            "hour": "hA",
+                            "day": "MMM D",
+                            "week": "ll",
+                            "month": "MMM YYYY",
+                            "quarter": "[Q]Q - YYYY",
+                            "year": "YYYY"
                         }
                     },
                     "distribution": "linear",
@@ -269,8 +256,8 @@ class EmailResultsToVoter extends Job
                         "display": false,
                         "color": "rgba(0, 0, 0, 0.1)",
                         "borderDash": [
-                        0,
-                        0
+                            0,
+                            0
                         ],
                         "lineWidth": 1,
                         "drawBorder": false,
@@ -280,16 +267,16 @@ class EmailResultsToVoter extends Job
                         "zeroLineWidth": 1,
                         "zeroLineColor": "rgba(0, 0, 0, 0.25)",
                         "zeroLineBorderDash": [
-                        0,
-                        0
+                            0,
+                            0
                         ]
                     },
                     "angleLines": {
                         "display": true,
                         "color": "rgba(0, 0, 0, 0.1)",
                         "borderDash": [
-                        0,
-                        0
+                            0,
+                            0
                         ],
                         "lineWidth": 1
                     },
