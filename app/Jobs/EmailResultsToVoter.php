@@ -96,7 +96,9 @@ class EmailResultsToVoter extends Job
                 return $response->json('body'); 
         } catch (Exception $e) {
             Log::error('getChartUrl: ' . $e->getMessage());
-        }       
+        }
+
+        return null;
     }
 
     protected function createParams()
