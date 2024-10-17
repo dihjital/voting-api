@@ -67,8 +67,8 @@ class EmailResultsToVoter extends Job
     {
         return $this->question->votes->map(
             fn($vote) => $this->question->correct_vote === $vote->id
-                ? 'red'
-                : 'lightblue'
+                ? 'rgb(104, 117, 246)'
+                : 'rgb(0, 146, 255)'
         )->toArray();
     }
 
