@@ -14,7 +14,10 @@ class EmailResultsToVoter extends Job
     private $templateId;
     private $apiKey;
 
-    private $serverlessFunctionUrl;
+    private array $serverlessFunction = [
+        'Url',
+        'Auth'
+    ];
 
     private $letters;
     
@@ -30,7 +33,9 @@ class EmailResultsToVoter extends Job
         $this->templateId = 11; // Brevo mail temaplate id
         $this->apiKey = env('BREVO_RESULTS_API_KEY');
 
-        $this->serverlessFunctionUrl = config('api.serverless-functions.quickchart.url');
+        $this->serverlessFunction['Url'] = config('api.serverless-functions.quickchart.url');
+        $this->serverlessFunction['Auth'] = config('api.serverless-functions.quickchart.auth');
+
         $this->letters = range('A', 'Z');
     }
 
@@ -48,40 +53,50 @@ class EmailResultsToVoter extends Job
         }
     }
 
-    protected function getChartUrl()
+    protected function getLabels(): array
     {
-        $labels = $this->question->votes->map(fn($vote, $index) => $this->letters[$index] . ') ')->toArray();
-        $data = $this->question->votes->map(fn($vote) => $vote->number_of_votes)->toArray();
+        return $this->question->votes->map(fn($vote, $index) => $this->letters[$index] . ') ')->toArray();
+    }
 
-        $backgroundColor = $this->question->votes->map(
+    protected function getData(): array
+    {
+        return $this->question->votes->map(fn($vote) => $vote->number_of_votes)->toArray();
+    }
+
+    protected function getDataBackgroundColor(): array
+    {
+        return $this->question->votes->map(
             fn($vote) => $this->question->correct_vote === $vote->id
                 ? 'red'
                 : 'lightblue'
         )->toArray();
+    }
 
+    protected function getChartUrl(): ?string
+    {
         try {
             $response = 
                 Http::withHeaders([
                     'Accept' => 'application/json',
                     'Content-Type' => 'application/json',
-                    'Authorization' => 'Basic ZjQzMjU0NGUtYTQyNC00NzA5LThjNjgtZDMyZTdhN2Y5ZThjOmtoRFBNRnZGbExjU2kzbHE4VmVvOERhenB0aG5sbjlEOG54b0w5TDc0aEZzZlZnYTBnU1pheFNkRzFCcjJnaTc=',
+                    'Authorization' => $this->serverlessFunction['Auth'],
                 ])
-                ->post($this->serverlessFunctionUrl, [
-                    'labels' => $labels,
-                    'data' => $data,
-                    'backgroundColor' => $backgroundColor,
+                ->post($this->serverlessFunction['Url'], [
+                    'labels' => $this->getLabels(),
+                    'data' => $this->getData(),
+                    'backgroundColor' => $this->getDataBackgroundColor(),
                 ]);
+
+                ! $response->successful() && 
+                    throw new Exception($response->body(), $response->status());
+
+                $response->json('statusCode') >= 400 &&
+                    throw new Exception($response->json('body'), $response->json('statusCode'));
+
+                return $response->json('body'); 
         } catch (Exception $e) {
             Log::error('getChartUrl: ' . $e->getMessage());
-        }
-
-        ! $response->successful() && 
-            throw new Exception($response->body(), $response->status());
-
-        $response->json('statusCode') >= 400 &&
-            throw new Exception($response->json('body'), $response->json('statusCode'));
-
-        return $response->json('body');        
+        }       
     }
 
     protected function createParams()
