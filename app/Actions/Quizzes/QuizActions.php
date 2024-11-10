@@ -25,7 +25,9 @@ class QuizActions Extends \App\Actions\Actions
         return 
             $quiz
                 ->questions()
-                ->where('is_closed', 0)
+                ->when(config('api.defaults.quiz.exclude_closed_questions'), fn($q) =>
+                    $q->where('is_closed', 0)
+                )
                 ->where('user_id', $input['user_id']) // Only list those which has the logged in user_id ...
                 ->when(isset($input['exclude_voter']), function($q1) use ($input) {
                     $q1->whereDoesntHave('registered_voters', function($q2) use ($input) { 

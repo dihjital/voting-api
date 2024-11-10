@@ -5,6 +5,7 @@ return [
     'quiz' => [
       'max_number_of_quizzes' => env('MAX_NUMBER_OF_QUIZZES', 5),
       'max_number_of_questions' => env('MAX_NUMBER_OF_QUESTIONS_FOR_QUIZ', 8),
+      'exclude_closed_questions' => env('EXCLUDE_CLOSED_QUESTIONS', false),
     ],
     'question' => [
       'max_number_of_questions' => env('MAX_NUMBER_OF_QUESTIONS', 8),
