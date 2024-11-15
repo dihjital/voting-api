@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 use Illuminate\Support\Facades\Storage;
@@ -75,6 +76,19 @@ class Vote extends Model
 
      /**
      * @OA\Property(
+     *     property="voted_at",
+     *     format="datetime",
+     *     default="null",
+     *     description="Date and time when someone chose this vote",
+     *     title="Voted at",
+     *     example="2023-06-18 12:01:01",
+     * )
+     *
+     * @var \DateTime
+     */
+
+     /**
+     * @OA\Property(
      *     property="created_at",
      *     format="datetime",
      *     default="now",
@@ -109,6 +123,7 @@ class Vote extends Model
         'number_of_votes', 
         'question_id',
         'image_path',
+        'voted_at',
     ];
 
     protected $appends = [
@@ -139,6 +154,16 @@ class Vote extends Model
         return $this->image_path 
             ? url(str_replace("public", "storage", $this->image_path))
             : null;
+    }
+
+    public function scopeWithVote(Builder $builder)
+    {
+        return $builder->where('number_of_votes', '>', 0);
+    }
+
+    public function scopeWithoutVote(Builder $builder)
+    {
+        return $builder->where('number_of_votes', '=', 0);
     }
 
     /**

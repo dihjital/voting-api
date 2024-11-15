@@ -4,6 +4,9 @@ namespace App\Actions\Votes;
 
 use App\Models\Vote;
 
+use Exception;
+use Carbon\Carbon;
+
 class IncreaseVoteNumber extends VoteActions
 {
     /**
@@ -15,20 +18,21 @@ class IncreaseVoteNumber extends VoteActions
     {
         $question = $this->findQuestionForVote($input);
         
-        $newVote = $question->votes->where('id', '=', $input['vote_id'])->first();
+        $vote = $question->votes->where('id', '=', $input['vote_id'])->first();
       
-        if (!$newVote) {
-            throw new \Exception(__('Vote not found'), 404);
+        if (! $vote) {
+            throw new Exception(__('Vote not found'), 404);
         }
-
-        $newVote->number_of_votes++;
-      
+        
         try {
-            $newVote->save();
-        } catch (\Exception $e) {
-            throw new \Exception($e->getMessage(), 500);
+            $vote->update([
+                'number_of_votes' => $vote->number_of_votes + 1,
+                'voted_at' => Carbon::now(),
+            ]);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage(), 500);
         }
 
-        return $newVote;
+        return $vote;
     }
 }
