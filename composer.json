@@ -6,6 +6,7 @@
     "type": "project",
     "require": {
         "php": "^7.3|^8.0",
+        "aws/aws-sdk-php": "~3.0",
         "darkaonline/swagger-lume": "8.*",
         "dusterio/lumen-passport": "^0.3.6",
         "getbrevo/brevo-php": "^2.0",

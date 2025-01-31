@@ -129,6 +129,10 @@ class Vote extends Model
     protected $appends = [
         'image_url',
     ];
+
+    protected $casts = [
+        'voted_at' => 'timestamp',
+    ];
     
     /**
      * The attributes that are excluded from the model's JSON form.
