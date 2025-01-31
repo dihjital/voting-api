@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 trait WithIpLocation
 {
     protected $IpStackFunctionURL;
-    protected $voteId; // TODO: Lehet ez a neve ennek a paraméternek ... ?
+    protected int $voteId; // TODO: Lehet ez a neve ennek a paraméternek ... ?
 
     public function initWithIpLocation($voteId): self 
     {
