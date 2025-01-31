@@ -6,6 +6,7 @@ use App\Models\Vote;
 use App\Models\Question;
 
 use App\Events\VoteReceived;
+use App\Traits\WithIpLocation;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -20,6 +21,8 @@ class ProcessVote implements ShouldQueue
     protected string $uuid;
     protected string $actionType;
     protected ?string $voterIPAddress;
+
+    use WithIpLocation;
     
     /**
      * Create a new job instance.
@@ -47,8 +50,19 @@ class ProcessVote implements ShouldQueue
 
         $this->validateJob($question, $vote);
         $this->performAction($question, $vote);
-        
-        Log::debug('Vote received for question: ' . $question->question_text);
+        $this->gatherVoterLocation($vote);        
+    }
+
+    protected function gatherVoterLocation(Vote $v): void
+    {
+        // Gather voter location
+        if ($this->voterIPAddress) {
+            $this->initWithIpLocation($v->id)
+                ->gatherIpLocationIf(
+                    fn($ipAddress) => filter_var($ipAddress, FILTER_VALIDATE_IP) !== false, 
+                    $this->voterIPAddress
+                );
+        }
     }
 
     protected function performAction(Question $q, Vote $v): void
