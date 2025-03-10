@@ -10,6 +10,8 @@ use App\Jobs\PushNotification;
 use App\Models\Question;
 use App\Models\Vote;
 
+// Obselete, we are using Pusher now
+
 trait WithPushNotification
 {
     protected $url;

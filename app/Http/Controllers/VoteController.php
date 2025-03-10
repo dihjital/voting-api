@@ -9,14 +9,13 @@ use App\Actions\Votes\IncreaseVoteNumber;
 use App\Actions\Votes\ShowOneVote;
 use App\Actions\Votes\ShowAllVotes;
 
-use App\Models\Question;
-
-use App\Traits\WithIpLocation;
-use App\Traits\WithPushNotification;
-
 use App\Events\VoteReceived;
+use App\Models\Question;
+use App\Traits\WithIpLocation;
 
 use Illuminate\Http\Request;
+
+use Exception;
 
 /**
  * @OA\SecurityScheme(
@@ -29,7 +28,7 @@ use Illuminate\Http\Request;
 
 class VoteController extends Controller
 {
-  use WithPushNotification, WithIpLocation;
+  use WithIpLocation;
 
   /**
    * Create a new Vote for a Question.
@@ -108,7 +107,7 @@ class VoteController extends Controller
 
     try {
       $vote = $createNewVote->create($request, $input);
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
       return response()->error($e->getMessage(), $e->getCode());
     }
 
@@ -205,7 +204,7 @@ class VoteController extends Controller
 
     try {
       $vote = $modifyVote->update($request, $input);
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
       return response()->error($e->getMessage(), $e->getCode());
     }
     
@@ -291,19 +290,11 @@ class VoteController extends Controller
       // Pusher notification
       event(new VoteReceived(Question::find($question_id)));
 
-      $this->initWithPushNotification(
-              $newVote->question,
-              $newVote,
-              // TODO: Should point to current server ...
-              config('api.defaults.voting-admin.url')."/$question_id/votes",
-              'vote')
-          ->sendPushNotification();
-
       // This is where we also gather the voter location based on the request IP address
       // or the voter-ip-address (which is the default)
       $this->initWithIpLocation($newVote->id)
           ->gatherIpLocationIf(self::isValidIpAddress(...), $request->header('voter-ip-address') ?? request()->ip());
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
       return response()->error($e->getMessage(), $e->getCode());
     }
     
@@ -360,7 +351,7 @@ class VoteController extends Controller
 
     try {
       $vote = $showOneVote->show($input);
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
       return response()->error($e->getMessage(), $e->getCode());
     }
 
@@ -411,7 +402,7 @@ class VoteController extends Controller
 
     try {
       $votes = $showAllVotes->show($input);
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
       return response()->error($e->getMessage(), $e->getCode());
     }
 
@@ -474,17 +465,9 @@ class VoteController extends Controller
       $vote = $deleteVote::getVoteData($input);
 
       if ($deleteVote->delete($input)) {
-        // Use Pusher from now on
-        // Move this to the Vote model
-        /* $this->initWithPushNotification(
-          $vote->question,
-          $vote,
-          config('api.defaults.voting-admin.url')."/$question_id/votes",
-          'delete')
-        ->sendPushNotification(); */
         return response()->json(self::sWrap(__('Vote deleted successfully')), 200);
       }
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
       return response()->error($e->getMessage(), $e->getCode());
     }
 
@@ -538,7 +521,7 @@ class VoteController extends Controller
       if ($deleteVote->deleteAllVotes($input)) {
         return response()->json(self::sWrap(__('All votes deleted successfully')), 200);
       }
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
       return response()->error($e->getMessage(), $e->getCode());
     }
 
@@ -557,10 +540,9 @@ class VoteController extends Controller
       $vote = $deleteVote::getVoteData($input);
 
       if ($deleteVote->deleteVoteImage($input)) {
-        // TODO: Generalize Push Notifications ...
         return response()->json(self::sWrap(__('Vote image deleted successfully')), 200);
       }
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
       return response()->error($e->getMessage(), $e->getCode());
     }
 

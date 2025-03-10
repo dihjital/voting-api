@@ -5,6 +5,8 @@ namespace App\Jobs;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
+// Obselete, we are using Pusher now
+
 class PushNotification extends Job
 {
     private $url;
